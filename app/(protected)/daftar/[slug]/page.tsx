@@ -284,7 +284,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                 <label htmlFor="agree"
                                     className="flex items-center gap-4 cursor-pointer"
                                 >
-                                    <input type="checkbox" id="agree" className="appearance-none checked:bg-secondary size-4 bg-muted-foreground rounded-lg border-none" required onChange={(e)=> setAggre(e.target.checked)}/>
+                                    <input type="checkbox" id="agree" className="appearance-none shrink-0 checked:bg-secondary size-4 bg-muted-foreground rounded-lg border-none" required onChange={(e)=> setAggre(e.target.checked)}/>
                                     <span className="text-sm text-muted-foreground">
                                         Saya menyetujui bahwa semua informasi yang saya berikan adalah benar dan akurat.
                                     </span>

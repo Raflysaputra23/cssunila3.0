@@ -195,7 +195,7 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
                             <>
                                 <h2 className="font-display text-3xl font-bold sm:text-4xl">Siap untuk bertanding?</h2>
                                 <p className="mt-3 text-muted-foreground">
-                                    Daftarkan timmu sekarang. Pembayaran via Midtrans, verifikasi oleh panitia.
+                                    Daftarkan timmu sekarang. Pembayaran langsung dari website, tanpa ribet.
                                 </p>
                                 {user ? (
                                     <Link

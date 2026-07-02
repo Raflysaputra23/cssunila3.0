@@ -77,7 +77,7 @@ const HistoryPage = () => {
   const qc = useQueryClient();
   const [payingId, setPayingId] = useState<string | null>(null);
   const suparef = useRef(createClient());
-  const { role, loading } = useAuth();
+  const { role, loading, user } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
@@ -100,12 +100,14 @@ const HistoryPage = () => {
     queryKey: ["my-registrations"],
     queryFn: async (): Promise<Row[]> => {
       const supabase = suparef.current;
-
+      
+      if (!user) return [];
       const { data, error } = await supabase
         .from("registrations")
         .select(
           "id, team_name, leader_name, leader_whatsapp, status, created_at, competition:competitions(id, slug, name), payments(amount_idr, status)"
         )
+        .eq("user_id", user.id)
         .order("created_at", { ascending: false });
 
       if (error) throw error;

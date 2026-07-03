@@ -34,11 +34,11 @@ export async function updateSession(request: NextRequest) {
 
   const { data } = await supabase.auth.getClaims();
   const user = data?.claims;
-  
+
   const isLogin = ["/auth"].includes(request.nextUrl.pathname);
   const isLogout = ["/history","/admin","/api/midtrans/snap"].includes(request.nextUrl.pathname);
 
-  if (isLogout && !user) {
+  if ((isLogout || request.nextUrl.pathname.startsWith("/daftar")) && !user) {
     const url = request.nextUrl.clone();
     url.pathname = "/auth";
     return NextResponse.redirect(url);

@@ -144,7 +144,7 @@ const FieldManager = ({ comp, onClose }: { comp: { id: string; name: string }; o
                       <option className="bg-background" value="file">Upload File</option>
                     </select>
                     <input className={"inputCls"} placeholder="Placeholder (opsional)" value={f.placeholder ?? ""} onChange={(e) => update(idx, { placeholder: e.target.value })} />
-                    <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/2 px-3 text-xs">
+                    <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/2 px-3 py-3 text-xs">
                       <input type="checkbox" className="appearance-none size-3 rounded-2xl border-none bg-white/20 checked:bg-primary" checked={f.required} onChange={(e) => update(idx, { required: e.target.checked })} />
                       Wajib diisi
                     </label>

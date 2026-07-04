@@ -6,12 +6,13 @@ import Footer from "@/components/site/Footer";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Pengumuman Juara | CSS 3.0",
-  description: "Pengumuman juara lomba CSS 3.0",
+  title: "Pengumuman Juara | CSS UNILA 3.0",
+  description: "Pengumuman juara lomba CSS UNILA 3.0",
   openGraph: {
-    title: "Pengumuman Juara | CSS 3.0",
-    description: "Pengumuman juara lomba CSS 3.0",
-  }
+    title: "Pengumuman Juara | CSS UNILA 3.0",
+    description: "Pengumuman juara lomba CSS UNILA 3.0",
+  },
+  keywords: ["CSS UNILA 3.0", "Pengumuman Juara", "Computer Science Showdown 3.0", "Himakom FMIPA UNILA"],
 }
 
 type WinnerItem = {

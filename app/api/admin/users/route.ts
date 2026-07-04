@@ -47,7 +47,7 @@ export async function GET() {
       .from("user_competitions")
       .select("user_id, competition_id");
     if (compsErr) throw compsErr;
-    const { data: authUsers, error: authErr } = await adminClient.auth.admin.listUsers();
+    const { data: authUsers } = await adminClient.auth.admin.listUsers();
     const authMap = new Map((authUsers?.users ?? []).map((u) => [u.id, u.email]));
 
     const usersList = (profiles ?? []).map((p) => {

@@ -8,6 +8,11 @@ import Seminars from "@/components/site/Seminars";
 import Sponsors from "@/components/site/Sponsors";
 import Timeline from "@/components/site/Timeline";
 import { createClient } from "@/supabase/server";
+import { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Landing Page | CSS UNILA 3.0",
+}
 
 export default async function Home() {
   let totalLomba = 4;

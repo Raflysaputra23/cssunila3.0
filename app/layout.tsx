@@ -15,7 +15,7 @@ const space = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "CSS 3.0",
+  title: "CSS UNILA 3.0",
   description: "CSS UNILA 3.0 adalah event terbesar bagi himakom yang mencakup berbagai sekolah di provinsi lampung.",
   keywords: [
     "CSS UNILA 3.0",
@@ -26,10 +26,21 @@ export const metadata: Metadata = {
     "CSS UNILA 3.0 Platform Digital Unila",
     "CSS UNILA 3.0 Platform Digital Unila Terbesar Himakom",
   ],
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    }
+  },
   authors: [
     {
-      name: "CSS UNILA 3.0",
-      url: process.env.NEXT_PUBLIC_DOMAIN_URL!,
+      name: "M. Rafly Saputra",
+      url: "https://github.com/Raflysaputra23",
     },
   ],
   openGraph: {

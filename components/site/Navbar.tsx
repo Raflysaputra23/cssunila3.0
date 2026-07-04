@@ -26,7 +26,7 @@ const Navbar = () => {
     const { user, loading, role } = useAuth();
     const suparef = useRef(createClient());
     const router = useRouter();
-    const isAdmin = role === "admin";
+    const isAdmin = ["petugas","lomba","admin"].includes(role || "");
 
     const [notifications, setNotifications] = useState<any[]>([]);
     const [showNotif, setShowNotif] = useState(false);

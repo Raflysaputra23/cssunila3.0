@@ -144,7 +144,7 @@ export default async function PengumumanPage() {
               {Object.entries(groupedWinners).map(([compName, winnerList]) => (
                 <section key={compName} className="space-y-6">
                   <div className="flex items-center gap-4">
-                    <h2 className="font-display text-xl font-bold text-foreground tracking-wide shrink-0">
+                    <h2 className="font-display text-xl font-bold sm:shrink-0 text-foreground tracking-wide">
                       {compName}
                     </h2>
                     <div className="h-px w-full bg-linear-to-r from-cyan-strong/30 to-transparent" />

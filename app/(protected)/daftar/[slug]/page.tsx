@@ -56,7 +56,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
     async function uploadFile(fieldKey: string, file: File) {
         if (!user) return;
         if (file.size > 5 * 1024 * 1024) {
-            toast.error("Ukuran file maksimum 5 MB");
+            toast.error("Ukuran file maksimum 2 MB");
             return;
         }
         setUploading((u) => ({ ...u, [fieldKey]: true }));
@@ -253,7 +253,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                                         }}
                                                     />
                                                 </label>
-                                                <p className="text-xs text-muted-foreground">Tip: File yang diterima &quot;.jpg&quot;, &quot;.jpeg&quot;, &quot;.png&quot;, &quot;.webp&quot; max 5mb</p>
+                                                <p className="text-xs text-muted-foreground">Tip: File yang diterima &quot;.jpg&quot;, &quot;.jpeg&quot;, &quot;.png&quot;, &quot;.webp&quot;. Max 2mb</p>
                                                 {answers[f.key] && (
                                                     <p className="flex items-center gap-1.5 text-xs text-emerald-300">
                                                         <CheckCircle2 size={12} /> {answers[f.key].split("/").pop()}

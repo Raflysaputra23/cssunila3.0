@@ -32,6 +32,9 @@ type CompFull = CompRow & {
   no_pj_1: string | null;
   pj_2: string | null;
   no_pj_2: string | null;
+  juara_1: string | null;
+  juara_2: string | null;
+  juara_3: string | null;
   timeline: { date: string; label: string }[];
 };
 
@@ -180,6 +183,21 @@ const CompetitionEditor = ({
           <div>
             <HelpLabel label="Urutan" required hint="Urutan tampil di halaman beranda. Angka lebih kecil tampil dulu." />
             <input className={"inputCls"} type="number" value={value.position ?? 0} onChange={(e) => onChange({ ...value, position: +e.target.value })} />
+          </div>
+        </div>
+
+        <div className="grid gap-3 sm:grid-cols-3">
+          <div>
+            <HelpLabel label="Juara 1" hint="Penghargaan untuk juara 1 (opsional). Contoh: Uang tunai 100000 + Sertifikat." />
+            <input className={"inputCls"} placeholder="Uang tunai 100000 + Sertifikat." type="text" min={0} value={value.juara_1 ?? ""} onChange={(e) => onChange({ ...value, juara_1: e.target.value })} />
+          </div>
+          <div>
+            <HelpLabel label="Juara 2" hint="Penghargaan untuk juara 2 (opsional). Contoh: Uang tunai 50000 + Sertifikat." />
+            <input className={"inputCls"} placeholder="Uang tunai 50000 + Sertifikat." type="text" min={0} value={value.juara_2 ?? ""} onChange={(e) => onChange({ ...value, juara_2: e.target.value })} />
+          </div>
+          <div>
+            <HelpLabel label="Juara 3" hint="Penghargaan untuk juara 3 (opsional). Contoh: Uang tunai 20000 + Sertifikat." />
+            <input className={"inputCls"} placeholder="Uang tunai 20000 + Sertifikat." type="text" min={0} value={value.juara_3 ?? ""} onChange={(e) => onChange({ ...value, juara_3: e.target.value })} />
           </div>
         </div>
 

@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowLeft, Users, Wallet, Trophy, CalendarCheck, CheckCircle2, Lock } from "lucide-react";
+import { ArrowLeft, Users, Wallet, Trophy, CheckCircle2, Lock, Timer, Clock } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
@@ -19,6 +19,7 @@ type CompetitionDetail = {
     icon: string | null; accent: string | null; fee_idr: number; quota: number;
     team_size: string | null; prize: string | null; is_open: boolean;
     pj_1: string; no_pj_1: string; pj_2: string; no_pj_2: string; banner: string;
+    juara_1: string; juara_2: string; juara_3: string;
     rules: string[]; timeline: { date: string; label: string }[];
 };
 
@@ -47,7 +48,7 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
             const supabase = suparef.current;
             const { data, error } = await supabase
                 .from("competitions")
-                .select("slug,name,tagline,description,icon,accent,fee_idr,quota,team_size,prize,is_open,rules,timeline,pj_1,no_pj_1,pj_2,no_pj_2,banner")
+                .select("slug,name,tagline,description,icon,accent,fee_idr,quota,team_size,prize,is_open,rules,timeline,pj_1,no_pj_1,pj_2,no_pj_2,banner,juara_1,juara_2,juara_3")
                 .eq("slug", slug)
                 .maybeSingle();
             if (error) throw error;
@@ -138,7 +139,7 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
             </section>
 
             <section className="py-12">
-                <div className="mx-auto grid max-w-5xl gap-8 px-4 md:grid-cols-2">
+                <div className="mx-auto grid max-w-5xl items-start gap-8 px-4 md:grid-cols-2">
                     <div className="glass rounded-3xl p-7">
                         <h2 className="font-display text-2xl font-bold">Syarat & Ketentuan</h2>
                         <ul className="mt-5 space-y-3">
@@ -157,75 +158,138 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
                         </ul>
                     </div>
 
-                    {c.banner &&
-                        <div className="flex justify-center items-center">
-                            <Image src={c.banner} alt="banner" width={280} height={280} className="pointer-events-none opacity-80 object-contain w-full h-full animate-floating-smooth" />
+                    <div className="relative isolate p-7 min-h-96">
+                        <Image
+                            src={'/assets/banner_juara.png'}
+                            alt="Gambar Banner Juara"
+                            width={120}
+                            height={120}
+                            className="pointer-events-none animate-floating-smooth absolute top-2/3 -translate-y-1/2 left-1/2 -translate-x-1/2 -z-10 h-auto w-62 object-cover opacity-80" />
+
+                        <h2 className="font-display text-2xl font-bold mb-1">Penghargaan</h2>
+                        <p className="text-sm text-muted-foreground mb-8">
+                            Pemenang dalam perlombaan {c.name} ini akan mendapatkan hadiah sebagai berikut
+                        </p>
+                        <div className="space-y-6">
+                            {c.juara_1 &&
+                                <div className="flex items-center gap-2">
+                                    <Image src={"/assets/juara_1.png"} alt="Gambar Juara 1" width={100} height={100} className="object-contain w-12 h-auto pointer-events-none" />
+                                    <div>
+                                        <p className="uppercase text-xs font-semibold font-display text-cyan-strong">Juara 1</p>
+                                        <span className="">{c.juara_1}</span>
+                                    </div>
+                                </div>
+                            }
+                            {c.juara_2 &&
+                                <div className="flex items-center gap-2">
+                                    <Image src={"/assets/juara_2.png"} alt="Gambar Juara 2" width={100} height={100} className="object-contain w-12 h-auto pointer-events-none" />
+                                    <div>
+                                        <p className="uppercase text-xs font-semibold font-display text-cyan-strong">Juara 2</p>
+                                        <span className="">{c.juara_2}</span>
+                                    </div>
+                                </div>
+                            }
+                            {c.juara_3 &&
+                                <div className="flex items-center gap-2">
+                                    <Image src={"/assets/juara_3.png"} alt="Gambar Juara 3" width={100} height={100} className="object-contain w-12 h-auto pointer-events-none" />
+                                    <div>
+                                        <p className="uppercase text-xs font-semibold font-display text-cyan-strong">Juara 3</p>
+                                        <span className="">{c.juara_3}</span>
+                                    </div>
+                                </div>
+                            }
+                            {!(c.juara_1) && !(c.juara_2) && !(c.juara_3) &&
+                                <div className="flex border bg-background/30 backdrop-blur-sm rounded-2xl p-8 flex-col items-center justify-center gap-2 mt-12">
+                                    <Trophy size={48} className="text-muted-foreground" />
+                                    <h2 className="text-center tracking-tight text-muted-foreground w-4/5">Penghargaan {c.name} belum ditentukan oleh panitia.</h2>
+                                </div>
+                            }
                         </div>
-                    }
+                    </div>
                 </div>
             </section>
 
             <section className="py-12">
-                <ol className="relative flex flex-col max-w-5xl mx-auto px-4">
-                    <div className="absolute left-4 top-0 bottom-0 w-px bg-linear-to-b from-sapphire via-cyan-strong to-transparent md:left-1/2" />
-                    {c.timeline.map((item, i) => (
-                        <li
-                            key={`${item.label}-${i}`}
-                            className="relative group mb-8 md:mb-12 w-full"
-                        >
-                            <span
-                                className={`absolute left-4 top-6 size-4 -translate-x-1/2 rounded-full border-2 group-hover:scale-125 transition-all duration-200 border-cyan-strong ${dateActive(item.date) ? "bg-cyan-strong" : "bg-cyan-strong/60"} shadow-[0_0_14px_var(--cyan-strong)] md:left-1/2`}
-                                aria-hidden
-                            />
-                            <div
-                                className={`glass group-hover:scale-105 transition-all duration-300 ml-10 p-5 rounded-2xl md:ml-0 md:w-[calc(50%-2.5rem)] ${i % 2 === 0
-                                    ? "md:mr-auto md:text-right"
-                                    : "md:ml-auto md:text-left"
-                                    }`}
-                            >
-                                <div className="text-xs font-medium tracking-wider text-cyan-strong uppercase glass inline-flex justify-center items-center rounded-xl px-2.5 py-2">
-                                    {item.date}
-                                </div>
-                                <h3 className="mt-1 group-hover:text-cyan-strong transition-all duration-200 font-display text-xl font-semibold">
-                                    {item.label}
-                                </h3>
+                <div className="max-w-5xl mx-auto px-4">
+                    <h2 className="mt-3 font-display text-3xl text-center mb-10 font-bold sm:text-4xl">
+                        Timeline <span className="gradient-text">{c.name}</span>
+                    </h2>
+                    <ol className="relative flex flex-col">
+                        {c.timeline.length > 0 &&
+                            <>
+                                <div className="absolute left-4 top-0 bottom-0 w-px bg-linear-to-b from-sapphire via-cyan-strong to-transparent md:left-1/2" />
+                                {c.timeline.map((item, i) => (
+                                    <li
+                                        key={`${item.label}-${i}`}
+                                        className="relative group mb-8 md:mb-12 w-full"
+                                    >
+                                        <span
+                                            className={`absolute left-4 top-6 size-4 -translate-x-1/2 rounded-full border-2 group-hover:scale-125 transition-all duration-200 border-cyan-strong ${dateActive(item.date) ? "bg-cyan-strong" : "bg-cyan-strong/60"} shadow-[0_0_14px_var(--cyan-strong)] md:left-1/2`}
+                                            aria-hidden
+                                        />
+                                        <div
+                                            className={`glass group-hover:scale-105 transition-all duration-300 ml-10 p-5 rounded-2xl md:ml-0 md:w-[calc(50%-2.5rem)] ${i % 2 === 0
+                                                ? "md:mr-auto md:text-right"
+                                                : "md:ml-auto md:text-left"
+                                                }`}
+                                        >
+                                            <div className="text-xs font-medium tracking-wider text-cyan-strong uppercase glass inline-flex justify-center items-center rounded-xl px-2.5 py-2">
+                                                {item.date}
+                                            </div>
+                                            <h3 className="mt-1 group-hover:text-cyan-strong transition-all duration-200 font-display text-xl font-semibold">
+                                                {item.label}
+                                            </h3>
+                                        </div>
+                                    </li>
+                                ))}
+                            </>
+                        }
+                        {c.timeline.length <= 0 &&
+                            <div className="max-w-lg mx-auto flex border bg-background/30 backdrop-blur-sm rounded-2xl p-8 flex-col items-center justify-center gap-3 mt-12">
+                                <Clock size={48} className="text-muted-foreground" />
+                                <h2 className="text-center tracking-tight text-muted-foreground w-4/5">Timeline {c.name} belum ditentukan oleh panitia.</h2>
                             </div>
-                        </li>
-                    ))}
-                </ol>
+                        }
+                    </ol>
+                </div>
             </section>
 
             <section className="py-12">
-                <div className="mx-auto max-w-md px-4 space-y-2">
-                    <h2 className="font-display text-center text-3xl font-bold sm:text-4xl">Narahubung</h2>
-                    <p className="text-center text-sm text-muted-foreground mb-8">Jika terdapat pertanyaan atau kendala pendaftaran terkait lomba.
-                        Silahkan hubungin narahubung lomba {c.name}
-                    </p>
-                    <div className={`flex items-center ${c.pj_2 ? 'justify-between' : 'justify-center'} gap-5`}>
-                        {c.pj_1 &&
-                            <Link href={`https://wa.me`} className="flex items-center gap-3 group">
-                                <Image src={"/assets/whatsapp.svg"} width={30} height={30} alt="icon whatsapp" />
-                                <div>
-                                    <p className="font-semibold">{c.pj_1}</p>
-                                    <p className="text-sm text-muted-foreground group-hover:text-cyan-strong">{c.no_pj_1}</p>
-                                </div>
-                            </Link>
-                        }
-                        {c.pj_2 &&
-                            <>
-                                <div className="h-10 w-0.5 bg-muted"></div>
-                                <Link href={`https://wa.me`} className="flex items-center gap-3 group">
+                <div className={`mx-auto grid grid-cols-1 justify-center ${c.banner && 'md:grid-cols-2'} items-center max-w-5xl px-4 gap-8`}>
+                    <div className={`glass order-2 lg:order-1 rounded-3xl p-7 ${c.banner ? '' : 'max-w-lg'}`}>
+                        <h2 className="font-display text-3xl font-bold mb-1">Narahubung</h2>
+                        <p className="text-sm text-muted-foreground mb-8">Jika terdapat pertanyaan atau kendala pendaftaran terkait lomba.
+                            Silahkan hubungin narahubung lomba {c.name}
+                        </p>
+                        <div className={`flex items-center flex-wrap gap-8`}>
+                            {c.pj_1 &&
+                                <Link href={`https://wa.me`} className="flex shrink-0 items-center gap-3 group">
+                                    <Image src={"/assets/whatsapp.svg"} width={30} height={30} alt="icon whatsapp" />
+                                    <div>
+                                        <p className="font-semibold">{c.pj_1}</p>
+                                        <p className="text-sm text-muted-foreground group-hover:text-cyan-strong">{c.no_pj_1}</p>
+                                    </div>
+                                </Link>
+                            }
+                            {c.pj_2 &&
+                                <Link href={`https://wa.me`} className="flex shrink-0 items-center gap-3 group">
                                     <Image src={"/assets/whatsapp.svg"} width={30} height={30} alt="icon whatsapp" />
                                     <div>
                                         <p className="font-semibold">{c.pj_2}</p>
                                         <p className="text-sm text-muted-foreground group-hover:text-cyan-strong">{c.no_pj_2}</p>
                                     </div>
                                 </Link>
-                            </>
-                        }
+                            }
+                        </div>
                     </div>
+                    {c.banner &&
+                        <div className="flex order-1 lg:order-2 justify-center items-center">
+                            <Image src={c.banner} alt="banner" width={120} height={120} className="pointer-events-none opacity-60 object-contain w-62 h-auto animate-floating-smooth" />
+                        </div>
+                    }
                 </div>
             </section>
+
 
             <section className="py-16">
                 <div className="mx-auto max-w-3xl px-4 text-center">

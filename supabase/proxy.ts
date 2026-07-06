@@ -39,7 +39,7 @@ export async function updateSession(request: NextRequest) {
       .eq("user_id", user.sub)
       .maybeSingle();
 
-    if (data) isAdmin = data.role == "admin";
+    if (data) isAdmin = (data.role == "admin" || data.role == "lomba" || data.role == "petugas");
   }
 
   const { data: maintenance } = await supabase

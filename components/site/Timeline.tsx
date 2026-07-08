@@ -35,6 +35,9 @@ const Timeline = ({ items }: TimelineProps) => {
           </h2>
         </div>
 
+        {(timelineItems.length === 0) && (
+          <div className="glass rounded-3xl p-10 text-center text-sm text-muted-foreground">Belum ada timeline.</div>
+        )}
         <ol className="relative flex flex-col">
           <div className="absolute left-4 top-0 bottom-0 w-px bg-linear-to-b from-sapphire via-cyan-strong to-transparent md:left-1/2" />
           {timelineItems.map((item, i) => (

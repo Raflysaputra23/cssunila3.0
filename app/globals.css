@@ -10,6 +10,8 @@
   --color-evergreen: var(--evergreen);
   --animate-floating-smooth: floatingSmooth 5s ease-in-out infinite;
   --animate-shimmer: shimmer 2s linear infinite;
+  --animate-star-movement-bottom: star-movement-bottom linear infinite alternate;
+  --animate-star-movement-top: star-movement-top linear infinite alternate;
   --color-background: var(--background);
   --color-foreground: var(--foreground);
   --font-poppins: var(--font-poppins);
@@ -239,11 +241,33 @@
 }
 
 @keyframes shimmer {
-  0% { 
-    background-position: 200% 0; 
+  0% {
+    background-position: 200% 0;
   }
-  100% { 
-    background-position: -200% 0; 
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+@keyframes star-movement-bottom {
+  0% {
+    transform: translate(0%, 0%);
+    opacity: 100;
+  }
+  100% {
+    transform: translate(-100%, 0%);
+    opacity: 0;
+  }
+}
+
+@keyframes star-movement-top {
+  0% {
+    transform: translate(0%, 0%);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(100%, 0%);
+    opacity: 0;
   }
 }
 

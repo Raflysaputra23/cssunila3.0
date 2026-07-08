@@ -105,32 +105,32 @@ export default async function NewsDetailPage({ params }: Props) {
                   src={news.image_url}
                   alt={news.title}
                   fill
-                  className="object-cover"
+                  className="object-contain"
                   priority
                 />
               </div>
             )}
 
             <div className="glass mt-10 rounded-3xl p-6 md:p-10 leading-relaxed text-foreground/90 space-y-6 text-base sm:text-lg">
+              <h2 className="text-muted-foreground mb-1 text-lg">Deskripsi</h2>
               {news.content?.split("\n").map((paragraph, index) => (
                 <p key={index}>{paragraph}</p>
               ))}
 
-              {/* Action Button: Google Drive Link */}
               {news.drive_link && (
                 <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center gap-4 justify-between">
                   <div className="flex items-center gap-3 text-sm text-muted-foreground">
                     <FolderOpen size={18} className="text-cyan-strong" />
                     <span>Berkas lampiran tersedia di Google Drive</span>
                   </div>
-                  <a
+                  <Link
                     href={news.drive_link}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="btn-hero hover:btn-hero-hover inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold whitespace-nowrap"
                   >
                     Buka Google Drive <ExternalLink size={14} />
-                  </a>
+                  </Link>
                 </div>
               )}
             </div>
@@ -149,7 +149,7 @@ export default async function NewsDetailPage({ params }: Props) {
                         src={imgUrl}
                         alt={`Galeri ${i + 1}`}
                         fill
-                        className="object-cover transition-transform duration-300 group-hover:scale-105"
+                        className="object-contain transition-transform duration-300 group-hover:scale-105"
                       />
                     </div>
                   ))}

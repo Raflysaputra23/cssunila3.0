@@ -1,9 +1,10 @@
 "use client"
 
-import { Instagram, Twitter, Youtube, Mail } from "lucide-react";
+import { Instagram, Twitter, Youtube, Mail, ArrowUpRight, Map } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/supabase/client";
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 
 const Footer = () => {
   const [lomba, setLomba] = useState<string[]>([]);
@@ -15,16 +16,14 @@ const Footer = () => {
   });
 
   useEffect(() => {
-    (async() => {
+    (async () => {
       const supabase = suparef.current;
-      
-      // Load competitions
+
       const { data: compData } = await supabase.from('competitions').select("name");
       if (compData) {
         setLomba(compData.map(comp => comp.name));
       }
 
-      // Load settings
       const { data: setValues } = await supabase
         .from("site_settings")
         .select("id, value")
@@ -45,26 +44,29 @@ const Footer = () => {
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
             <div className="flex items-center gap-3">
+              <Image src={"/himakom-logo.png"} width={80} height={80} alt={`logo himakom`} className="h-9 w-auto" />
               <Image src={settings.site_logo} width={80} height={80} alt={`${settings.site_title_main} ${settings.site_title_sub}`} className="h-9 w-auto" />
               <span className="font-display text-lg font-bold tracking-wider">
                 <span className="gradient-text">{settings.site_title_main} {settings.site_title_sub}</span>
               </span>
             </div>
             <p className="mt-4 max-w-md text-sm text-muted-foreground">
-              Computer Science Showdown — event teknologi himakom terbesar, mempertemukan
-              talenta, komunitas, dan sekolah SMA/SMK sederajat se-Provinsi Lampung.
+              Kegiatan perlombaan dan perayaan yang diselenggarakan oleh Himpunan Mahasiswa Jurusan Ilmu Komputer(Himakom), FMIPA, Universitas Lampung. CSS menghadirkan kompetisi di bidang teknologi maupun non-teknologi, yang dirancang sebagai ajang pengembangan potensi, kreativitas, dan kolaborasi bagi siswa, mahasiswa, serta peserta umum.
             </p>
             <div className="mt-5 flex gap-2">
-              {[Instagram, Twitter, Youtube, Mail].map((I, idx) => (
-                <a
-                  key={idx}
+              {[{icon: Instagram, url: "instagram.com/"}, {icon: Youtube, url: "youtube.com/"}, {icon: Mail, url: "mailto:cssunila25@gmail.com?subject=Halo CSS"}].map((item) => (
+                <Link
+                  key={item.url}
                   href="#"
                   aria-label="social"
                   className="glass flex size-10 items-center justify-center rounded-full text-foreground/80 transition hover:text-cyan-strong"
                 >
-                  <I size={16} />
-                </a>
+                  <item.icon size={16} />
+                </Link>
               ))}
+              <Link href={"tiktok.com/@cssunila"} className="glass flex size-10 items-center justify-center rounded-full text-foreground/80 transition hover:text-cyan-strong">
+                <Image src={"/assets/tiktok.svg"} width={40} height={40} alt={`tiktok logo`} className="h-4 w-auto" />
+              </Link>
             </div>
           </div>
 
@@ -75,7 +77,7 @@ const Footer = () => {
             <ul className="space-y-2 text-sm text-muted-foreground">
               {lomba.length > 0 ?
                 lomba.map((comp, idx) => (
-                  <li key={idx}><a href="#lomba" className="hover:text-foreground">{comp}</a></li>
+                  <li key={idx} className="flex items-center gap-2 group"><ArrowUpRight size={14} className="group-hover:text-cyan-strong group-hover:translate-x-0.5 transition-all" /> <a href="#lomba" className="group-hover:text-foreground">{comp}</a></li>
                 ))
                 :
                 <li><a href="#lomba" className="hover:text-foreground">Belum tersedia</a></li>
@@ -84,21 +86,20 @@ const Footer = () => {
           </div>
 
           <div>
-            <h4 className="mb-4 font-display text-sm font-semibold uppercase tracking-wider">
-              Event
+            <h4 className="mb-1 font-display text-sm font-semibold uppercase tracking-wider">
+              Kontak
             </h4>
-            <ul className="space-y-2 text-sm text-muted-foreground">
-              <li><a href="#timeline" className="hover:text-foreground">Timeline</a></li>
-              <li><a href="#seminar" className="hover:text-foreground">Seminar</a></li>
-              <li><a href="#berita" className="hover:text-foreground">Berita</a></li>
-              <li><a href="#sponsor" className="hover:text-foreground">Sponsor</a></li>
-            </ul>
+            <Link href="mailto:cssunila25@gmail.com?subject=Halo CSS" className="flex items-center gap-2 text-sm text-cyan-strong"><Mail size={16} /> cssunila25@gmail.com</Link>
+            <p className="text-sm text-muted-foreground mt-4 mb-1">
+              Jl. Prof.Dr. Ir. Sumatri Brojonegoro No.1 Gedong Meneng, Kec. Rajabasa, Kota Bandar Lampung, Indonesia
+            </p>
+            <Link href="https://maps.app.goo.gl/qtpKaZCQm6QrHE917" target="_blank" className="flex items-center gap-2 text-sm text-cyan-strong"><Map size={16} /> Gedung UKM FMIPA Unila</Link>
           </div>
         </div>
 
         <div className="mt-12 flex flex-col items-center justify-between gap-3 border-t border-border/60 pt-6 text-xs text-muted-foreground sm:flex-row">
           <p>© 2026 {settings.site_title_main} {settings.site_title_sub} — Computer Science Showdown. All rights reserved.</p>
-          <p>Made with M. Rafly Saputra</p>
+          <p>Created With M. Rafly Saputra</p>
         </div>
       </div>
     </footer>

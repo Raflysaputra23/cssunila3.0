@@ -55,7 +55,7 @@ const About = ({ title, description1, description2, highlights, logo }: AboutPro
             {aboutDesc2}
           </p>
 
-          <ul className="mt-6 grid grid-cols-2 gap-3 text-sm">
+          <ul className="mt-6 grid grid-cols-1 md:grid-cols-2 gap-3 text-sm">
             {aboutHighlights.map((f) => (
               <li
                 key={f}

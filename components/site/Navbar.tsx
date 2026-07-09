@@ -180,7 +180,7 @@ const Navbar = () => {
                     (payload: any) => {
                         const newNotif = payload.new;
                         const isForMe = newNotif.user_id === user.id ||
-                            (newNotif.is_for_admin && (role === "admin" || role === "lomba"));
+                            (newNotif.is_for_admin && (role === "admin"));
 
                         if (isForMe) {
                             setNotifications((prev) => [newNotif, ...prev.slice(0, 9)]);

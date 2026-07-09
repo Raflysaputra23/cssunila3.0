@@ -139,28 +139,32 @@ const GroupLinkRow = ({
 
   const handleSave = async () => {
     setLoading(true);
-    const qr = await QR.toDataURL(link, { margin: 3, width: 220 });
-    const response = await fetch(qr);
-    const blob = await response.blob();
+    if (!qr) {
+      const qrCode = await QR.toDataURL(link, { margin: 3, width: 220 });
+      const response = await fetch(qrCode);
+      const blob = await response.blob();
 
-    const supabase = suparef.current;
-    const filename = `${crypto.randomUUID()}-${comp.slug}.png`;
-    const { error } = await supabase.storage
-      .from("site_settings")
-      .upload(filename, blob, { upsert: false, contentType: "image/png" });
+      const supabase = suparef.current;
+      const filename = `${crypto.randomUUID()}-${comp.slug}.png`;
+      const { error } = await supabase.storage
+        .from("site_settings")
+        .upload(filename, blob, { upsert: false, contentType: "image/png" });
 
-    if (error) {
-      setLoading(false);
-      toast.error("Gagal mengupload gambar");
-      return;
-    };
+      if (error) {
+        setLoading(false);
+        toast.error("Gagal mengupload gambar");
+        return;
+      };
 
-    const { data: url } = await supabase.storage
-      .from("site_settings")
-      .getPublicUrl(filename);
+      const { data: url } = await supabase.storage
+        .from("site_settings")
+        .getPublicUrl(filename);
 
-    setQr(url.publicUrl);
-    onSave({ link_url: link, qr_url: url.publicUrl });
+      setQr(url.publicUrl);
+      onSave({ link_url: link, qr_url: url.publicUrl });
+    } else {
+      onSave({ link_url: link, qr_url: qr });
+    }
     setLoading(false);
   }
 

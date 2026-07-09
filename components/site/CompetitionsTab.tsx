@@ -168,14 +168,7 @@ const CompetitionsTab = () => {
           </button>
         </div>
       )}
-      {role === "lomba" && (
-        <div className="mb-4 flex justify-end">
-          <button onClick={() => setEditing({ is_open: true, position: (data?.length ?? 0) + 1, accent: "cyan", icon: "Trophy", rules: [], timeline: [] })} className="btn-hero cursor-pointer inline-flex items-center gap-2 rounded-full px-4 py-2 text-xs font-semibold">
-            <Plus size={14} /> Lomba baru
-          </button>
-        </div>
-      )}
-
+    
       {isLoading && <div className="glass rounded-2xl p-8 text-center text-sm text-muted-foreground">Memuat…</div>}
       <div className="space-y-2">
         {data?.map((c) => (

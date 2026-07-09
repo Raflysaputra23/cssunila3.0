@@ -235,7 +235,7 @@ const CompetitionEditor = ({
         </div>
 
         <div>
-          <HelpLabel label="Timeline (tanggal | label)" required hint="Satu baris = satu tahap. Format: 'TANGGAL | KETERANGAN'. Contoh: '10 Okt 2026 | Pendaftaran dibuka'." />
+          <HelpLabel label="Timeline (tanggal | label)" hint="Satu baris = satu tahap. Format: 'TANGGAL | KETERANGAN'. Contoh: '10 Okt 2026 | Pendaftaran dibuka'." />
           <textarea
             rows={4}
             className="inputCls"

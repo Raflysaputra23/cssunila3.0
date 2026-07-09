@@ -1,5 +1,5 @@
-import { eventTimeline } from "@/lib/data";
 import { dateActive, formatDate } from "@/lib/formatTanggal";
+import { Clock } from "lucide-react";
 
 type TimelineItem = {
   start_date: string;
@@ -13,15 +13,7 @@ type TimelineProps = {
 };
 
 const Timeline = ({ items }: TimelineProps) => {
-  const timelineItems: TimelineItem[] =
-    items && items.length > 0
-      ? items
-      : eventTimeline.map((e) => ({
-        start_date: e.start_date,
-        end_date: e.end_date,
-        label: e.label,
-        description: e.description,
-      }));
+  const timelineItems: TimelineItem[] = items ?? [];
 
   return (
     <section id="timeline" className="relative py-24">
@@ -36,7 +28,10 @@ const Timeline = ({ items }: TimelineProps) => {
         </div>
 
         {(timelineItems.length === 0) && (
-          <div className="glass rounded-3xl p-10 text-center text-sm text-muted-foreground">Belum ada timeline.</div>
+          <div className="max-w-2xl mx-auto flex border bg-background/30 backdrop-blur-sm rounded-2xl p-8 flex-col items-center justify-center gap-3 mt-12">
+            <Clock size={48} className="text-muted-foreground" />
+            <h2 className="text-center tracking-tight text-muted-foreground w-4/5">Timeline acara belum ditentukan oleh panitia.</h2>
+          </div>
         )}
         <ol className="relative flex flex-col">
           <div className="absolute left-4 top-0 bottom-0 w-px bg-linear-to-b from-sapphire via-cyan-strong to-transparent md:left-1/2" />

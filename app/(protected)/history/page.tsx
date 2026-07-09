@@ -106,9 +106,22 @@ const HistoryPage = () => {
     if (typeof window === "undefined") return;
     if (document.getElementById("midtrans-snap")) return;
 
+    const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION;
+    const isProd = (isProduction ?? "false").toLowerCase() === "true";
+
     const s = document.createElement("script");
     s.id = "midtrans-snap";
-    s.src = "https://app.sandbox.midtrans.com/snap/snap.js";
+    s.src = isProd
+      ? "https://app.midtrans.com/snap/snap.js"
+      : "https://app.sandbox.midtrans.com/snap/snap.js";
+
+    const clientKeySand = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY_SAND;
+    const clientKeyProd = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY_PROD;
+    const clientKey = isProd ? clientKeyProd : clientKeySand;
+    if (clientKey) {
+      s.setAttribute("data-client-key", clientKey);
+    }
+
     document.head.appendChild(s);
   }, []);
 

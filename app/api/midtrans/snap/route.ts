@@ -8,9 +8,16 @@ type SnapResult = {
   is_production: boolean;
 };
 
-const serverKey = process.env.NEXT_PUBLIC_MIDTRANS_SERVER_KEY;
-const clientKey = process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY;
 const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION;
+const isProd = (isProduction ?? "false").toLowerCase() === "true";
+
+const serverKey = isProd
+  ? process.env.NEXT_PUBLIC_MIDTRANS_SERVER_KEY_PROD
+  : process.env.NEXT_PUBLIC_MIDTRANS_SERVER_KEY_SAND;
+
+const clientKey = isProd
+  ? process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY_PROD
+  : process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY_SAND;
 
 export const POST = async (req: Request) => {
   try {
@@ -29,8 +36,6 @@ export const POST = async (req: Request) => {
     }
 
     const data = (await req.json()) as { registrationId: string; forceNew?: boolean };
-
-    const isProd = (isProduction ?? "false").toLowerCase() === "true";
 
     if (!serverKey || !clientKey) {
       return NextResponse.json(
@@ -114,6 +119,8 @@ export const POST = async (req: Request) => {
       ? reg.competition[0]?.name
       : (reg.competition as { name: string } | null)?.name;
 
+    const appUrl = process.env.NEXT_PUBLIC_DOMAIN_URL ?? "http://localhost:3000";
+
     const body = {
       transaction_details: {
         order_id: orderId,
@@ -137,6 +144,11 @@ export const POST = async (req: Request) => {
       ],
       credit_card: {
         secure: true,
+      },
+      callbacks: {
+        finish: `${appUrl}/payment/success`,
+        error: `${appUrl}/payment/error`,
+        pending: `${appUrl}/payment/pending`,
       },
     };
 

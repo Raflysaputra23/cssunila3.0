@@ -12,7 +12,12 @@ type Notification = {
   payment_type?: string;
 };
 
-const serverKey = process.env.NEXT_PUBLIC_MIDTRANS_SERVER_KEY;
+const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION;
+const isProd = (isProduction ?? "false").toLowerCase() === "true";
+
+const serverKey = isProd
+  ? process.env.NEXT_PUBLIC_MIDTRANS_SERVER_KEY_PROD
+  : process.env.NEXT_PUBLIC_MIDTRANS_SERVER_KEY_SAND;
 
 export const POST = async (request: Request) => {
   if (!serverKey) return new Response("not configured", { status: 500 });

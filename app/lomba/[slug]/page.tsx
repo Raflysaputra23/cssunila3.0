@@ -106,7 +106,7 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
                     </Link>
 
                     <div className="mt-6 flex flex-col items-start gap-6 md:flex-row md:items-center">
-                        <div className="glass-strong flex size-20 items-center justify-center rounded-3xl">
+                        <div className="glass-strong flex shrink-0 size-20 items-center justify-center rounded-3xl">
                             <DynamicIcon icon={c.icon ?? "Trophy"} />
                         </div>
                         <div>
@@ -268,7 +268,7 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
 
             <section className="py-12">
                 <div className={`mx-auto grid grid-cols-1 justify-center ${c.banner ? 'md:grid-cols-2' : ''} items-center max-w-5xl px-4 gap-8`}>
-                    <div className={`glass order-2 lg:order-1 rounded-3xl p-7 ${c.banner ? '' : 'max-w-lg'}`}>
+                    <div className={`glass order-2 lg:order-1 rounded-3xl p-7 ${c.banner ? '' : 'max-w-lg mx-auto'}`}>
                         <h2 className="font-display text-3xl font-bold mb-1">Narahubung</h2>
                         <p className="text-sm text-muted-foreground mb-8">Jika terdapat pertanyaan atau kendala pendaftaran terkait lomba.
                             Silahkan hubungin narahubung lomba {c.name}

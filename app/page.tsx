@@ -72,7 +72,8 @@ export default async function Home() {
 
     const { count } = await supabase
       .from("registrations")
-      .select("*", { count: "exact", head: true });
+      .select("*", { count: "exact", head: true })
+      .eq("status", "verified");
     if (count !== null) totalPeserta = count;
 
     const { data: settings } = await supabase

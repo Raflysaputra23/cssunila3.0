@@ -31,6 +31,7 @@ type Row = {
   leader_name: string;
   leader_whatsapp: string;
   status: string;
+  rejection_reason: string;
   created_at: string;
   competition: { id: string; slug: string; name: string } | null;
   payments:
@@ -134,7 +135,7 @@ const HistoryPage = () => {
     const { data, error } = await supabase
       .from("registrations")
       .select(
-        "id, team_name, leader_name, leader_whatsapp, status, created_at, competition:competitions(id, slug, name), payments(amount_idr, status, midtrans_token, midtrans_order_id)"
+        "id, team_name, leader_name, leader_whatsapp, status, rejection_reason, created_at, competition:competitions(id, slug, name), payments(amount_idr, status, midtrans_token, midtrans_order_id)"
       )
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
@@ -378,7 +379,16 @@ const HistoryPage = () => {
                       )}
                     </div>
                   </div>
-
+                  {r.status === "rejected" && r.rejection_reason && (
+                    <div className="mt-4 rounded-2xl bg-destructive/10 border border-destructive/40 p-5">
+                      <h4 className="text-sm font-semibold text-destructive">
+                        Alasan Penolakan
+                      </h4>
+                      <p className="mt-2 text-xs text-muted-foreground">
+                        {r.rejection_reason}
+                      </p>
+                    </div>
+                  )}
                   {r.status === "verified" && r.competition && (
                     <GroupLinkPanel competitionId={r.competition.id} />
                   )}

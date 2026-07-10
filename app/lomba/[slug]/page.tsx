@@ -116,7 +116,7 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
                         </div>
                         <div>
                             {!c.is_open && (
-                                <span className="hidden md:inline-flex items-center gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">
+                                <span className="hidden md:inline-flex items-center mb-1 gap-1 rounded-full bg-amber-500/15 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wider text-amber-300">
                                     <Lock size={10} /> Pendaftaran Ditutup
                                 </span>
                             )}

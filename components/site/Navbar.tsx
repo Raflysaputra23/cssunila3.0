@@ -114,7 +114,7 @@ const Navbar = () => {
             .order("created_at", { ascending: false })
             .limit(8);
 
-        if (role === "admin") {
+        if (role === "admin" || role === "lomba") {
             query.or(`user_id.eq.${user.id},is_for_admin.eq.true`);
         } else {
             query.eq("user_id", user.id);
@@ -180,7 +180,7 @@ const Navbar = () => {
                     (payload: any) => {
                         const newNotif = payload.new;
                         const isForMe = newNotif.user_id === user.id ||
-                            (newNotif.is_for_admin && (role === "admin"));
+                            (newNotif.is_for_admin && (role === "admin" || role === "lomba"));
 
                         if (isForMe) {
                             setNotifications((prev) => [newNotif, ...prev.slice(0, 9)]);

@@ -50,7 +50,9 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
     useEffect(() => {
         (async () => {
             if (user?.email) setLeaderEmail((v) => v || user.email!);
-        })()
+            if (user?.user_metadata.full_name) setLeaderName((v) => v || user.user_metadata.full_name!);
+            if (user?.phone) setLeaderWhatsapp((v) => v || user.phone!);
+        })();
     }, [user]);
 
     async function uploadFile(fieldKey: string, file: File) {
@@ -103,7 +105,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
             if (!comp || !user) throw new Error("Data belum siap");
 
             if (!teamName.trim() || !leaderName.trim() || !leaderWhatsapp.trim() || !leaderEmail.trim()) {
-                throw new Error("Isi data ketua, email dan nama tim");
+                throw new Error("Isi data pendaftar, email, whatsapp dan nama tim");
             }
 
             if (!agree) {
@@ -209,7 +211,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                         <input value={leaderWhatsapp} onChange={(e) => setLeaderWhatsapp(e.target.value)} className={"inputCls"} maxLength={20} required placeholder="08xxxxxxxxxx" />
                                     </Field>
                                     <Field label="Email Pendaftar" required>
-                                        <input type="email" value={leaderEmail} onChange={(e) => setLeaderEmail(e.target.value)} className={"inputCls"} maxLength={255} required />
+                                        <input type="email" value={leaderEmail} onChange={(e) => setLeaderEmail(e.target.value)} className={"inputCls"} maxLength={255} required placeholder="cssunila25@gmail.com" />
                                     </Field>
                                 </div>
 

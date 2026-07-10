@@ -1,6 +1,6 @@
 "use client"
 
-import { ArrowUpRight, Users, Wallet, Trophy, Lock, User } from "lucide-react";
+import { ArrowUpRight, Users, Wallet, Lock, User } from "lucide-react";
 import { getIcon, accentGlow } from "@/lib/icons";
 import { useEffect, useRef, useState } from "react";
 import { createClient } from "@/supabase/client";

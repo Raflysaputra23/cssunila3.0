@@ -120,7 +120,6 @@ const WinnersTab = () => {
     enabled: role !== null,
   });
 
-  // Query winners
   const { data: winners, isLoading } = useQuery({
     queryKey: ["admin-winners-list", role, allowedComps],
     queryFn: async (): Promise<WinnerRow[]> => {

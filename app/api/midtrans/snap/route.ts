@@ -134,7 +134,7 @@ export const POST = async (req: Request) => {
       item_details: [
         {
           id: reg.id,
-          name: `${competitionName ?? "Lomba"} — ${reg.team_name}`.slice(
+          name: `${competitionName ?? "Lomba"} - ${reg.team_name}`.slice(
             0,
             50
           ),

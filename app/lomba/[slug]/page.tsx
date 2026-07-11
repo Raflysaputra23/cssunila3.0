@@ -13,12 +13,14 @@ import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import Image from "next/image";
 import { dateActive } from "@/lib/formatTanggal";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
 type CompetitionDetail = {
     id: string; slug: string; name: string; tagline: string | null; description: string | null;
     icon: string | null; accent: string | null; fee_idr: number; quota: number; pendaftar: number | null;
     team_size: string | null; is_open: boolean;
-    pj_1: string; no_pj_1: string; pj_2: string; no_pj_2: string; banner: string;
+    pj_1: string; no_pj_1: string; pj_2: string; no_pj_2: string; banner: string; panduan: string;
     juara_1: string; juara_2: string; juara_3: string;
     rules: string[]; timeline: { date: string; label: string }[];
 };
@@ -37,10 +39,10 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
     const { user, loading } = useAuth();
     const pathname = usePathname();
     const searchParams = useSearchParams();
+    const suparef = useRef(createClient());
 
     const currentUrl =
         pathname + (searchParams.toString() ? `?${searchParams.toString()}` : "");
-    const suparef = useRef(createClient());
 
     const { data: c, isLoading } = useQuery({
         queryKey: ["comp-detail", slug],
@@ -48,7 +50,7 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
             const supabase = suparef.current;
             const { data, error } = await supabase
                 .from("competitions")
-                .select("id,slug,name,tagline,description,icon,accent,fee_idr,quota,team_size,is_open,rules,timeline,pj_1,no_pj_1,pj_2,no_pj_2,banner,juara_1,juara_2,juara_3")
+                .select("id,slug,name,tagline,description,icon,accent,fee_idr,quota,team_size,is_open,rules,timeline,pj_1,no_pj_1,pj_2,no_pj_2,banner,juara_1,juara_2,juara_3,panduan")
                 .eq("slug", slug)
                 .maybeSingle();
             if (error) throw error;
@@ -71,6 +73,31 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
             return newData;
         },
     });
+
+    async function downloadPdf(path: string) {
+        const supabase = suparef.current;
+        const { data, error } = await supabase.storage
+            .from("site_settings")
+            .download(path);
+
+        if (error) {
+            toast.error("Gagal mengunduh file");
+            console.error(error);
+            return;
+        }
+
+        const url = URL.createObjectURL(data);
+        const link = document.createElement("a");
+
+        link.href = url;
+        link.download = `panduan-${c?.slug ?? "lomba"}.pdf`;
+
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+
+        URL.revokeObjectURL(url);
+    }
 
     if (isLoading) {
         return (
@@ -273,8 +300,8 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
             </section>
 
             <section className="py-12">
-                <div className={`mx-auto grid grid-cols-1 justify-center ${c.banner ? 'md:grid-cols-2' : ''} items-center max-w-5xl px-4 gap-8`}>
-                    <div className={`glass order-2 lg:order-1 rounded-3xl p-7 ${c.banner ? '' : 'max-w-lg mx-auto'}`}>
+                <div className={`mx-auto grid grid-cols-1 justify-center ${c.panduan ? 'md:grid-cols-2' : ''} items-start max-w-5xl px-4 gap-8`}>
+                    <div className={`glass order-2 lg:order-1 rounded-3xl p-7 ${c.panduan ? '' : 'max-w-lg mx-auto'}`}>
                         <h2 className="font-display text-3xl font-bold mb-1">Narahubung</h2>
                         <p className="text-sm text-muted-foreground mb-8">Jika terdapat pertanyaan atau kendala pendaftaran terkait lomba.
                             Silahkan hubungin narahubung lomba {c.name}
@@ -300,14 +327,26 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
                             }
                         </div>
                     </div>
-                    {c.banner &&
-                        <div className="flex order-1 lg:order-2 justify-center items-center">
-                            <Image src={c.banner} alt="banner" width={120} height={120} className="pointer-events-none opacity-60 object-contain w-62 h-auto animate-floating-smooth" />
+                    {c.panduan && 
+                        <div className={`glass order-2 lg:order-1 rounded-3xl p-7`}>
+                            <h2 className="font-display text-3xl font-bold mb-1">Panduan Lomba</h2>
+                            <p className="text-sm text-muted-foreground mb-6">Untuk teknis dan pelaksanaan lomba lebih lanjut. Silahkan unduh dan membaca terlebih dahulu buku panduan lomba {c.name}
+                            </p>
+                            <Button onClick={() => downloadPdf(c.panduan)} className="glass px-3 py-2 rounded-lg text-sm text-white">Unduh buku panduan lomba disini</Button>
                         </div>
                     }
                 </div>
             </section>
 
+            {c.banner &&
+                <section className="py-16">
+                    <div className="mx-auto max-w-3xl px-4 text-center">
+                        <div className="flex order-1 lg:order-2 justify-center items-center">
+                            <Image src={c.banner} alt="banner" width={120} height={120} className="pointer-events-none opacity-60 object-contain w-62 h-auto animate-floating-smooth" />
+                        </div>
+                    </div>
+                </section>
+            }
 
             <section className="py-16">
                 <div className="mx-auto max-w-3xl px-4 text-center">

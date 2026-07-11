@@ -4,10 +4,11 @@
 import { ArrowDown, ArrowRight, Loader2, X } from "lucide-react";
 import HelpLabel from "./HelpLabel";
 import { accentOptions, iconNames } from "@/lib/icons";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/supabase/client";
 import Image from "next/image";
+import Link from "next/link";
 
 type CompRow = {
   id: string;
@@ -34,6 +35,7 @@ type CompFull = CompRow & {
   juara_1: string | null;
   juara_2: string | null;
   juara_3: string | null;
+  panduan: string | null;
   timeline: { date: string; label: string }[];
 };
 
@@ -53,7 +55,35 @@ const CompetitionEditor = ({
       .join("\n")
   );
   const [loadingUpload, setLoadingUpload] = useState<boolean>(false);
+  const [loadingUploadFile, setLoadingUploadFile] = useState<boolean>(false);
+  const [preview, setPreview] = useState<string | null>(null);
   const suparef = useRef(createClient());
+
+  const loadFile = async (path: string | null) => {
+    try {
+      if(!path) {
+        setPreview(null);
+        return;
+      }
+      
+      setLoadingUploadFile(true);
+      const supabase = suparef.current;
+      const { data } = await supabase.storage.from("site_settings")
+        .getPublicUrl(path);
+
+      setPreview(data.publicUrl);
+    } catch {
+      setPreview(null);
+    } finally {
+      setLoadingUploadFile(false);
+    }
+  }
+
+  useEffect(() => {
+    (async() => {
+      await loadFile(value.panduan ?? null);
+    })()
+  }, []);
 
   const parseTimeline = (text: string) => {
     return text
@@ -111,6 +141,48 @@ const CompetitionEditor = ({
     }
   };
 
+  const handleUploadFilePdf = async (e: React.ChangeEvent<HTMLInputElement>, value: Partial<CompFull>) => {
+    const file = e.target.files?.[0];
+    setLoadingUploadFile(true);
+    if (!file) {
+      setLoadingUploadFile(false);
+      toast.error("File tidak ditemukan");
+      return;
+    }
+
+    const ext = file.name.split(".").pop()?.toLowerCase();
+    const allowed = ["pdf"];
+    if (!allowed.includes(ext ?? "")) {
+      setLoadingUploadFile(false);
+      toast.error("Format file harus berupa PDF");
+      return;
+    }
+
+    if (file.size > 3 * 1024 * 1024) {
+      setLoadingUploadFile(false);
+      toast.error("Ukuran file maksimal 3MB");
+      return;
+    }
+
+    try {
+      const supabase = suparef.current;
+      const path = `competitions/panduan-${value.slug}/${crypto.randomUUID()}.${ext}`;
+      const { error } = await supabase.storage
+        .from("site_settings")
+        .upload(path, file, { upsert: false, contentType: file.type });
+
+      if (error) throw error;
+
+      onChange({ ...value, panduan: path });
+      await loadFile(path);
+      toast.success("File berhasil diunggah");
+    } catch (err: any) {
+      toast.error("Gagal mengunggah file: " + err.message);
+    } finally {
+      setLoadingUploadFile(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 z-50 overflow-y-auto bg-background/80 p-4 backdrop-blur">
       <form
@@ -123,7 +195,7 @@ const CompetitionEditor = ({
           <HelpLabel label="Banner" hint="Banner lomba, file ext yang diperbolehkan: jpg, jpeg, png, webp, dan svg" />
           {value.banner &&
             <div className="flex items-center gap-2">
-              <Image src={value.banner ?? ""} alt="Logo Website" width={70} height={70} className="object-contain w-16 h-16 my-1" />
+              <Image src={value.banner ?? ""} alt="Logo Banner" width={70} height={70} className="object-contain w-16 h-16 my-1" />
               <button type="button" onClick={() => onChange({ ...value, banner: null })} className="text-xs text-destructive hover:underline flex items-center gap-1">
                 <X size={12} /> Hapus Banner
               </button>
@@ -135,6 +207,26 @@ const CompetitionEditor = ({
               className="inputCls inputFile"
               accept=".png,.jpg,.jpeg,.svg,.webp"
               onChange={(e) => handleUpload(e, value)}
+            />
+          )}
+        </div>
+        <div>
+          <HelpLabel label="Panduan Lomba" hint="Panduan lomba, file yang diperbolehkan hanya PDF" />
+          {preview &&
+            <div className="flex items-center gap-2 mb-2">
+              <Link target="_blank" href={preview ?? ""} className="text-cyan-strong text-sm bg-cyan-strong/10 px-2.5 py-1 rounded-lg border border-cyan-strong">Preview</Link>
+              <button type="button" onClick={() => {onChange({ ...value, panduan: null }); setPreview(null)}} className="text-xs text-destructive hover:underline flex items-center gap-1">
+                <X size={12} /> Hapus Panduan
+              </button>
+            </div>
+          }
+          
+          {loadingUploadFile ? <Loader2 size={14} className="animate-spin" /> : (
+            <input
+              type="file"
+              className="inputCls inputFile"
+              accept=".pdf"
+              onChange={(e) => handleUploadFilePdf(e, value)}
             />
           )}
         </div>

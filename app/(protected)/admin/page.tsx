@@ -62,16 +62,18 @@ const AdminPage = () => {
           </h1>
 
           <Tabs key={role} defaultValue={defaultTab} className="mt-10">
-            <TabsList className="glass px-1 py-5 w-full md:w-fit pl-16 md:pl-1 overflow-y-hidden overflow-x-auto">
-              {(role === "admin" || role === "lomba") && <TabsTrigger value="reg" className="p-4 cursor-pointer">Pendaftaran</TabsTrigger>}
-              {(role === "admin" || role === "lomba") && <TabsTrigger value="comp" className="p-4 cursor-pointer">Lomba</TabsTrigger>}
-              {(role === "admin" || role === "petugas") && <TabsTrigger value="news" className="p-4 cursor-pointer">Berita</TabsTrigger>}
-              {(role === "admin" || role === "petugas") && <TabsTrigger value="sem" className="p-4 cursor-pointer">Seminar</TabsTrigger>}
-              {(role === "admin" || role === "lomba") && <TabsTrigger value="groups" className="p-4 cursor-pointer">Grup</TabsTrigger>}
-              {(role === "admin" || role === "lomba") && <TabsTrigger value="winners" className="p-4 cursor-pointer">Juara</TabsTrigger>}
-              {role === "admin" && <TabsTrigger value="website" className="p-4 cursor-pointer">Website</TabsTrigger>}
-              {role === "admin" && <TabsTrigger value="users" className="p-4 cursor-pointer">Pengguna</TabsTrigger>}
-            </TabsList>
+            <div className="glass px-2.5 py-2 rounded-2xl flex items-center w-full md:w-fit overflow-y-hidden overflow-x-auto">
+              <TabsList className="bg-transparent border-0">
+                {(role === "admin" || role === "lomba") && <TabsTrigger value="reg" className="p-4 cursor-pointer">Pendaftaran</TabsTrigger>}
+                {(role === "admin" || role === "lomba") && <TabsTrigger value="comp" className="p-4 cursor-pointer">Lomba</TabsTrigger>}
+                {(role === "admin" || role === "petugas") && <TabsTrigger value="news" className="p-4 cursor-pointer">Berita</TabsTrigger>}
+                {(role === "admin" || role === "petugas") && <TabsTrigger value="sem" className="p-4 cursor-pointer">Seminar</TabsTrigger>}
+                {(role === "admin" || role === "lomba") && <TabsTrigger value="groups" className="p-4 cursor-pointer">Grup</TabsTrigger>}
+                {(role === "admin" || role === "lomba") && <TabsTrigger value="winners" className="p-4 cursor-pointer">Juara</TabsTrigger>}
+                {role === "admin" && <TabsTrigger value="website" className="p-4 cursor-pointer">Website</TabsTrigger>}
+                {role === "admin" && <TabsTrigger value="users" className="p-4 cursor-pointer">Pengguna</TabsTrigger>}
+              </TabsList>
+            </div>
             {(role === "admin" || role === "lomba") && <TabsContent value="reg" className="mt-6"><RegistrationsTab /></TabsContent>}
             {(role === "admin" || role === "lomba") && <TabsContent value="comp" className="mt-6"><CompetitionsTab /></TabsContent>}
             {(role === "admin" || role === "petugas") && <TabsContent value="news" className="mt-6"><NewsTab /></TabsContent>}

@@ -55,7 +55,7 @@ const AdminPage = () => {
       <section className="pt-32 pb-16 md:pt-40">
         <div className="mx-auto max-w-6xl px-4">
           <Link href="/" className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-            <ArrowLeft size={14} /> Beranda
+            <ArrowLeft size={14} /> Kembali ke Beranda
           </Link>
           <h1 className="mt-4 font-display text-4xl font-bold sm:text-5xl">
             <span className="gradient-text">Admin</span> Dashboard

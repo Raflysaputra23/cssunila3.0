@@ -12,13 +12,13 @@ import Image from "next/image";
 import ConfirmModal from "./ConfirmModal";
 
 const links = [
-    { href: "/#about", label: "Tentang" },
+    { href: "/", label: "Beranda" },
+    { href: "/#about", label: "Tentang Kami" },
     { href: "/#timeline", label: "Timeline" },
     { href: "/#lomba", label: "Lomba" },
     { href: "/#berita", label: "Berita" },
     { href: "/#seminar", label: "Seminar" },
     { href: "/pengumuman", label: "Pengumuman" },
-    { href: "/#sponsor", label: "Sponsor" },
 ];
 
 const Navbar = () => {
@@ -248,7 +248,7 @@ const Navbar = () => {
                         </span>
                     </Link>
 
-                    <ul className="hidden items-center gap-7 text-sm text-muted-foreground md:flex">
+                    <ul className="hidden items-center gap-7 text-sm text-muted-foreground lg:flex">
                         {activeLinks.map((l) => (
                             <li key={l.href}>
                                 <a
@@ -333,14 +333,14 @@ const Navbar = () => {
                             )}
 
                             <button
-                                className="rounded-md p-2 text-foreground md:hidden"
+                                className="rounded-md p-2 text-foreground lg:hidden"
                                 onClick={() => setOpen((o) => !o)}
                                 aria-label="Menu"
                             >
                                 {open ? <X size={20} /> : <Menu size={20} />}
                             </button>
                         </div>
-                        <div className="hidden md:flex items-center gap-2">
+                        <div className="hidden lg:flex items-center gap-2">
                             {!loading && user ? (
                                 <>
                                     {isAdmin && (
@@ -382,7 +382,7 @@ const Navbar = () => {
                 </nav>
 
                 {open && (
-                    <div className="glass-strong mt-2 rounded-2xl p-4 md:hidden">
+                    <div className="glass-strong mt-2 rounded-2xl p-4 lg:hidden">
                         <ul className="flex flex-col gap-1">
                             {activeLinks.map((l) => (
                                 <li key={l.href}>

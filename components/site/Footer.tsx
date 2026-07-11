@@ -1,12 +1,12 @@
 "use client"
 
-import { Instagram, Twitter, Youtube, Mail, ArrowUpRight, Map } from "lucide-react";
+import { Instagram, Youtube, Mail, ArrowUpRight, Map } from "lucide-react";
 import Image from "next/image";
 import { createClient } from "@/supabase/client";
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
-const Footer = () => {
+const Footer = ({ marginTop = true }: { marginTop?: boolean }) => {
   const [lomba, setLomba] = useState<string[]>([]);
   const suparef = useRef(createClient());
   const [settings, setSettings] = useState<Record<string, string>>({
@@ -39,7 +39,7 @@ const Footer = () => {
   }, []);
 
   return (
-    <footer className="relative mt-12 border-t border-border/60 py-16">
+    <footer className={`relative ${marginTop ? 'mt-12' : ''} border-t border-border/60 pt-16 pb-10`}>
       <div className="mx-auto max-w-7xl px-4">
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
@@ -54,17 +54,17 @@ const Footer = () => {
               Kegiatan perlombaan dan perayaan yang diselenggarakan oleh Himpunan Mahasiswa Jurusan Ilmu Komputer(Himakom), FMIPA, Universitas Lampung. CSS menghadirkan kompetisi di bidang teknologi maupun non-teknologi, yang dirancang sebagai ajang pengembangan potensi, kreativitas, dan kolaborasi bagi siswa, mahasiswa, serta peserta umum.
             </p>
             <div className="mt-5 flex gap-2">
-              {[{icon: Instagram, url: "instagram.com/"}, {icon: Youtube, url: "youtube.com/"}, {icon: Mail, url: "mailto:cssunila25@gmail.com?subject=Halo CSS"}].map((item) => (
+              {[{icon: Instagram, url: "https://www.instagram.com/cssunila"}, {icon: Youtube, url: "https://www.youtube.com/@cssunila"}, {icon: Mail, url: "mailto:cssunila25@gmail.com?subject=Halo CSS"}].map((item) => (
                 <Link
                   key={item.url}
-                  href="#"
+                  href={item.url}
                   aria-label="social"
                   className="glass flex size-10 items-center justify-center rounded-full text-foreground/80 transition hover:text-cyan-strong"
                 >
                   <item.icon size={16} />
                 </Link>
               ))}
-              <Link href={"tiktok.com/@cssunila"} className="glass flex size-10 items-center justify-center rounded-full text-foreground/80 transition hover:text-cyan-strong">
+              <Link href={"https://www.tiktok.com/@css.himakom.unila"} className="glass flex size-10 items-center justify-center rounded-full text-foreground/80 transition hover:text-cyan-strong">
                 <Image src={"/assets/tiktok.svg"} width={40} height={40} alt={`tiktok logo`} className="h-4 w-auto" />
               </Link>
             </div>
@@ -87,7 +87,7 @@ const Footer = () => {
 
           <div>
             <h4 className="mb-1 font-display text-sm font-semibold uppercase tracking-wider">
-              Kontak
+              Kontak Kami
             </h4>
             <Link href="mailto:cssunila25@gmail.com?subject=Halo CSS" className="flex items-center gap-2 text-sm text-cyan-strong"><Mail size={16} /> cssunila25@gmail.com</Link>
             <p className="text-sm text-muted-foreground mt-4 mb-1">

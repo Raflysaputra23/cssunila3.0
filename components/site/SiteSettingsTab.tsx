@@ -1028,9 +1028,7 @@ const SiteSettingsTab = () => {
               </div>
               <div>
                 <h2 className="font-semibold text-lg text-foreground truncate">Maintenance</h2>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm text-muted-foreground truncate">Maintenance / Publish website</span>
-                </div>
+                <span className="text-sm text-muted-foreground">Maintenance / Publish website</span>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
@@ -1045,9 +1043,7 @@ const SiteSettingsTab = () => {
               </div>
               <div>
                 <h2 className="font-semibold text-lg text-foreground truncate">Pendaftaran Akun</h2>
-                <div className="flex items-center gap-2 flex-wrap">
-                  <span className="text-sm text-muted-foreground truncate">Tutup / Aktifkan pendaftaran akun website</span>
-                </div>
+                <span className="text-sm text-muted-foreground">Tutup / Aktifkan pendaftaran akun website</span>
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">

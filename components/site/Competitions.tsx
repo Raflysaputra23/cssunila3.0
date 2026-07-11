@@ -62,7 +62,7 @@ const Competitions = () => {
                     <div className="glass rounded-3xl p-10 text-center text-sm text-muted-foreground">Belum ada lomba.</div>
                 )}
 
-                <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-4">
+                <div className="grid gap-5 grid-cols-1 md:grid-cols-3 xl:grid-cols-4">
                     {data?.map((c) => {
                         const Icon = getIcon(c.icon);
                         const accent = c.accent ?? "cyan";

@@ -1,5 +1,6 @@
-import { Sparkles } from "lucide-react";
+import { ArrowUpRight, Sparkles } from "lucide-react";
 import Image from "next/image";
+import Link from "next/link";
 
 type AboutProps = {
   title?: string;
@@ -48,20 +49,25 @@ const About = ({ title, description1, description2, highlights, logo }: AboutPro
           <h2 className="mt-3 font-display text-4xl font-bold sm:text-5xl">
             <span className="gradient-text">{aboutTitle}</span>
           </h2>
-          <p className="mt-5 text-muted-foreground">
+          <p className="mt-5 text-muted-foreground text-justify">
             {aboutDesc1}
           </p>
-          <p className="mt-4 text-muted-foreground">
+          <p className="mt-4 text-muted-foreground text-justify">
             {aboutDesc2}
+            {"...  "}
+            <Link href="/tentang-kami" className="text-cyan-strong group inline-flex items-center gap-1">
+              Lihat selengkapnya
+              <ArrowUpRight size={16} className="group-hover:translate-x-1 transition-all" />
+            </Link>
           </p>
 
-          <ul className="mt-6 grid justify-start grid-cols-1 md:grid-cols-2 gap-3 text-sm">
+          <ul className="mt-6 flex justify-start flex-wrap gap-3 text-sm">
             {aboutHighlights.map((f) => (
               <li
                 key={f}
-                className="glass flex items-stretch gap-2 rounded-xl px-3 py-2.5"
+                className="glass flex items-center gap-2 rounded-xl px-3 py-2.5"
               >
-                <span className="size-1.5 mt-1 border-2 shrink-0 rounded-full bg-cyan-strong shadow-[0_0_10px_var(--cyan-strong)]" />
+                <span className="size-1.5 border-2 shrink-0 rounded-full bg-cyan-strong shadow-[0_0_10px_var(--cyan-strong)]" />
                 {f}
               </li>
             ))}

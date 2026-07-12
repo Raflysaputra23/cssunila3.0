@@ -7,6 +7,7 @@ import { Loader2, Search, Shield, Ban, CheckCircle, Trash2, Pencil, X, CheckSqua
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 import ConfirmModal from "./ConfirmModal";
+import Image from "next/image";
 
 type ManagedUser = {
   id: string;
@@ -176,27 +177,31 @@ const UsersTab = () => {
         {filteredUsers.map((u) => (
           <div
             key={u.id}
-            className={`glass rounded-2xl p-5 border transition-colors ${
-              u.suspended ? "border-red-500/20 bg-red-500/5" : "border-white/5 hover:border-white/10"
-            }`}
+            className={`glass rounded-2xl p-5 border transition-colors ${u.suspended ? "border-red-500/20 bg-red-500/5" : "border-white/5 hover:border-white/10"
+              }`}
           >
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div className="flex items-start gap-3">
-                <div className="flex size-10 items-center justify-center rounded-xl bg-cyan-strong/10 text-cyan-strong font-display font-semibold shrink-0">
-                  {u.full_name ? u.full_name.substring(0, 2).toUpperCase() : "US"}
-                </div>
+                {u.avatar_url ? (
+                  <Image src={u.avatar_url} alt={u.full_name || "Avatar"} width={40} height={40} className="rounded-full size-10 object-contain pointer-events-none" priority={true} />
+                )
+                  :
+                  (
+                    <div className="flex size-10 items-center justify-center rounded-xl bg-cyan-strong/10 text-cyan-strong font-display font-semibold shrink-0">
+                      {u.full_name ? u.full_name.substring(0, 2).toUpperCase() : "US"}
+                    </div>
+                  )}
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
                     <h4 className="font-display font-bold text-foreground">{u.full_name || "Tanpa Nama"}</h4>
-                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                      u.role === "admin"
+                    <span className={`text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full ${u.role === "admin"
                         ? "bg-red-500/10 text-red-400"
                         : u.role === "lomba"
-                        ? "bg-amber-500/10 text-amber-400"
-                        : u.role === "petugas"
-                        ? "bg-purple-500/10 text-purple-400"
-                        : "bg-white/5 text-muted-foreground"
-                    }`}>
+                          ? "bg-amber-500/10 text-amber-400"
+                          : u.role === "petugas"
+                            ? "bg-purple-500/10 text-purple-400"
+                            : "bg-white/5 text-muted-foreground"
+                      }`}>
                       {u.role}
                     </span>
                     {u.suspended && (
@@ -206,7 +211,7 @@ const UsersTab = () => {
                     )}
                   </div>
                   <p className="text-xs text-muted-foreground mt-0.5">{u.email} · {u.whatsapp || "no whatsapp"} · {u.institution || "no instansi"}</p>
-                  
+
                   {u.role === "lomba" && (
                     <div className="mt-2 flex flex-wrap gap-1.5 items-center">
                       <span className="text-[10px] text-muted-foreground">Akses Lomba:</span>
@@ -236,11 +241,10 @@ const UsersTab = () => {
                 </button>
                 <button
                   onClick={() => handleToggleSuspend(u)}
-                  className={`rounded-full p-2 transition cursor-pointer ${
-                    u.suspended
+                  className={`rounded-full p-2 transition cursor-pointer ${u.suspended
                       ? "bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
                       : "bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
-                  }`}
+                    }`}
                   title={u.suspended ? "Aktifkan Akun" : "Tangguhkan Akun"}
                 >
                   {u.suspended ? <CheckCircle size={14} /> : <Ban size={14} />}
@@ -319,11 +323,10 @@ const UsersTab = () => {
                         type="button"
                         key={comp.id}
                         onClick={() => toggleCompetitionAccess(comp.id)}
-                        className={`flex items-center gap-2.5 rounded-xl border p-3 text-left transition cursor-pointer ${
-                          isChecked
+                        className={`flex items-center gap-2.5 rounded-xl border p-3 text-left transition cursor-pointer ${isChecked
                             ? "border-amber-500/50 bg-amber-500/5 text-amber-300 font-semibold"
                             : "border-white/5 hover:border-white/10 text-muted-foreground hover:text-foreground"
-                        }`}
+                          }`}
                       >
                         {isChecked ? <CheckSquare size={16} className="text-amber-400" /> : <Square size={16} />}
                         <span className="text-xs truncate">{comp.name}</span>

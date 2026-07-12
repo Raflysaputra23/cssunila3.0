@@ -19,6 +19,7 @@ const links = [
     { href: "/#berita", label: "Berita" },
     { href: "/#seminar", label: "Seminar" },
     { href: "/pengumuman", label: "Pengumuman" },
+    { href: "/kontak", label: "Kontak" },
 ];
 
 const Navbar = () => {

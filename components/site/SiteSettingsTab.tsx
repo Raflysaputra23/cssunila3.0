@@ -56,19 +56,6 @@ type MediaPartner = {
   position: number;
 };
 
-const SETTING_KEYS = [
-  "hero_tagline",
-  "hero_subtitle",
-  "about_title",
-  "about_description_1",
-  "about_description_2",
-  "about_highlights",
-  "site_logo",
-  "site_favicon",
-  "site_title_main",
-  "site_title_sub",
-];
-
 const SiteSettingsTab = () => {
   const qc = useQueryClient();
   const suparef = useRef(createClient());

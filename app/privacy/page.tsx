@@ -67,7 +67,7 @@ const sections = [
 
 const PrivacyPage = () => {
   return (
-    <div className="relative min-h-screen overflow-hidden px-4 py-20 sm:py-28">
+    <div className="relative min-h-screen overflow-hidden px-4 py-20">
       <div className="pointer-events-none absolute -left-20 top-40 -z-10 h-80 w-80 rounded-full bg-cyan-strong/25 blur-3xl animate-float" />
       <div className="pointer-events-none absolute -right-24 top-2/3 -z-10 h-96 w-96 rounded-full bg-sapphire/25 blur-3xl animate-float [animation-delay:2s]" />
 
@@ -142,12 +142,12 @@ const PrivacyPage = () => {
                 Tim CSS 3.0 siap membantu kamu terkait data pribadi.
               </p>
             </div>
-            <a
-              href="mailto:cssunila@gmail.com"
+            <Link
+              href="mailto:cssunila25@gmail.com"
               className="btn-hero hover:btn-hero-hover inline-flex items-center gap-2 rounded-full px-5 py-2.5 text-xs font-semibold"
             >
               <Mail size={14} /> Hubungi Kami
-            </a>
+            </Link>
           </div>
         </div>
       </div>

@@ -158,7 +158,7 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
                             </h1>
                         </div>
                     </div>
-                    
+
                     <div className="mt-8 max-w-5xl">
                         {c.description.length > 0 && c.description.map((text, i) => (
                             <p key={i} className="text-lg text-muted-foreground mb-4 text-justify">
@@ -260,6 +260,9 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
 
             <section className="py-12">
                 <div className="max-w-5xl mx-auto px-4">
+                    <span className="flex items-center justify-center gap-2 text-xs font-medium uppercase tracking-widest text-cyan-strong">
+                        <Clock size={14} /> Timeline Lomba
+                    </span>
                     <h2 className="mt-3 font-display text-3xl text-center mb-10 font-bold sm:text-4xl">
                         Timeline <span className="gradient-text">{c.name}</span>
                     </h2>
@@ -331,7 +334,7 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
                             }
                         </div>
                     </div>
-                    {c.panduan && 
+                    {c.panduan &&
                         <div className={`glass order-2 lg:order-1 rounded-3xl p-7`}>
                             <h2 className="font-display text-3xl font-bold mb-1">Panduan Lomba</h2>
                             <p className="text-sm text-muted-foreground mb-4">Untuk teknis dan pelaksanaan lomba lebih lanjut. Silahkan unduh dan membaca terlebih dahulu buku panduan {c.name}

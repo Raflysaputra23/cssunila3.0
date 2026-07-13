@@ -134,7 +134,7 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
                         >
                             <ArrowLeft size={14} /> Kembali ke Beranda
                         </Link>
-                        <ShareButton title={c.name} url={currentUrl} text={(c.description ?? []).join("/n")} />
+                        <ShareButton title={c.name} url={currentUrl} text={`Ayo daftar ${c.name}. Lihat detail lomba selengkapnya di: `} />
                     </div>
 
                     <div className="mt-6 flex flex-col items-start gap-6 md:flex-row md:items-center">

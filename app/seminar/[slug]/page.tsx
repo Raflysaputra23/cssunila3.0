@@ -96,7 +96,7 @@ const SeminarDetailPage = async ({ params }: Props) => {
             >
               <ArrowLeft size={14} /> Kembali ke Beranda
             </Link>
-            <ShareButton title={seminar.title} url={`${process.env.NEXT_PUBLIC_DOMAIN_URL}/seminar/${slug}`} text={seminar.description ?? ""} />
+            <ShareButton title={seminar.title} url={`${process.env.NEXT_PUBLIC_DOMAIN_URL}/seminar/${slug}`} text={`Seminar CSS 3.0 - ${seminar.title}. Lihat selengkapnya di: `} />
           </div>
 
           <article className="mt-8">

@@ -105,7 +105,7 @@ const NewsDetailPage = async ({ params }: Props) => {
             >
               <ArrowLeft size={14} /> Kembali ke Beranda
             </Link>
-            <ShareButton title={news.title} url={`${process.env.NEXT_PUBLIC_DOMAIN_URL}/berita/${slug}`} text={news.content ?? ""} />
+            <ShareButton title={news.title} url={`${process.env.NEXT_PUBLIC_DOMAIN_URL}/berita/${slug}`} text={`Berita CSS 3.0 - Lihat selengkapnya di: `} />
           </div>
 
           <article className="mt-8">

@@ -29,6 +29,8 @@ type CompRow = {
     slug: string;
     fee_idr: number;
     is_open: boolean;
+    is_multi_slot: boolean;
+    slot: number;
     team_size: string | null;
     competition_fields: FieldRow[];
 };
@@ -42,6 +44,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
     const [leaderName, setLeaderName] = useState("");
     const [leaderWhatsapp, setLeaderWhatsapp] = useState("");
     const [leaderEmail, setLeaderEmail] = useState("");
+    const [slot, setSlot] = useState<number>(1);
     const [agree, setAggre] = useState(false);
     const [answers, setAnswers] = useState<Record<string, string>>({});
     const [uploading, setUploading] = useState<Record<string, boolean>>({});
@@ -92,7 +95,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
             const supabase = suparef.current;
             const { data, error } = await supabase
                 .from("competitions")
-                .select("id, name, slug, fee_idr, is_open, team_size, competition_fields(id,key,label,field_type,placeholder,required,options,position)")
+                .select("id, name, slug, fee_idr, is_open, team_size, is_multi_slot, slot, competition_fields(id,key,label,field_type,placeholder,required,options,position)")
                 .eq("slug", slug)
                 .maybeSingle();
             if (error) throw error;
@@ -130,6 +133,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                     leader_name: leaderName.trim(),
                     leader_whatsapp: leaderWhatsapp.trim(),
                     leader_email: leaderEmail.trim() || null,
+                    slot,
                     status: "pending_payment",
                 })
                 .select("id")
@@ -151,7 +155,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
             const { error: e3 } = await supabase.from("payments").insert({
                 registration_id: reg.id,
                 user_id: user.id,
-                amount_idr: comp.fee_idr,
+                amount_idr: comp.fee_idr * slot,
                 status: "pending",
             });
             if (e3) throw e3;
@@ -216,6 +220,20 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                         <input type="email" value={leaderEmail} onChange={(e) => setLeaderEmail(e.target.value)} className={"inputCls"} maxLength={255} required placeholder="cssunila25@gmail.com" />
                                     </Field>
                                 </div>
+                                {!!comp.is_multi_slot &&
+                                    <Field label="Nama Pendaftar" required>
+                                        <select
+                                            value={slot}
+                                            onChange={(e) => setSlot(Number(e.target.value))}
+                                            className={"inputCls"}
+                                        >
+                                            <option value={1}>1</option>
+                                            {Array.from({ length: comp.slot }).map((_, index) => (
+                                                <option key={index + comp.slot} value={index + comp.slot}>{index + comp.slot}</option>
+                                            ))}
+                                        </select>
+                                    </Field>
+                                }
 
                                 <div className="my-4 h-px bg-white/10" />
 
@@ -282,7 +300,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                 <label htmlFor="agree"
                                     className="flex items-start gap-3 cursor-pointer"
                                 >
-                                    <input type="checkbox" id="agree" className="appearance-none mt-1 shrink-0 checked:bg-secondary size-3.5 bg-muted-foreground rounded-lg border-none" required onChange={(e)=> setAggre(e.target.checked)}/>
+                                    <input type="checkbox" id="agree" className="appearance-none mt-1 shrink-0 checked:bg-secondary size-3.5 bg-muted-foreground rounded-lg border-none" required onChange={(e) => setAggre(e.target.checked)} />
                                     <span className="text-sm text-muted-foreground">
                                         Saya menyetujui bahwa semua informasi yang saya berikan adalah benar dan akurat.
                                     </span>

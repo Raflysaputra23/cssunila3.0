@@ -19,6 +19,7 @@ type CompRow = {
   fee_idr: number;
   quota: number;
   is_open: boolean;
+  is_multi_slot: boolean;
   position: number;
 };
 
@@ -36,6 +37,7 @@ type CompFull = CompRow & {
   juara_2: string | null;
   juara_3: string | null;
   panduan: string | null;
+  slot: number;
   timeline: { date: string; label: string }[];
 };
 
@@ -398,8 +400,22 @@ const CompetitionEditor = ({
           <p className="text-[10px] text-muted-foreground flex items-center gap-1">Tip: tekan <ArrowRight size={10} /> untuk berpindah ke label & tekan <ArrowDown size={10} /> untuk menambah timeline baru.</p>
         </div>
 
-        <label className="flex items-start gap-2 rounded-xl border border-white/10 bg-white/2 p-3 text-sm">
-          <input type="checkbox" className="appearance-none mt-1 shrink-0 size-3 rounded-2xl border-none bg-white/20 checked:bg-primary" checked={!!value.is_open} onChange={(e) => onChange({ ...value, is_open: e.target.checked })} />
+        <div className="flex flex-col gap-3 border rounded-2xl">
+          <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/2 px-3 py-3 text-sm">
+            <input type="checkbox" className="appearance-none shrink-0 size-3 rounded-2xl border-none bg-white/20 checked:bg-primary" checked={!!value.is_multi_slot} onChange={(e) => onChange({ ...value, is_multi_slot: e.target.checked })} />
+            <span>
+              <strong>Multi Slot</strong>
+              <span className="ml-2 text-xs text-muted-foreground">Aktifkan, jika ingin membuat slot pendaftaran lebih dari satu.</span>
+            </span>
+          </label>
+          {!!value.is_multi_slot &&
+           <div className="px-3 pb-3">
+             <input className={"inputCls"} type="number" min={2} value={value.slot} placeholder="Masukkan berapa slot yang diperbolehkan" onChange={(e) => onChange({ ...value, slot: + e.target.value })} />
+           </div>
+          }
+        </div>
+        <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/2 p-3 text-sm">
+          <input type="checkbox" className="appearance-none shrink-0 size-3 rounded-2xl border-none bg-white/20 checked:bg-primary" checked={!!value.is_open} onChange={(e) => onChange({ ...value, is_open: e.target.checked })} />
           <span>
             <strong>Pendaftaran dibuka</strong>
             <span className="ml-2 text-xs text-muted-foreground">Jika dimatikan, peserta melihat pesan &quot;pendaftaran ditutup&quot;.</span>

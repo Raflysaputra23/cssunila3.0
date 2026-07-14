@@ -117,9 +117,10 @@ const SeminarDetailPage = async ({ params }: Props) => {
                 <Image
                   src={seminar.image_url}
                   alt={seminar.title}
-                  fill
-                  className="object-cover"
-                  priority
+                  width={1920}
+                  height={720}
+                  className="object-cover w-full h-full bg-background/50"
+                  preload
                 />
               </div>
             )}
@@ -148,8 +149,10 @@ const SeminarDetailPage = async ({ params }: Props) => {
                       <Image
                         src={seminar.speaker_image_url}
                         alt={seminar.speaker || "Speaker"}
-                        fill
-                        className="object-cover"
+                        width={80}
+                        height={80}
+                        loading="lazy"
+                        className="object-cover w-full h-full"
                       />
                     ) : (
                       <div className="flex h-full w-full items-center justify-center text-muted-foreground">

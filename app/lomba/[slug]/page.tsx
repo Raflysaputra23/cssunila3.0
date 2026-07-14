@@ -353,7 +353,7 @@ const LombaDetail = ({ params }: { params: Promise<{ slug: string }> }) => {
                 <section className="py-16">
                     <div className="mx-auto max-w-3xl px-4 text-center">
                         <div className="flex order-1 lg:order-2 justify-center items-center">
-                            <Image src={c.banner} alt="banner" width={120} height={120} className="pointer-events-none opacity-60 object-contain w-62 h-auto animate-floating-smooth" />
+                            <Image src={c.banner} alt="banner" preload width={120} height={120} className="pointer-events-none opacity-60 object-contain w-62 h-auto animate-floating-smooth" />
                         </div>
                     </div>
                 </section>

@@ -20,6 +20,7 @@ type CompRow = {
   fee_idr: number;
   quota: number;
   is_open: boolean;
+  is_multi_slot: boolean;
   position: number;
 };
 
@@ -36,6 +37,7 @@ type CompFull = CompRow & {
   juara_1: string | null;
   juara_2: string | null;
   juara_3: string | null;
+  slot: number;
   panduan: string | null;
   timeline: { date: string; label: string }[];
 };
@@ -71,7 +73,7 @@ const CompetitionsTab = () => {
       const supabase = suparef.current;
       let query = supabase
         .from("competitions")
-        .select("id,slug,name,tagline,fee_idr,quota,is_open,position,description,icon,accent,team_size,rules,timeline,pj_1,no_pj_1,pj_2,no_pj_2,banner,juara_1,juara_2,juara_3,panduan");
+        .select("id,slug,name,tagline,fee_idr,quota,is_open,position,description,icon,accent,team_size,rules,timeline,pj_1,no_pj_1,pj_2,no_pj_2,banner,juara_1,juara_2,juara_3,panduan,is_multi_slot,slot");
 
       if (role === "lomba") {
         if (!allowedComps || allowedComps.length === 0) {
@@ -97,6 +99,7 @@ const CompetitionsTab = () => {
       const payload = {
         slug: v.slug!, name: v.name!, tagline: v.tagline ?? null,
         fee_idr: v.fee_idr ?? 0, quota: v.quota ?? 0, is_open: !!v.is_open, position: v.position ?? 0,
+        is_multi_slot: !!v.is_multi_slot,
         description: v.description ?? [],
         icon: v.icon ?? "Trophy",
         accent: v.accent ?? "cyan",
@@ -109,6 +112,7 @@ const CompetitionsTab = () => {
         juara_1: v.juara_1 || null,
         juara_2: v.juara_2 || null,
         juara_3: v.juara_3 || null,
+        slot: !!v.is_multi_slot ? v.slot ?? 0 : 0,
         team_size: v.team_size ?? null,
         rules: v.rules ?? [],
         timeline: v.timeline ?? [],

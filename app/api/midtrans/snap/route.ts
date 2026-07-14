@@ -47,7 +47,7 @@ export const POST = async (req: Request) => {
     const { data: reg, error: regErr } = await supabase
       .from("registrations")
       .select(
-        "id, user_id, team_name, leader_name, leader_email, leader_whatsapp, status, competition:competitions(name), payments(id, amount_idr, status, midtrans_token, midtrans_order_id)"
+        "id, user_id, team_name, leader_name, leader_email, leader_whatsapp, status, slot, competition:competitions(name), payments(id, amount_idr, status, midtrans_token, midtrans_order_id)"
       )
       .eq("id", data.registrationId)
       .maybeSingle();
@@ -139,7 +139,7 @@ export const POST = async (req: Request) => {
             50
           ),
           price: payment.amount_idr,
-          quantity: 1,
+          quantity: reg.slot,
         },
       ],
       credit_card: {

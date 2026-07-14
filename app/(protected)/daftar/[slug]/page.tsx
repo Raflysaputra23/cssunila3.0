@@ -11,6 +11,7 @@ import { useAuth } from "@/hooks/use-auth";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/supabase/client";
 import Link from "next/link";
+import ConfirmModal from "@/components/site/ConfirmModal";
 
 type FieldRow = {
     id: string;
@@ -48,6 +49,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
     const [agree, setAggre] = useState(false);
     const [answers, setAnswers] = useState<Record<string, string>>({});
     const [uploading, setUploading] = useState<Record<string, boolean>>({});
+    const [openInformation, setOpenInformation] = useState<boolean>(false);
     const suparef = useRef(createClient());
 
     useEffect(() => {
@@ -169,165 +171,183 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
     });
 
     return (
-        <div className="relative min-h-screen overflow-x-hidden">
-            <Navbar />
-            <section className="pt-30 md:pt-32 pb-26 md:pb-30">
-                <div className="mx-auto max-w-2xl px-4">
-                    <Link href={`/lomba/${slug}`} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-                        <ArrowLeft size={14} /> Kembali ke Lomba
-                    </Link>
+        <>
+            <div className="relative min-h-screen overflow-x-hidden">
+                <Navbar />
+                <section className="pt-30 md:pt-32 pb-26 md:pb-30">
+                    <div className="mx-auto max-w-2xl px-4">
+                        <Link href={`/lomba/${slug}`} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                            <ArrowLeft size={14} /> Kembali ke Lomba
+                        </Link>
 
-                    {isLoading && <div className="glass mt-8 rounded-2xl p-10 text-center text-sm text-muted-foreground">Memuat…</div>}
+                        {isLoading && <div className="glass mt-8 rounded-2xl p-10 text-center text-sm text-muted-foreground">Memuat…</div>}
 
-                    {!isLoading && !comp && (
-                        <div className="glass mt-8 rounded-2xl p-10 text-center">Lomba tidak ditemukan.</div>
-                    )}
+                        {!isLoading && !comp && (
+                            <div className="glass mt-8 rounded-2xl p-10 text-center">Lomba tidak ditemukan.</div>
+                        )}
 
-                    {comp && (
-                        <>
-                            <h1 className="mt-4 font-display text-3xl font-bold sm:text-4xl">
-                                Daftar <span className="gradient-text">{comp.name}</span>
-                            </h1>
-                            <p className="mt-2 text-sm text-muted-foreground">
-                                Biaya pendaftaran <span className="text-foreground">Rp {comp.fee_idr.toLocaleString("id-ID")}</span> · {comp.team_size}
-                            </p>
+                        {comp && (
+                            <>
+                                <h1 className="mt-4 font-display text-3xl font-bold sm:text-4xl">
+                                    Daftar <span className="gradient-text">{comp.name}</span>
+                                </h1>
+                                <p className="mt-2 text-sm text-muted-foreground">
+                                    Biaya pendaftaran <span className="text-foreground">Rp. {(comp.fee_idr * slot).toLocaleString("id-ID")}</span> · {comp.team_size}
+                                </p>
 
-                            {!comp.is_open && (
-                                <div className="mt-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-200">
-                                    Pendaftaran cabang ini sedang ditutup.
-                                </div>
-                            )}
+                                {!comp.is_open && (
+                                    <div className="mt-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-200">
+                                        Pendaftaran cabang ini sedang ditutup.
+                                    </div>
+                                )}
 
-                            <form
-                                onSubmit={(e) => {
-                                    e.preventDefault();
-                                    if (!comp.is_open) return;
-                                    submit.mutate();
-                                }}
-                                className="glass mt-8 space-y-5 rounded-3xl p-6"
-                            >
-                                <Field label="Nama Tim" required>
-                                    <input value={teamName} onChange={(e) => setTeamName(e.target.value)} className={"inputCls"} maxLength={100} placeholder="Radar" required />
-                                </Field>
-                                <Field label="Nama Pendaftar" required>
-                                    <input value={leaderName} onChange={(e) => setLeaderName(e.target.value)} className={"inputCls"} maxLength={100} placeholder="Bangraff" required />
-                                </Field>
-                                <div className="grid gap-5 sm:grid-cols-2">
-                                    <Field label="WhatsApp Pendaftar" required>
-                                        <input value={leaderWhatsapp} onChange={(e) => setLeaderWhatsapp(e.target.value)} className={"inputCls"} maxLength={20} required placeholder="08xxxxxxxxxx" />
+                                <form
+                                    onSubmit={(e) => {
+                                        e.preventDefault();
+                                        if (!comp.is_open) return;
+                                        if (slot > 1) {
+                                            setOpenInformation(true);
+                                            return;
+                                        }
+                                        submit.mutate();
+                                    }}
+                                    className="glass mt-8 space-y-5 rounded-3xl p-6"
+                                >
+                                    <Field label="Nama Tim" required>
+                                        <input value={teamName} onChange={(e) => setTeamName(e.target.value)} className={"inputCls"} maxLength={100} placeholder="Radar" required />
                                     </Field>
-                                    <Field label="Email Pendaftar" required>
-                                        <input type="email" value={leaderEmail} onChange={(e) => setLeaderEmail(e.target.value)} className={"inputCls"} maxLength={255} required placeholder="cssunila25@gmail.com" />
-                                    </Field>
-                                </div>
-                                {!!comp.is_multi_slot &&
                                     <Field label="Nama Pendaftar" required>
-                                        <select
-                                            value={slot}
-                                            onChange={(e) => setSlot(Number(e.target.value))}
-                                            className={"inputCls"}
-                                        >
-                                            <option value={1}>1</option>
-                                            {Array.from({ length: comp.slot }).map((_, index) => (
-                                                <option key={index + comp.slot} value={index + comp.slot}>{index + comp.slot}</option>
-                                            ))}
-                                        </select>
+                                        <input value={leaderName} onChange={(e) => setLeaderName(e.target.value)} className={"inputCls"} maxLength={100} placeholder="Bangraff" required />
                                     </Field>
-                                }
-
-                                <div className="my-4 h-px bg-white/10" />
-
-                                {comp.competition_fields.map((f) => (
-                                    <Field key={f.id} label={f.label} required={f.required}>
-                                        {f.field_type === "textarea" ? (
-                                            <textarea
-                                                value={answers[f.key] ?? ""}
-                                                onChange={(e) => setAnswers((a) => ({ ...a, [f.key]: e.target.value }))}
-                                                placeholder={f.placeholder ?? ""}
-                                                rows={4}
-                                                maxLength={2000}
-                                                className={"inputCls"}
-                                                required={f.required}
-                                            />
-                                        ) : f.field_type === "select" ? (
+                                    <div className="grid gap-5 sm:grid-cols-2">
+                                        <Field label="WhatsApp Pendaftar" required>
+                                            <input value={leaderWhatsapp} onChange={(e) => setLeaderWhatsapp(e.target.value)} className={"inputCls"} maxLength={20} required placeholder="08xxxxxxxxxx" />
+                                        </Field>
+                                        <Field label="Email Pendaftar" required>
+                                            <input type="email" value={leaderEmail} onChange={(e) => setLeaderEmail(e.target.value)} className={"inputCls"} maxLength={255} required placeholder="cssunila25@gmail.com" />
+                                        </Field>
+                                    </div>
+                                    {!!comp.is_multi_slot &&
+                                        <Field label="Multi Slot">
                                             <select
-                                                value={answers[f.key] ?? ""}
-                                                onChange={(e) => setAnswers((a) => ({ ...a, [f.key]: e.target.value }))}
+                                                value={slot}
+                                                onChange={(e) => setSlot(Number(e.target.value))}
                                                 className={"inputCls"}
-                                                required={f.required}
                                             >
-                                                <option value="">-- pilih --</option>
-                                                {(f.options ?? []).map((o) => (
-                                                    <option key={o} value={o}>{o}</option>
+                                                {Array.from({ length: comp.slot }).map((_, index) => (
+                                                    <option className="bg-background" key={index + 1} value={index + 1}>{index + 1}</option>
                                                 ))}
                                             </select>
-                                        ) : f.field_type === "file" ? (
-                                            <div className="space-y-2">
-                                                <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 bg-white/2 px-4 py-4 text-sm text-muted-foreground hover:bg-white/5">
-                                                    {uploading[f.key] ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-                                                    <span>{uploading[f.key] ? "Mengunggah…" : (answers[f.key] ? "Ganti file" : (f.placeholder || "Pilih file (maks 5 MB)"))}</span>
-                                                    <input
-                                                        type="file"
-                                                        className="hidden"
-                                                        accept=".jpg,.jpeg,.png,.webp"
-                                                        onChange={(e) => {
-                                                            const file = e.target.files?.[0];
-                                                            if (file) uploadFile(f.key, file);
-                                                        }}
-                                                    />
-                                                </label>
-                                                <p className="text-xs text-muted-foreground">Tip: File yang diterima &quot;.jpg&quot;, &quot;.jpeg&quot;, &quot;.png&quot;, &quot;.webp&quot;. Max 2mb</p>
-                                                {answers[f.key] && (
-                                                    <p className="flex items-center gap-1.5 text-xs text-emerald-300">
-                                                        <CheckCircle2 size={12} /> {answers[f.key].split("/").pop()}
-                                                    </p>
-                                                )}
-                                            </div>
-                                        ) : (
-                                            <input
-                                                type={f.field_type}
-                                                value={answers[f.key] ?? ""}
-                                                onChange={(e) => setAnswers((a) => ({ ...a, [f.key]: e.target.value }))}
-                                                placeholder={f.placeholder ?? ""}
-                                                maxLength={500}
-                                                className={"inputCls"}
-                                                required={f.required}
-                                            />
-                                        )}
-                                    </Field>
-                                ))}
+                                        </Field>
+                                    }
 
-                                <label htmlFor="agree"
-                                    className="flex items-start gap-3 cursor-pointer"
-                                >
-                                    <input type="checkbox" id="agree" className="appearance-none mt-1 shrink-0 checked:bg-secondary size-3.5 bg-muted-foreground rounded-lg border-none" required onChange={(e) => setAggre(e.target.checked)} />
-                                    <span className="text-sm text-muted-foreground">
-                                        Saya menyetujui bahwa semua informasi yang saya berikan adalah benar dan akurat.
-                                    </span>
-                                </label>
+                                    <div className="my-4 h-px bg-white/10" />
 
-                                <div className="rounded-xl border border-white/10 bg-white/2 p-4 text-xs text-muted-foreground">
-                                    <p className="flex items-start gap-2">
-                                        <ShieldCheck size={14} className="mt-0.5 shrink-0 text-cyan-strong" />
-                                        Setelah pengiriman, kamu akan diarahkan ke halaman riwayat untuk menyelesaikan pembayaran.
-                                    </p>
-                                </div>
+                                    {comp.competition_fields.map((f) => (
+                                        <Field key={f.id} label={f.label} required={f.required}>
+                                            {f.field_type === "textarea" ? (
+                                                <textarea
+                                                    value={answers[f.key] ?? ""}
+                                                    onChange={(e) => setAnswers((a) => ({ ...a, [f.key]: e.target.value }))}
+                                                    placeholder={f.placeholder ?? ""}
+                                                    rows={4}
+                                                    maxLength={2000}
+                                                    className={"inputCls"}
+                                                    required={f.required}
+                                                />
+                                            ) : f.field_type === "select" ? (
+                                                <select
+                                                    value={answers[f.key] ?? ""}
+                                                    onChange={(e) => setAnswers((a) => ({ ...a, [f.key]: e.target.value }))}
+                                                    className={"inputCls"}
+                                                    required={f.required}
+                                                >
+                                                    <option value="">-- pilih --</option>
+                                                    {(f.options ?? []).map((o) => (
+                                                        <option key={o} value={o}>{o}</option>
+                                                    ))}
+                                                </select>
+                                            ) : f.field_type === "file" ? (
+                                                <div className="space-y-2">
+                                                    <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 bg-white/2 px-4 py-4 text-sm text-muted-foreground hover:bg-white/5">
+                                                        {uploading[f.key] ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+                                                        <span>{uploading[f.key] ? "Mengunggah…" : (answers[f.key] ? "Ganti file" : (f.placeholder || "Pilih file (maks 5 MB)"))}</span>
+                                                        <input
+                                                            type="file"
+                                                            className="hidden"
+                                                            accept=".jpg,.jpeg,.png,.webp"
+                                                            onChange={(e) => {
+                                                                const file = e.target.files?.[0];
+                                                                if (file) uploadFile(f.key, file);
+                                                            }}
+                                                        />
+                                                    </label>
+                                                    <p className="text-xs text-muted-foreground">Tip: File yang diterima &quot;.jpg&quot;, &quot;.jpeg&quot;, &quot;.png&quot;, &quot;.webp&quot;. Max 2mb</p>
+                                                    {answers[f.key] && (
+                                                        <p className="flex items-center gap-1.5 text-xs text-emerald-300">
+                                                            <CheckCircle2 size={12} /> {answers[f.key].split("/").pop()}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            ) : (
+                                                <input
+                                                    type={f.field_type}
+                                                    value={answers[f.key] ?? ""}
+                                                    onChange={(e) => setAnswers((a) => ({ ...a, [f.key]: e.target.value }))}
+                                                    placeholder={f.placeholder ?? ""}
+                                                    maxLength={500}
+                                                    className={"inputCls"}
+                                                    required={f.required}
+                                                />
+                                            )}
+                                        </Field>
+                                    ))}
 
-                                <button
-                                    type="submit"
-                                    disabled={!comp.is_open || submit.isPending}
-                                    className="btn-hero cursor-pointer hover:btn-hero-hover inline-flex w-full items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold disabled:opacity-60"
-                                >
-                                    {submit.isPending && <Loader2 size={16} className="animate-spin" />}
-                                    Kirim Pendaftaran
-                                </button>
-                            </form>
-                        </>
-                    )}
-                </div>
-            </section>
-            <Footer />
-        </div>
+                                    <label htmlFor="agree"
+                                        className="flex items-start gap-3 cursor-pointer"
+                                    >
+                                        <input type="checkbox" id="agree" className="appearance-none mt-1 shrink-0 checked:bg-secondary size-3.5 bg-muted-foreground rounded-lg border-none" required onChange={(e) => setAggre(e.target.checked)} />
+                                        <span className="text-sm text-muted-foreground">
+                                            Saya menyetujui bahwa semua informasi yang saya berikan adalah benar dan akurat.
+                                        </span>
+                                    </label>
+
+                                    <div className="rounded-xl border border-white/10 bg-white/2 p-4 text-xs text-muted-foreground">
+                                        <p className="flex items-start gap-2">
+                                            <ShieldCheck size={14} className="mt-0.5 shrink-0 text-cyan-strong" />
+                                            Setelah pengiriman, kamu akan diarahkan ke halaman riwayat untuk menyelesaikan pembayaran.
+                                        </p>
+                                    </div>
+
+                                    <button
+                                        type="submit"
+                                        disabled={!comp.is_open || submit.isPending}
+                                        className="btn-hero cursor-pointer hover:btn-hero-hover inline-flex w-full items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold disabled:opacity-60"
+                                    >
+                                        {submit.isPending && <Loader2 size={16} className="animate-spin" />}
+                                        Kirim Pendaftaran
+                                    </button>
+                                </form>
+                            </>
+                        )}
+                    </div>
+                </section>
+                <Footer />
+            </div>
+
+            <ConfirmModal
+                open={openInformation}
+                variant="warning"
+                title="Konfirmasi Pendaftaran"
+                message={`Informasi: karena anda mendaftar lebih dari 1 slot anda dikenakan biaya tambahan sebesar Rp. ${comp ? (comp.fee_idr * slot).toLocaleString("id-ID") : 0}.`}
+                confirmLabel="Ya, Setuju"
+                onConfirm={() => {
+                    setOpenInformation(false)
+                    submit.mutate();
+                }}
+                onCancel={() => setOpenInformation(false)}
+            />
+        </>
     );
 }
 

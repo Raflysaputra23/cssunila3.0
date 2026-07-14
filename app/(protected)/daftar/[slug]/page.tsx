@@ -228,7 +228,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                         </Field>
                                     </div>
                                     {!!comp.is_multi_slot &&
-                                        <Field label="Multi Slot">
+                                        <Field label="Slot">
                                             <select
                                                 value={slot}
                                                 onChange={(e) => setSlot(Number(e.target.value))}

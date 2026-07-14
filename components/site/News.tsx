@@ -68,7 +68,7 @@ const News = () => {
                             className="glass group relative flex h-full flex-col overflow-hidden rounded-3xl p-6 transition hover:-translate-y-1 hover:border-white/20"
                         >
                             {n.image_url && (
-                                <Image src={n.image_url} alt={n.title} width={120} height={120} className="mb-4 h-40 w-full rounded-2xl object-contain" loading="lazy" />
+                                <Image src={n.image_url} alt={n.title} width={120} height={120} className="mb-4 h-40 w-full rounded-2xl object-contain border bg-background/50" loading="lazy" />
                             )}
 
                             <div className="flex items-center gap-3">

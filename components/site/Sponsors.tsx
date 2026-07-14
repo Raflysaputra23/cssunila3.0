@@ -2,6 +2,7 @@
 
 import { createClient } from "@/supabase/client";
 import Image from "next/image";
+import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 
 type Sponsor = {
@@ -82,7 +83,7 @@ const Sponsors = () => {
         {sponsors.length > 0 && (
           <div className="glass mb-8 grid grid-cols-2 gap-px overflow-hidden rounded-3xl bg-white/5 sm:grid-cols-4">
             {sponsors.map((sp) => (
-              <a
+              <Link
                 key={sp.id}
                 href={sp.website || "#sponsor"}
                 target={sp.website ? "_blank" : undefined}
@@ -108,7 +109,7 @@ const Sponsors = () => {
                     {sp.name}
                   </span>
                 )}
-              </a>
+              </Link>
             ))}
           </div>
         )}
@@ -121,7 +122,7 @@ const Sponsors = () => {
             </p>
             <div className="flex flex-wrap items-center justify-center gap-x-8 gap-y-4">
               {mediaPartners.map((mp) => (
-                <a
+                <Link
                   key={mp.id}
                   href={mp.website || "#sponsor"}
                   target={mp.website ? "_blank" : undefined}
@@ -147,7 +148,7 @@ const Sponsors = () => {
                       {mp.name}
                     </span>
                   )}
-                </a>
+                </Link>
               ))}
             </div>
           </div>

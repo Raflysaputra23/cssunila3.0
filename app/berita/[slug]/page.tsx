@@ -7,6 +7,7 @@ import Footer from "@/components/site/Footer";
 import NotFound from "@/components/site/NotFound";
 import { Metadata } from "next";
 import ShareButton from "@/components/site/ShareButton";
+import Gallery from "@/components/site/Gallery";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -140,15 +141,16 @@ const NewsDetailPage = async ({ params }: Props) => {
                 <Image
                   src={news.image_url}
                   alt={news.title}
-                  fill
-                  className="object-contain"
-                  priority
+                  width={1920}
+                  height={720}
+                  className="object-cover w-full h-full bg-background/50"
+                  preload
                 />
               </div>
             )}
 
             <div className="glass mt-10 rounded-3xl p-6 md:p-10 leading-relaxed text-foreground/90 space-y-6 text-base sm:text-lg">
-              <h2 className="text-muted-foreground mb-1 text-lg">Deskripsi</h2>
+              <h2 className="mb-1 text-lg font-semibold">Deskripsi</h2>
               {news.content?.split("\n").map((paragraph, index) => (
                 <p key={index} className="text-justify text-muted-foreground">{paragraph}</p>
               ))}
@@ -177,17 +179,7 @@ const NewsDetailPage = async ({ params }: Props) => {
                 <h2 className="font-display text-2xl font-bold">Galeri Dokumentasi</h2>
                 <div className="grid gap-4 grid-cols-2 sm:grid-cols-3">
                   {galleryImages.map((imgUrl, i) => (
-                    <div
-                      key={i}
-                      className="relative aspect-square overflow-hidden rounded-2xl border border-white/10 hover:border-cyan-strong/40 transition-colors shadow-lg cursor-pointer group"
-                    >
-                      <Image
-                        src={imgUrl}
-                        alt={`Galeri ${i + 1}`}
-                        fill
-                        className="object-contain transition-transform duration-300 group-hover:scale-105"
-                      />
-                    </div>
+                    <Gallery key={`Gallery ${i+1}`} imgUrl={imgUrl} i={i} />
                   ))}
                 </div>
               </div>

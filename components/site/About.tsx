@@ -38,7 +38,7 @@ const About = ({ title, description1, description2, highlights, logo }: AboutPro
         <div className="relative">
           <div className="absolute -inset-8 -z-10 rounded-full bg-linear-to-br from-sapphire/30 to-cyan-strong/20 blur-3xl" />
           <div className="glass-strong relative mx-auto flex aspect-square max-w-md items-center justify-center rounded-3xl p-10">
-            <Image src={aboutLogo} width={200} height={400} alt="Logo CSS 3.0" className="w-full max-w-65" loading="lazy" />
+            <Image src={aboutLogo} width={200} height={400} alt="Logo CSS 3.0" className="w-full max-w-65" loading="eager" />
           </div>
         </div>
 

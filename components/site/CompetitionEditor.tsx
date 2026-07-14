@@ -193,12 +193,12 @@ const CompetitionEditor = ({
         <h3 className="font-display text-lg font-bold">{value.id ? "Edit Lomba" : "Lomba Baru"}</h3>
 
         <div>
-          <HelpLabel label="Banner" hint="Banner lomba, file ext yang diperbolehkan: jpg, jpeg, png, webp, dan svg" />
+          <HelpLabel label="Logo Lomba" hint="Logo lomba, file ext yang diperbolehkan: jpg, jpeg, png, webp, dan svg" />
           {value.banner &&
             <div className="flex items-center gap-2">
               <Image src={value.banner ?? ""} alt="Logo Banner" width={70} height={70} className="object-contain w-16 h-16 my-1" />
               <button type="button" onClick={() => onChange({ ...value, banner: null })} className="text-xs text-destructive hover:underline flex items-center gap-1">
-                <X size={12} /> Hapus Banner
+                <X size={12} /> Hapus Logo
               </button>
             </div>
           }

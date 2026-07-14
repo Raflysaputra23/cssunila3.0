@@ -335,11 +335,13 @@ function DetailModal({
                 <CreditCard size={12} /> Informasi Pembayaran
               </h3>
               <div className="glass rounded-2xl p-4 space-y-3">
-                <InfoRow
-                  icon={<Users size={14} />}
-                  label="Slot"
-                  value={`${reg.slot} Slot`}
-                />
+                {reg.slot > 1 && (
+                  <InfoRow
+                    icon={<Users size={14} />}
+                    label="Slot"
+                    value={`${reg.slot} Slot`}
+                  />
+                )}
                 <InfoRow
                   icon={<CreditCard size={14} />}
                   label="Nominal"

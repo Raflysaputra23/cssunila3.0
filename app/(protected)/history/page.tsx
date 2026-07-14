@@ -30,6 +30,7 @@ type Row = {
   team_name: string;
   leader_name: string;
   leader_whatsapp: string;
+  slot: number;
   status: string;
   rejection_reason: string;
   created_at: string;
@@ -135,7 +136,7 @@ const HistoryPage = () => {
     const { data, error } = await supabase
       .from("registrations")
       .select(
-        "id, team_name, leader_name, leader_whatsapp, status, rejection_reason, created_at, competition:competitions(id, slug, name), payments(amount_idr, status, midtrans_token, midtrans_order_id)"
+        "id, team_name, leader_name, leader_whatsapp, status, rejection_reason, created_at, slot, competition:competitions(id, slug, name), payments(amount_idr, status, midtrans_token, midtrans_order_id)"
       )
       .eq("user_id", user.id)
       .order("created_at", { ascending: false });
@@ -315,7 +316,7 @@ const HistoryPage = () => {
                       </p>
 
                       <p className="mt-1 text-xs text-muted-foreground">
-                        Rp. {amount.toLocaleString("id-ID")}
+                        Rp. {amount.toLocaleString("id-ID")}{r.slot > 1 && `- ${r.slot} Slot`}
                       </p>
                     </div>
 

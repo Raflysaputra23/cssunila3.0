@@ -36,7 +36,7 @@ export default function NotifPermissionModal({
 
   return (
     <div
-      className="fixed inset-0 z-9999 flex items-end sm:items-center justify-center p-6 bg-black/40 backdrop-blur-sm animate-notif-overlay-in"
+      className="fixed inset-0 z-9999 flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm animate-notif-overlay-in"
       onClick={(e) => {
         if (e.target === e.currentTarget) onDismiss();
       }}

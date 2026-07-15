@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 
-const STORAGE_KEY = "cssunila_notif_asked";
+function getStorageKey(userId: string) {
+  return `cssunila_notif_asked_${userId}`;
+}
 
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
@@ -23,45 +25,58 @@ async function registerAndSubscribe() {
     return;
   }
 
-  const registration = await navigator.serviceWorker.register("/sw.js", {
-    scope: "/",
-  });
-
-  await navigator.serviceWorker.ready;
-
   const vapidPublicKey = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
   if (!vapidPublicKey) {
     console.warn("VAPID Public Key not set.");
     return;
   }
 
-  const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
-
-  const existing = await registration.pushManager.getSubscription();
-  if (existing) return;
-
-  const subscription = await registration.pushManager.subscribe({
-    userVisibleOnly: true,
-    applicationServerKey: convertedVapidKey,
+  const registration = await navigator.serviceWorker.register("/sw.js", {
+    scope: "/",
   });
 
-  await fetch("/api/push/subscribe", {
+  await navigator.serviceWorker.ready;
+
+  const convertedVapidKey = urlBase64ToUint8Array(vapidPublicKey);
+
+  let subscription = await registration.pushManager.getSubscription();
+
+  if (!subscription) {
+    subscription = await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: convertedVapidKey,
+    });
+  }
+
+  const res = await fetch("/api/push/subscribe", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ subscription }),
   });
+
+  if (!res.ok) {
+    const body = await res.json().catch(() => ({}));
+    console.error("Failed to save push subscription:", body);
+  }
 }
 
-export function useBrowserNotification(enabled: boolean) {
+export function useBrowserNotification(enabled: boolean, userId?: string) {
   const [shouldShowModal, setShouldShowModal] = useState(false);
   const registeredRef = useRef(false);
+  const lastUserIdRef = useRef<string | undefined>(undefined);
 
   useEffect(() => {
-    if (!enabled) return;
+    if (!enabled || !userId) return;
     if (typeof window === "undefined") return;
     if (!("Notification" in window)) return;
 
     const perm = Notification.permission;
+    const storageKey = getStorageKey(userId);
+
+    if (lastUserIdRef.current !== userId) {
+      registeredRef.current = false;
+      lastUserIdRef.current = userId;
+    }
 
     if (perm === "granted") {
       if (!registeredRef.current) {
@@ -69,17 +84,18 @@ export function useBrowserNotification(enabled: boolean) {
         registerAndSubscribe().catch(console.error);
       }
     } else if (perm === "default") {
-      const alreadyAsked = sessionStorage.getItem(STORAGE_KEY);
+      const alreadyAsked = sessionStorage.getItem(storageKey);
       if (!alreadyAsked) {
         const timer = setTimeout(() => setShouldShowModal(true), 1500);
         return () => clearTimeout(timer);
       }
     }
-  }, [enabled]);
+  }, [enabled, userId]);
 
   const requestPermission = useCallback(async () => {
     setShouldShowModal(false);
-    sessionStorage.setItem(STORAGE_KEY, "true");
+    if (!userId) return;
+    sessionStorage.setItem(getStorageKey(userId), "true");
 
     if (!("Notification" in window)) return;
 
@@ -91,15 +107,13 @@ export function useBrowserNotification(enabled: boolean) {
     } catch (err) {
       console.error("Failed to request notification permission:", err);
     }
-  }, []);
+  }, [userId]);
 
   const dismissModal = useCallback(() => {
     setShouldShowModal(false);
-    sessionStorage.setItem(STORAGE_KEY, "true");
-  }, []);
+    if (!userId) return;
+    sessionStorage.setItem(getStorageKey(userId), "true");
+  }, [userId]);
 
   return { shouldShowModal, requestPermission, dismissModal };
 }
-
-
-

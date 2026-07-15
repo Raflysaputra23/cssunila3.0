@@ -35,7 +35,7 @@ const Navbar = () => {
     const [notifications, setNotifications] = useState<any[]>([]);
     const [showNotif, setShowNotif] = useState(false);
     const notifRef = useRef<HTMLDivElement>(null);
-    const { shouldShowModal: showNotifModal, requestPermission, dismissModal } = useBrowserNotification(!!user);
+    const { shouldShowModal: showNotifModal, requestPermission, dismissModal } = useBrowserNotification(!!user, user?.id);
     const [allowedComps, setAllowedComps] = useState<string[]>([]);
 
     const [settings, setSettings] = useState<Record<string, string>>({

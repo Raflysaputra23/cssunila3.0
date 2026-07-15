@@ -4,6 +4,10 @@ function getStorageKey(userId: string) {
   return `cssunila_notif_asked_${userId}`;
 }
 
+function getEndpointStorageKey(userId: string) {
+  return `cssunila_push_endpoint_${userId}`;
+}
+
 function urlBase64ToUint8Array(base64String: string) {
   const padding = "=".repeat((4 - (base64String.length % 4)) % 4);
   const base64 = (base64String + padding)
@@ -19,7 +23,7 @@ function urlBase64ToUint8Array(base64String: string) {
   return outputArray;
 }
 
-async function registerAndSubscribe() {
+async function registerAndSubscribe(userId: string) {
   if (!("serviceWorker" in navigator) || !("PushManager" in window)) {
     console.warn("Web Push is not supported in this browser.");
     return;
@@ -48,13 +52,24 @@ async function registerAndSubscribe() {
     });
   }
 
+  const endpointKey = getEndpointStorageKey(userId);
+  const savedEndpoint = localStorage.getItem(endpointKey);
+
+  if (subscription && subscription.endpoint === savedEndpoint) {
+    return; 
+  }
+
   const res = await fetch("/api/push/subscribe", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ subscription }),
   });
 
-  if (!res.ok) {
+  if (res.ok) {
+    if (subscription) {
+      localStorage.setItem(endpointKey, subscription.endpoint);
+    }
+  } else {
     const body = await res.json().catch(() => ({}));
     console.error("Failed to save push subscription:", body);
   }
@@ -81,7 +96,7 @@ export function useBrowserNotification(enabled: boolean, userId?: string) {
     if (perm === "granted") {
       if (!registeredRef.current) {
         registeredRef.current = true;
-        registerAndSubscribe().catch(console.error);
+        registerAndSubscribe(userId).catch(console.error);
       }
     } else if (perm === "default") {
       const alreadyAsked = sessionStorage.getItem(storageKey);
@@ -102,7 +117,7 @@ export function useBrowserNotification(enabled: boolean, userId?: string) {
     try {
       const perm = await Notification.requestPermission();
       if (perm === "granted") {
-        await registerAndSubscribe();
+        await registerAndSubscribe(userId);
       }
     } catch (err) {
       console.error("Failed to request notification permission:", err);

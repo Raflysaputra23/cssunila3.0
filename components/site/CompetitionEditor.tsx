@@ -410,8 +410,9 @@ const CompetitionEditor = ({
           </label>
           {!!value.is_multi_slot &&
            <div className="px-3 pb-3">
+             <HelpLabel label="Jumlah Slot" hint="Izinkan berapa maximal slot. Contoh: '5' berarti maximal 5 slot." />
              <input className={"inputCls"} type="number" min={2} value={value.slot} placeholder="Masukkan berapa slot yang diperbolehkan" onChange={(e) => onChange({ ...value, slot: + e.target.value })} />
-           </div>
+           </div>git
           }
         </div>
         <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/2 p-3 text-sm">

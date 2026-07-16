@@ -52,10 +52,10 @@ const About = ({ title, description, highlights, logo }: AboutProps) => {
             <span className="gradient-text">{aboutTitle}</span>
           </h2>
           {aboutDesc.split("\n").map((desc, i) => (
-            <p key={i} className="mt-5 text-muted-foreground text-justify">
+            <p key={i} className={`mt-5 text-muted-foreground text-justify ${i == aboutDesc.split("\n").length - 1 ? "mr-3" : ""}`}>
               {desc}
               {i == aboutDesc.split("\n").length - 1 &&
-                <Link href="/tentang-kami" className="ml-3 text-cyan-strong group inline-flex items-center gap-1">
+                <Link href="/tentang-kami" className="text-cyan-strong group inline-flex items-center gap-1">
                   Lihat selengkapnya
                   <ArrowUpRight size={16} className="group-hover:translate-x-1 transition-all" />
                 </Link>

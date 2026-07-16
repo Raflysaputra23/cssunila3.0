@@ -189,7 +189,7 @@ export default function LogsTab() {
 
       {/* Filters */}
       <div className="flex flex-wrap gap-3">
-        <div className="relative flex-1 min-w-[200px] max-w-xs">
+        <div className="relative flex-1 min-w-50 max-w-xs">
           <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40 pointer-events-none" />
           <input
             type="text"
@@ -279,7 +279,7 @@ export default function LogsTab() {
                       </td>
                       <td className="px-4 py-3 align-top text-xs text-white/80">
                         {log.metadata ? (
-                          <details className="max-w-[220px]">
+                          <details className="max-w-55">
                             <summary className="cursor-pointer text-xs text-muted-foreground hover:text-foreground">
                               Lihat detail
                             </summary>

@@ -121,7 +121,7 @@ export default function LogsTab() {
           entity_type,
           entity_id,
           status,
-          actor,
+          actor_id,
           metadata,
           created_at,
           actor:profiles!export_logs_actor_id_fkey(full_name)

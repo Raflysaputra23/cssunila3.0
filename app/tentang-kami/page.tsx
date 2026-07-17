@@ -47,7 +47,7 @@ const TentangKami = () => {
                         Setiap tahunnya, <span className="gradient-text">CSS</span> dimeriahkan dengan berbagai kompetisi di bidang teknologi maupun non-teknologi, serta penampilan kreatif dari mahasiswa Ilmu Komputer dalam acara puncak. Kegiatan ini menjadi ajang pengembangan potensi, unjuk kreativitas, serta mempererat solidaritas antar mahasiswa, siswa dan masyarakat umum.
                     </p>
                     <p className="text-muted-foreground mb-2 text-justify">
-                        Pada tahun ini, <span className="gradient-text">CSS 3.0</span> mengusung tema &quot;Show Your Skill, Enjoy The Thrill&quot;, yang mencerminkan semangat untuk menunjukkan kemampuan terbaik sekaligus menikmati setiap tantangan yang ada. Melalui tema ini, <span className="gradient-text">CSS 3.0</span> diharapkan menjadi momentum bagi mahasiswa dan siswa untuk terus berkembang dan berani tampil dalam dunia yang penuh kompetisi dan inovasi.
+                        Pada tahun ini, <span className="gradient-text">CSS 3.0</span> mengusung tema &quot;Dare to Grow, Ready to Glow&quot;, yang mencerminkan semangat untuk menunjukkan kemampuan terbaik sekaligus menikmati setiap tantangan yang ada. Melalui tema ini, <span className="gradient-text">CSS 3.0</span> diharapkan menjadi momentum bagi mahasiswa dan siswa untuk terus berkembang dan berani tampil dalam dunia yang penuh kompetisi dan inovasi.
                     </p>
 
                     {/* Penyelenggara */}

@@ -65,7 +65,7 @@ CREATE TABLE public.competitions (
   slug text UNIQUE NOT NULL,
   name text NOT NULL,
   tagline text,
-  description text,
+  description jsonb NOT NULL DEFAULT '[]'::jsonb,
   accent text,
   icon text,
   fee_idr integer NOT NULL DEFAULT 0,
@@ -83,6 +83,9 @@ CREATE TABLE public.competitions (
   juara_1 text,
   juara_2 text,
   juara_3 text,
+  panduan text,
+  slot integer NOT NULL DEFAULT 0,
+  is_multi_slot boolean NOT NULL DEFAULT false,
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );

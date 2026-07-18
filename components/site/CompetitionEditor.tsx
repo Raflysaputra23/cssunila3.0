@@ -50,8 +50,8 @@ const CompetitionEditor = ({
   onSave: () => void;
   saving: boolean;
 }) => {
-  const rulesText = (value.rules ?? []).join("\n");
-  const descriptionText = (value.description ?? []).join("\n");
+  const [rulesText, setRulesText] = useState<string>((value.rules ?? []).join("\n"));
+  const [descriptionText, setDescriptionText] = useState<string>((value.description ?? []).join("\n"));
   const [timelineText, setTimelineText] = useState(
     (value.timeline ?? [])
       .map((t) => `${t.date}${t.label ? ` | ${t.label}` : ""}`)
@@ -247,7 +247,10 @@ const CompetitionEditor = ({
         </div>
         <div>
           <HelpLabel label="Deskripsi" hint="Paragraf penjelasan lengkap di halaman detail lomba. Tekan enter untuk membuat setiap paragraf baru." required />
-          <textarea rows={3} className={"inputCls"} required placeholder="Mobile Legends adalah game MOBA yang dimainkan oleh dua tim yang terdiri dari lima pemain." value={descriptionText} onChange={(e) => onChange({ ...value, description: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) })} />
+          <textarea rows={3} className={"inputCls"} required placeholder="Mobile Legends adalah game MOBA yang dimainkan oleh dua tim yang terdiri dari lima pemain." value={descriptionText} onChange={(e) => {
+              onChange({ ...value, description: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) });
+              setDescriptionText(e.target.value);
+            }} />
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
@@ -326,7 +329,10 @@ const CompetitionEditor = ({
 
         <div>
           <HelpLabel label="Syarat & Ketentuan" required hint="Satu baris = satu poin syarat. Akan ditampilkan sebagai daftar di halaman detail." />
-          <textarea rows={4} required className={"inputCls"} value={rulesText} onChange={(e) => onChange({ ...value, rules: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) })} placeholder={"Peserta adalah pelajar SMA/SMK aktif\nSatu tim 5 pemain + 1 cadangan"} />
+          <textarea rows={4} required className={"inputCls"} value={rulesText} onChange={(e) => { 
+              onChange({ ...value, rules: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) });
+              setRulesText(e.target.value); 
+            }} placeholder={"Peserta adalah pelajar SMA/SMK aktif\nSatu tim 5 pemain + 1 cadangan"} />
         </div>
 
         <div>

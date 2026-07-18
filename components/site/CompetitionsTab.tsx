@@ -95,6 +95,11 @@ const CompetitionsTab = () => {
 
   const save = useMutation({
     mutationFn: async (v: Partial<CompFull>) => {
+      if (/\s/.test(v.slug!)) {
+        toast.error("Slug tidak boleh mengandung spasi, gunakan - jika ingin membuat kata baru!");
+        return;
+      }
+      
       const supabase = suparef.current;
       const payload = {
         slug: v.slug!, name: v.name!, tagline: v.tagline ?? null,
@@ -160,11 +165,10 @@ const CompetitionsTab = () => {
             }}
             disabled={toggleVis.isPending}
             title={visibility.lomba ? "Sembunyikan section Lomba dari landing page" : "Tampilkan section Lomba di landing page"}
-            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
-              visibility.lomba
+            className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${visibility.lomba
                 ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
                 : "border-amber-500/40 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
-            }`}
+              }`}
           >
             {toggleVis.isPending ? <Loader2 size={13} className="animate-spin" /> : visibility.lomba ? <Eye size={13} /> : <EyeOff size={13} />}
             {visibility.lomba ? "Ditampilkan" : "Disembunyikan"}
@@ -174,7 +178,7 @@ const CompetitionsTab = () => {
           </button>
         </div>
       )}
-    
+
       {isLoading && <div className="glass rounded-2xl p-8 text-center text-sm text-muted-foreground">Memuat…</div>}
       <div className="space-y-2">
         {data?.map((c) => (
@@ -183,7 +187,7 @@ const CompetitionsTab = () => {
               <p className="font-display font-semibold">{c.name}</p>
               <p className="text-xs text-muted-foreground"><span className="text-cyan-strong font-semibold">Slug:</span> /{c.slug}</p>
               <p className="text-xs text-muted-foreground"><span className="text-cyan-strong font-semibold">Harga:</span> Rp. {c.fee_idr.toLocaleString("id-ID")}</p>
-              <p className="text-xs text-muted-foreground"><span className="text-cyan-strong font-semibold">Kuota:</span> {c.quota > 0 ? c.quota+' tim' : 'Tidak ada batasan'}</p>
+              <p className="text-xs text-muted-foreground"><span className="text-cyan-strong font-semibold">Kuota:</span> {c.quota > 0 ? c.quota + ' tim' : 'Tidak ada batasan'}</p>
               <p className="text-xs text-muted-foreground"><span className="text-cyan-strong font-semibold">Status:</span> <span className={c.is_open ? "text-emerald-300" : "text-amber-300"}>{c.is_open ? "buka" : "tutup"}</span></p>
             </div>
             <div className="flex gap-2">

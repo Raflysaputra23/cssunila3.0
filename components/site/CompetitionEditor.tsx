@@ -239,7 +239,12 @@ const CompetitionEditor = ({
         </div>
         <div>
           <HelpLabel label="Slug URL" hint="Bagian alamat halaman setelah /lomba/. Huruf kecil, tanpa spasi, pakai tanda strip. Contoh: 'mobile-legends'." required />
-          <input className={"inputCls"} required pattern="[a-z0-9-]+" value={value.slug ?? ""} onChange={(e) => onChange({ ...value, slug: e.target.value })} placeholder="mobile-legends" />
+          <input className={"inputCls"} required pattern="[a-z0-9-]+" value={value.slug ?? ""} onChange={(e) => onChange({ ...value, slug: e.target.value.toLowerCase() })} onKeyDown={(e) => {
+            if (e.key === ' ') {
+              e.preventDefault();
+              onChange({ ...value, slug: value.slug + '-'});
+            }
+          }} placeholder="mobile-legends" />
         </div>
         <div>
           <HelpLabel label="Tagline" hint="Subjudul singkat di kartu lomba. Contoh: '5v5 MOBA Tournament'." required />

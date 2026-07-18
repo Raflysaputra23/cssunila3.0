@@ -45,6 +45,11 @@ const NewsTab = () => {
 
   const save = useMutation({
     mutationFn: async (v: Partial<NewsRow>) => {
+      if (/\s/.test(v.slug!)) {
+        toast.error("Slug tidak boleh mengandung spasi, gunakan - jika ingin membuat kata baru!");
+        return;
+      }
+      
       const payload = {
         slug: v.slug!, title: v.title!, excerpt: v.excerpt ?? null, category: v.category ?? null,
         status: v.status ?? "draft", image_url: v.image_url ?? null, content: v.content ?? null,
@@ -175,11 +180,10 @@ const NewsTab = () => {
           }}
           disabled={toggleVis.isPending}
           title={visibility.berita ? "Sembunyikan section Berita dari landing page" : "Tampilkan section Berita di landing page"}
-          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${
-            visibility.berita
-              ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
-              : "border-amber-500/40 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
-          }`}
+          className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1.5 text-xs font-medium transition-colors cursor-pointer ${visibility.berita
+            ? "border-emerald-500/40 bg-emerald-500/10 text-emerald-400 hover:bg-emerald-500/20"
+            : "border-amber-500/40 bg-amber-500/10 text-amber-400 hover:bg-amber-500/20"
+            }`}
         >
           {toggleVis.isPending ? <Loader2 size={13} className="animate-spin" /> : visibility.berita ? <Eye size={13} /> : <EyeOff size={13} />}
           {visibility.berita ? "Ditampilkan" : "Disembunyikan"}
@@ -223,7 +227,12 @@ const NewsTab = () => {
               </div>
               <div className="space-y-1">
                 <label className="text-xs text-muted-foreground after:content-['*'] after:ml-1 after:text-red-500">Slug (huruf kecil, tanpa spasi)</label>
-                <input className="inputCls" placeholder="contoh-slug-unik" required pattern="[a-z0-9-]+" value={editing.slug ?? ""} onChange={(e) => setEditing({ ...editing, slug: e.target.value })} />
+                <input className="inputCls" placeholder="contoh-slug-unik" required pattern="[a-z0-9-]+" value={editing.slug ?? ""} onChange={(e) => setEditing({ ...editing, slug: e.target.value.toLowerCase() })} onKeyDown={(e) => {
+                  if (e.key === ' ') {
+                    e.preventDefault();
+                    setEditing({ ...editing, slug: editing.slug + '-' });
+                  }
+                }} />
               </div>
             </div>
 
@@ -255,9 +264,8 @@ const NewsTab = () => {
                 </div>
               )}
               {!editing.image_url && (
-                <label className={`flex items-center gap-2 rounded-xl border border-dashed border-white/20 px-4 py-3 text-sm text-muted-foreground transition ${
-                  uploadingBanner ? "opacity-60" : "cursor-pointer hover:border-white/40 hover:text-foreground"
-                }`}>
+                <label className={`flex items-center gap-2 rounded-xl border border-dashed border-white/20 px-4 py-3 text-sm text-muted-foreground transition ${uploadingBanner ? "opacity-60" : "cursor-pointer hover:border-white/40 hover:text-foreground"
+                  }`}>
                   {uploadingBanner ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
                   {uploadingBanner ? "Mengunggah..." : "Upload banner berita (PNG/JPG/WebP/SVG, max 2MB)"}
                   <input
@@ -301,9 +309,8 @@ const NewsTab = () => {
               </div>
 
               {/* Upload input button */}
-              <label className={`flex items-center gap-2 rounded-xl border border-dashed border-white/20 px-4 py-2.5 text-xs text-muted-foreground transition ${
-                uploadingGallery ? "opacity-60" : "cursor-pointer hover:border-white/40 hover:text-foreground"
-              }`}>
+              <label className={`flex items-center gap-2 rounded-xl border border-dashed border-white/20 px-4 py-2.5 text-xs text-muted-foreground transition ${uploadingGallery ? "opacity-60" : "cursor-pointer hover:border-white/40 hover:text-foreground"
+                }`}>
                 {uploadingGallery ? <Loader2 size={12} className="animate-spin" /> : <Plus size={12} />}
                 {uploadingGallery ? "Mengunggah..." : "Tambah Foto ke Galeri (PNG/JPG/WebP/SVG, max 1MB)"}
                 <input

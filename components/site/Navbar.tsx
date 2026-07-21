@@ -506,6 +506,7 @@ const Navbar = () => {
                 title="Informasi"
                 message={`Info CSS UNILA 3.0 sudah dialihkan ke domain cssunila.com, Silahkan kunjungi domain tersebut untuk mengakses informasi seputar CSS UNILA 3.0.`}
                 confirmLabel="Ya, Alihkan"
+                variant="warning"
                 onConfirm={() => { 
                         if (showInfoDomain) {
                             window.location.href = "https://cssunila.com";

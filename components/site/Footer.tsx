@@ -44,8 +44,20 @@ const Footer = ({ marginTop = true }: { marginTop?: boolean }) => {
         <div className="grid gap-10 md:grid-cols-4">
           <div className="md:col-span-2">
             <div className="flex items-center gap-3">
-              <Image src={"/himakom-logo.png"} width={80} height={80} alt={`logo himakom`} className="h-9 w-auto" />
-              <Image src={settings.site_logo} width={80} height={80} alt={`${settings.site_title_main} ${settings.site_title_sub}`} className="h-9 w-auto" />
+              <Link
+                href={"https://www.instagram.com/himakomunila"}
+                target="_blank"
+                aria-label="social"
+                rel="noopener noreferrer">
+                <Image src={"/himakom-logo.png"} width={80} height={80} alt={`logo himakom`} className="h-9 w-auto" />
+              </Link>
+              <Link
+                href={"https://www.instagram.com/cssunila"}
+                target="_blank"
+                aria-label="social"
+                rel="noopener noreferrer">
+                <Image src={settings.site_logo} width={80} height={80} alt={`${settings.site_title_main} ${settings.site_title_sub}`} className="h-9 w-auto" />
+              </Link>
               <span className="font-display text-lg font-bold tracking-wider">
                 {settings.site_title_main}<span className="gradient-text"> {settings.site_title_sub}</span>
               </span>
@@ -54,18 +66,19 @@ const Footer = ({ marginTop = true }: { marginTop?: boolean }) => {
               Kegiatan perlombaan dan perayaan yang diselenggarakan oleh Himpunan Mahasiswa Jurusan Ilmu Komputer(Himakom), FMIPA, Universitas Lampung. CSS menghadirkan kompetisi di bidang teknologi maupun non-teknologi, yang dirancang sebagai ajang pengembangan potensi, kreativitas, dan kolaborasi bagi siswa, mahasiswa, serta peserta umum.
             </p>
             <div className="mt-5 flex gap-2">
-              {[{icon: Instagram, url: "https://www.instagram.com/cssunila"}, {icon: Youtube, url: "https://www.youtube.com/@cssunila"}, {icon: Mail, url: "mailto:cssunila25@gmail.com?subject=Halo CSS"}].map((item) => (
+              {[{ icon: Instagram, url: "https://www.instagram.com/cssunila" }, { icon: Youtube, url: "https://www.youtube.com/@cssunila" }, { icon: Mail, url: "mailto:cssunila25@gmail.com?subject=Halo CSS" }].map((item) => (
                 <Link
                   key={item.url}
                   href={item.url}
                   aria-label="social"
+                  target="_blank"
                   rel="noopener noreferrer"
                   className="glass flex size-10 items-center justify-center rounded-full text-foreground/80 transition hover:text-cyan-strong"
                 >
                   <item.icon size={16} />
                 </Link>
               ))}
-              <Link rel="noopener noreferrer" href={"https://www.tiktok.com/@css.himakom.unila"} className="glass flex size-10 items-center justify-center rounded-full text-foreground/80 transition hover:text-cyan-strong">
+              <Link target="_blank" rel="noopener noreferrer" href={"https://www.tiktok.com/@css.himakom.unila"} className="glass flex size-10 items-center justify-center rounded-full text-foreground/80 transition hover:text-cyan-strong">
                 <Image src={"/assets/tiktok.svg"} width={40} height={40} alt={`tiktok logo`} className="h-4 w-auto" />
               </Link>
             </div>
@@ -90,11 +103,11 @@ const Footer = ({ marginTop = true }: { marginTop?: boolean }) => {
             <h4 className="mb-1 font-display text-sm font-semibold uppercase tracking-wider">
               Kontak Kami
             </h4>
-            <Link rel="noopener noreferrer" href="mailto:cssunila25@gmail.com?subject=Halo CSS" className="flex items-center gap-2 text-sm text-cyan-strong"><Mail size={16} /> cssunila25@gmail.com</Link>
+            <Link rel="noopener noreferrer" aria-label="alamat" href="mailto:cssunila25@gmail.com?subject=Halo CSS" className="flex items-center gap-2 text-sm text-cyan-strong"><Mail size={16} /> cssunila25@gmail.com</Link>
             <p className="text-sm text-muted-foreground mt-4 mb-1">
               Jl. Prof.Dr. Ir. Sumatri Brojonegoro No.1 Gedong Meneng, Kec. Rajabasa, Kota Bandar Lampung, Indonesia
             </p>
-            <Link rel="noopener noreferrer" href="https://maps.app.goo.gl/qtpKaZCQm6QrHE917" target="_blank" className="flex items-center gap-2 text-sm text-cyan-strong"><Map size={16} /> Gedung UKM FMIPA Unila</Link>
+            <Link rel="noopener noreferrer" aria-label="email" href="https://maps.app.goo.gl/qtpKaZCQm6QrHE917" target="_blank" className="flex items-center gap-2 text-sm text-cyan-strong"><Map size={16} /> Gedung UKM FMIPA Unila</Link>
           </div>
         </div>
 

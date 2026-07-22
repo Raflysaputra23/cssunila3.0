@@ -11,7 +11,7 @@ import { createClient } from "@/supabase/server";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Landing Page",
+  title: "Computer Science Showdown",
 }
 
 export default async function Home() {

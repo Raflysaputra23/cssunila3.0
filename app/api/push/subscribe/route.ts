@@ -1,8 +1,21 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextResponse } from "next/server";
 import { createClient } from "@/supabase/server";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 export async function POST(req: Request) {
+  const ip = getClientIp(req);
+  const { allowed, resetAt } = rateLimit(`push-subscribe:${ip}`, 20, 60_000);
+  if (!allowed) {
+    return NextResponse.json(
+      { message: "Terlalu banyak permintaan. Coba lagi nanti." },
+      {
+        status: 429,
+        headers: { "Retry-After": String(Math.ceil((resetAt - Date.now()) / 1000)) },
+      }
+    );
+  }
+
   try {
     const supabase = await createClient();
     const {

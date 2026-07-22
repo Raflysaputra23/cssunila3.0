@@ -3,7 +3,7 @@ import type { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = process.env.NEXT_PUBLIC_DOMAIN_URL ?? "http://localhost:3000";
-   const supabase = await createClient();
+  const supabase = await createClient();
 
   const { data: competitions } = await supabase
     .from("competitions")
@@ -14,6 +14,28 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       url: `${baseUrl}/lomba/${competition.slug}`,
       lastModified: competition.updated_at
         ? new Date(competition.updated_at)
+        : new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    })) ?? [];
+
+  const { data: news } = await supabase.from("news").select("slug, updated_at");
+  const newsPages =
+    news?.map((n) => ({
+      url: `${baseUrl}/lomba/${n.slug}`,
+      lastModified: n.updated_at ? new Date(n.updated_at) : new Date(),
+      changeFrequency: "weekly" as const,
+      priority: 0.8,
+    })) ?? [];
+
+  const { data: seminars } = await supabase
+    .from("seminars")
+    .select("slug, updated_at");
+  const seminarPages =
+    seminars?.map((seminar) => ({
+      url: `${baseUrl}/lomba/${seminar.slug}`,
+      lastModified: seminar.updated_at
+        ? new Date(seminar.updated_at)
         : new Date(),
       changeFrequency: "weekly" as const,
       priority: 0.8,
@@ -50,6 +72,14 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       changeFrequency: "monthly",
       priority: 0.7,
     },
-    ...competitionPages
+    {
+      url: `${baseUrl}/kontak`,
+      lastModified: new Date(),
+      changeFrequency: "monthly",
+      priority: 0.7,
+    },
+    ...competitionPages,
+    ...newsPages,
+    ...seminarPages,
   ];
 }

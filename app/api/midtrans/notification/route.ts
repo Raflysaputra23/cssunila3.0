@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { createHash } from "crypto";
 import { createAdmin } from "@/supabase/admin";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 type Notification = {
   order_id?: string;
@@ -16,11 +17,21 @@ const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION;
 const isProd = (isProduction ?? "false").toLowerCase() === "true";
 
 const serverKey = isProd
-  ? process.env.NEXT_PUBLIC_MIDTRANS_SERVER_KEY_PROD
-  : process.env.NEXT_PUBLIC_MIDTRANS_SERVER_KEY_SAND;
+  ? process.env.MIDTRANS_SERVER_KEY_PROD
+  : process.env.MIDTRANS_SERVER_KEY_SAND;
 
 export const POST = async (request: Request) => {
-  if (!serverKey) return new Response("not configured", { status: 500 });
+  if (!serverKey) return new Response("Tidak ada Server Key", { status: 500 });
+
+  const ip = getClientIp(request);
+  const { allowed, resetAt } = rateLimit(`midtrans-notif:${ip}`, 30, 60_000);
+  if (!allowed) {
+    return new Response("Telah mencapai limit, tunggu beberapa saat...", {
+      status: 429,
+      headers: { "Retry-After": String(Math.ceil((resetAt - Date.now()) / 1000)) },
+    });
+  }
+
   const supabaseAdmin = createAdmin();
 
   const raw = await request.text();

@@ -53,7 +53,7 @@ export async function generateMetadata({
     title: news.title,
     description: news.content,
     alternates: {
-      canonical: `/news/${slug}`,
+      canonical: `/berita/${slug}`,
     },
     openGraph: {
       title: news.title,
@@ -93,8 +93,44 @@ const NewsDetailPage = async ({ params }: Props) => {
     }
   }
 
+  const baseUrl = process.env.NEXT_PUBLIC_DOMAIN_URL ?? "http://localhost:3000";
+
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "NewsArticle",
+    headline: news.title,
+    description: news.content?.slice(0, 200) ?? "",
+    image: news.image_url ? [news.image_url] : [],
+    datePublished: news.published_at ?? new Date().toISOString(),
+    dateModified: news.published_at ?? new Date().toISOString(),
+    author: [
+      {
+        "@type": "Organization",
+        name: "CSS UNILA 3.0",
+        url: baseUrl,
+      },
+    ],
+    publisher: {
+      "@type": "Organization",
+      name: "Himakom UNILA – CSS UNILA 3.0",
+      url: baseUrl,
+      logo: {
+        "@type": "ImageObject",
+        url: `${baseUrl}/css-logo.png`,
+      },
+    },
+    mainEntityOfPage: {
+      "@type": "WebPage",
+      "@id": `${baseUrl}/berita/${slug}`,
+    },
+  };
+
   return (
     <div className="relative min-h-screen overflow-x-hidden">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Navbar />
 
       <section className="pt-30 md:pt-32 pb-26 md:pb-30">

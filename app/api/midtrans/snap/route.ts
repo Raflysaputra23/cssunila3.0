@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
 import { createClient } from "@/supabase/server";
+import { rateLimit, getClientIp } from "@/lib/rate-limit";
 
 type SnapResult = {
   token: string;
@@ -12,14 +13,32 @@ const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION;
 const isProd = (isProduction ?? "false").toLowerCase() === "true";
 
 const serverKey = isProd
-  ? process.env.NEXT_PUBLIC_MIDTRANS_SERVER_KEY_PROD
-  : process.env.NEXT_PUBLIC_MIDTRANS_SERVER_KEY_SAND;
+  ? process.env.MIDTRANS_SERVER_KEY_PROD
+  : process.env.MIDTRANS_SERVER_KEY_SAND;
 
 const clientKey = isProd
   ? process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY_PROD
   : process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY_SAND;
 
 export const POST = async (req: Request) => {
+  const ip = getClientIp(req);
+  const { allowed, remaining, resetAt } = rateLimit(`midtrans-snap:${ip}`, 5, 60_000);
+  if (!allowed) {
+    return NextResponse.json(
+      { 
+        message: "Terlalu banyak permintaan. Silakan tunggu sebentar.", 
+        remaining 
+      },
+      {
+        status: 429,
+        headers: {
+          "X-RateLimit-Remaining": "0",
+          "Retry-After": String(Math.ceil((resetAt - Date.now()) / 1000)),
+        },
+      }
+    );
+  }
+
   try {
     const supabase = await createClient();
 

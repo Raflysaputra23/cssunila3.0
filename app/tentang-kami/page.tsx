@@ -7,12 +7,44 @@ import Link from "next/link";
 
 export const metadata: Metadata = {
     title: "Tentang Kami",
-    description: "Sejarah CSS 3.0",
+    description: "CSS 3.0 (Computer Science Showdown) adalah event tahunan yang diselenggarakan Himakom Ilmu Komputer Universitas Lampung, menampilkan kompetisi teknologi, olahraga, dan logika matematika bagi siswa",
 }
+
+const baseUrl = process.env.NEXT_PUBLIC_DOMAIN_URL ?? "http://localhost:3000";
+
+const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Event",
+    name: "Computer Science Showdown 3.0 (CSS UNILA)",
+    description:
+        "CSS 3.0 adalah kegiatan tahunan dalam rangka Dies Natalis Jurusan Ilmu Komputer FMIPA Universitas Lampung yang menampilkan berbagai kompetisi teknologi, olahraga, dan seni.",
+    url: `${baseUrl}/tentang-kami`,
+    image: `${baseUrl}/css-logo.png`,
+    organizer: {
+        "@type": "Organization",
+        name: "Himakom – Himpunan Mahasiswa Ilmu Komputer Universitas Lampung",
+        url: baseUrl,
+    },
+    location: {
+        "@type": "Place",
+        name: "Universitas Lampung",
+        address: {
+            "@type": "PostalAddress",
+            addressLocality: "Bandar Lampung",
+            addressRegion: "Lampung",
+            addressCountry: "ID",
+        },
+    },
+    inLanguage: "id",
+};
 
 const TentangKami = () => {
     return (
         <div className="relative min-h-screen overflow-x-hidden">
+            <script
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+            />
             <Navbar />
 
             <section className="relative isolate overflow-hidden pt-30 md:pt-32 pb-26 md:pb-30">

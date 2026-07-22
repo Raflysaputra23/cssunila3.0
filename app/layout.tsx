@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Poppins, Space_Grotesk } from "next/font/google";
+import Script from "next/script";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import "./globals.css";
 import Providers from "@/hooks/providers";
@@ -22,11 +23,10 @@ export const metadata: Metadata = {
   },
   description: "CSS UNILA 3.0 adalah event perlombaan teknologi dan olahraga yang diselenggarakan oleh Himakom Jurusan Ilmu Komputer Universitas Lampung.",
   keywords: [
-    "CSS UNILA",
-    "CSS 3.0",
-    "event UNILA",
-    "lomba komputer",
-    "lomba mahasiswa",
+    "CSS UNILA", "CSS 3.0", "Computer Science Showdown",
+    "lomba komputer Lampung", "lomba siswa Lampung", "Himakom UNILA",
+    "event teknologi Universitas Lampung", "lomba coding Lampung",
+    "kompetisi IT siswa"
   ],
   robots: {
     index: true,
@@ -56,7 +56,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CSS UNILA 3.0",
     description:
-    "Ikuti berbagai perlombaan dalam event CSS UNILA 3.0.",
+      "Ikuti berbagai perlombaan dalam event CSS UNILA 3.0.",
     images: ["/css-logo.png"],
   },
 };
@@ -68,11 +68,29 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
+      lang="id"
       data-scroll-behavior="smooth"
       className={`${poppins.variable} ${space.variable} h-full scroll-smooth antialiased`}
     >
       <body className="min-h-full">
+        {process.env.NEXT_PUBLIC_GA_ID && (
+          <>
+            <Script
+              src={`https://www.googletagmanager.com/gtag/js?id=${process.env.NEXT_PUBLIC_GA_ID}`}
+              strategy="afterInteractive"
+            />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                gtag('js', new Date());
+                gtag('config', '${process.env.NEXT_PUBLIC_GA_ID}', {
+                  page_path: window.location.pathname,
+                });
+              `}
+            </Script>
+          </>
+        )}
         <Sonner />
         <Providers>{children}</Providers>
       </body>

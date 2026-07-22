@@ -20,6 +20,12 @@ import {
   LogIn,
   Settings,
   CreditCard,
+  BarChart3,
+  TrendingUp,
+  Globe,
+  HelpCircle,
+  ExternalLink,
+  Sparkles,
 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { id as localeId } from "date-fns/locale";
@@ -41,6 +47,12 @@ type LogsResponse = {
   total: number;
   page: number;
   limit: number;
+  stats: {
+    success: number;
+    error: number;
+    warning: number;
+    info: number;
+  };
 };
 
 const STATUS_CONFIG = {
@@ -98,6 +110,8 @@ export default function LogsTab() {
   const [search, setSearch] = useState("");
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
+  const gaMeasurementId = process.env.NEXT_PUBLIC_GA_ID;
+
   useEffect(() => {
     const t = setTimeout(() => {
       setDebouncedSearch(search);
@@ -147,11 +161,20 @@ export default function LogsTab() {
 
       if (error) throw error;
 
+      const rawLogs = (logsData as any) ?? [];
+      const stats = {
+        success: rawLogs.filter((l: any) => l.status === "success").length,
+        error: rawLogs.filter((l: any) => l.status === "error").length,
+        warning: rawLogs.filter((l: any) => l.status === "warning").length,
+        info: rawLogs.filter((l: any) => l.status === "info").length,
+      };
+
       return {
-        logs: (logsData as any) ?? [],
+        logs: rawLogs,
         total: count ?? 0,
         page,
         limit,
+        stats,
       };
     },
     staleTime: 30_000,
@@ -159,7 +182,11 @@ export default function LogsTab() {
 
   const logs = data?.logs ?? [];
   const total = data?.total ?? 0;
+  const stats = data?.stats ?? { success: 0, error: 0, warning: 0, info: 0 };
   const totalPages = Math.max(1, Math.ceil(total / 30));
+
+  const totalSample = logs.length || 1;
+  const successRatio = Math.round((stats.success / totalSample) * 100);
 
   const handleFilterChange = (setter: (v: string) => void) => (v: string) => {
     setter(v);
@@ -168,12 +195,16 @@ export default function LogsTab() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
       <div className="flex flex-col gap-4 items-start sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-xl font-display font-bold">Activity Logs</h2>
+          <div className="flex items-center gap-2">
+            <h2 className="text-xl font-display font-bold">Analytics & Activity Logs</h2>
+            <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-cyan-strong/15 text-cyan-strong border border-cyan-strong/30">
+              <Sparkles size={10} /> Real-time
+            </span>
+          </div>
           <p className="text-sm text-muted-foreground mt-0.5">
-            Rekam jejak semua aktivitas — <span className="px-2.5 py-1 text-xs rounded-lg bg-primary/10 text-primary"> {total.toLocaleString()} total</span>
+            Analisis sistem, statistik kesehatan aplikasi, dan rekam jejak aktivitas real-time.
           </p>
         </div>
         <button
@@ -182,8 +213,137 @@ export default function LogsTab() {
           className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl border border-white/10 bg-white/5 hover:bg-white/10 text-white/70 hover:text-white text-xs font-medium cursor-pointer transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <RefreshCw size={14} className={isFetching ? "animate-spin" : ""} />
-          Refresh
+          Refresh Data
         </button>
+      </div>
+
+      <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
+        <div className="glass-strong rounded-2xl p-5 border border-white/10 relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Total Log Sistem</span>
+            <div className="p-2 rounded-xl bg-cyan-strong/10 text-cyan-strong">
+              <BarChart3 size={18} />
+            </div>
+          </div>
+          <p className="font-display text-2xl font-bold mt-2 text-foreground">
+            {total.toLocaleString()}
+          </p>
+          <p className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
+            <Activity size={12} className="text-cyan-strong" /> Tercatat di database
+          </p>
+        </div>
+
+        <div className="glass-strong rounded-2xl p-5 border border-white/10 relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Keberhasilan Sistem</span>
+            <div className="p-2 rounded-xl bg-emerald-500/10 text-emerald-400">
+              <TrendingUp size={18} />
+            </div>
+          </div>
+          <p className="font-display text-2xl font-bold mt-2 text-emerald-400">
+            {successRatio}%
+          </p>
+          <p className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
+            <CheckCircle2 size={12} className="text-emerald-400" /> {stats.success} transaksi/aksi sukses
+          </p>
+        </div>
+
+        <div className="glass-strong rounded-2xl p-5 border border-white/10 relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Error & Warning</span>
+            <div className="p-2 rounded-xl bg-amber-500/10 text-amber-400">
+              <AlertTriangle size={18} />
+            </div>
+          </div>
+          <p className="font-display text-2xl font-bold mt-2 text-amber-400">
+            {stats.error + stats.warning}
+          </p>
+          <p className="text-[11px] text-muted-foreground mt-1 flex items-center gap-1">
+            <XCircle size={12} className="text-rose-400" /> {stats.error} error, {stats.warning} warning
+          </p>
+        </div>
+
+        {/* Google Analytics */}
+        <div className="glass-strong rounded-2xl p-5 border border-white/10 relative overflow-hidden">
+          <div className="flex items-center justify-between">
+            <span className="text-xs font-medium text-muted-foreground uppercase tracking-wider">Google Analytics</span>
+            <div className="p-2 rounded-xl bg-sky-500/10 text-sky-400">
+              <Globe size={18} />
+            </div>
+          </div>
+          <div className="mt-2 flex items-center gap-2">
+            {gaMeasurementId ? (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/15 text-emerald-400 border border-emerald-500/30">
+                <span className="size-2 rounded-full bg-emerald-400 animate-pulse" />
+                Aktif
+              </span>
+            ) : (
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/15 text-amber-400 border border-amber-500/30">
+                <span className="size-2 rounded-full bg-amber-400" />
+                Tidak ada konfigurasi Key!
+              </span>
+            )}
+          </div>
+        </div>
+      </div>
+
+      <div className="glass rounded-2xl p-5 border border-white/10 space-y-3">
+        <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <span className="font-semibold text-foreground flex items-center gap-2">
+            <Activity size={14} className="text-cyan-strong" /> Distribusi Status Log
+          </span>
+          <span>{logs.length} item dianalisis</span>
+        </div>
+
+        <div className="h-3 w-full bg-white/5 rounded-full overflow-hidden flex">
+          {stats.success > 0 && (
+            <div
+              style={{ width: `${(stats.success / totalSample) * 100}%` }}
+              className="bg-emerald-500 transition-all duration-500"
+              title={`Berhasil: ${stats.success}`}
+            />
+          )}
+          {stats.info > 0 && (
+            <div
+              style={{ width: `${(stats.info / totalSample) * 100}%` }}
+              className="bg-sky-500 transition-all duration-500"
+              title={`Info: ${stats.info}`}
+            />
+          )}
+          {stats.warning > 0 && (
+            <div
+              style={{ width: `${(stats.warning / totalSample) * 100}%` }}
+              className="bg-amber-500 transition-all duration-500"
+              title={`Peringatan: ${stats.warning}`}
+            />
+          )}
+          {stats.error > 0 && (
+            <div
+              style={{ width: `${(stats.error / totalSample) * 100}%` }}
+              className="bg-rose-500 transition-all duration-500"
+              title={`Error: ${stats.error}`}
+            />
+          )}
+        </div>
+
+        <div className="flex flex-wrap gap-4 text-xs pt-1">
+          <div className="flex items-center gap-1.5 text-emerald-400">
+            <span className="size-2 rounded-full bg-emerald-500" />
+            <span>Berhasil ({stats.success})</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-sky-400">
+            <span className="size-2 rounded-full bg-sky-500" />
+            <span>Info ({stats.info})</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-amber-400">
+            <span className="size-2 rounded-full bg-amber-500" />
+            <span>Peringatan ({stats.warning})</span>
+          </div>
+          <div className="flex items-center gap-1.5 text-rose-400">
+            <span className="size-2 rounded-full bg-rose-500" />
+            <span>Error ({stats.error})</span>
+          </div>
+        </div>
       </div>
 
       {/* Filters */}
@@ -221,7 +381,7 @@ export default function LogsTab() {
       </div>
 
       {/* Table */}
-      <div className="glass rounded-2xl overflow-hidden">
+      <div className="glass rounded-2xl overflow-hidden border border-white/10">
         {isLoading ? (
           <div className="flex items-center justify-center py-20 gap-2 text-muted-foreground text-sm">
             <RefreshCw size={16} className="animate-spin" /> Memuat logs...
@@ -326,3 +486,4 @@ export default function LogsTab() {
     </div>
   );
 }
+

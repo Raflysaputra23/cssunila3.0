@@ -14,6 +14,8 @@ export const metadata: Metadata = {
     }
 };
 
+export const dynamic = "force-dynamic";
+
 const AuthPage = async () => {
     let logo = "/css-logo.png";
     let titleMain = "CSS";

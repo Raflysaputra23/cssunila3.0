@@ -101,21 +101,6 @@ export default function VideoBackground({
         />
       )}
 
-      <div
-        className="absolute inset-0 z-10 pointer-events-none"
-        style={{
-          background:
-            "linear-gradient(to bottom, rgba(0,0,0,0.35) 0%, rgba(0,0,0,0.15) 40%, rgba(0,0,0,0.55) 80%, rgba(0,0,0,0.92) 100%)",
-        }}
-      />
-      <div
-        className="absolute inset-0 z-10 pointer-events-none"
-        style={{
-          background:
-            "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%)",
-        }}
-      />
-
       <video
         ref={videoRef}
         muted
@@ -131,6 +116,8 @@ export default function VideoBackground({
         <source src="/video/animasi-css3.webm" type="video/webm" />
         <source src="/video/animasi-css3.mp4" type="video/mp4" />
       </video>
+      
+      <div className="pointer-events-none absolute inset-0 -z-10 bg-linear-to-b from-background/50 via-background/80 to-background" />
     </div>
   );
 }

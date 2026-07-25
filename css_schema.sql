@@ -117,8 +117,9 @@ CREATE TABLE public.registrations (
   rejection_reason text,
   status public.registration_status NOT NULL DEFAULT 'draft',
   slot integer NOT NULL DEFAULT 1,
+  is_manual boolean NOT NULL DEFAULT false,
   verified_at timestamp with time zone,
-  verified_by uuid REFERENCES auth.users(id),
+  verified_by uuid REFERENCES public.profiles(id) ON DELETE RESTRICT NOT NULL,
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );
@@ -145,6 +146,7 @@ CREATE TABLE public.payments (
   midtrans_token text,
   midtrans_transaction_status text,
   paid_at timestamp with time zone,
+  payment_proof text,
   status public.payment_status NOT NULL DEFAULT 'pending',
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
@@ -645,7 +647,8 @@ INSERT INTO public.site_settings (id, value) VALUES
   ('site_logo', '/css-logo.png'),
   ('site_favicon', '/favicon.ico'),
   ('site_title_main', 'CSS'),
-  ('site_title_sub', '3.0')
+  ('site_title_sub', '3.0'),
+  ('qris_bank_url', '')
 ON CONFLICT (id) DO NOTHING;
 
 -- Table: public.timeline_items (manageable event timeline)

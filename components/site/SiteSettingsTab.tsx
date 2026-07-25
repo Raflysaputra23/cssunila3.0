@@ -328,7 +328,7 @@ const SiteSettingsTab = () => {
 
   const handleLogoUpload = async (
     e: React.ChangeEvent<HTMLInputElement>,
-    bucket: "sponsors" | "media-partners",
+    bucket: "sponsors" | "media-partners" | "bank",
     onDone: (url: string) => void
   ) => {
     const file = e.target.files?.[0];
@@ -1262,6 +1262,71 @@ const SiteSettingsTab = () => {
           </form>
         </div>
       )}
+
+      <div className="glass rounded-3xl p-4 space-y-6 border border-white/10 mt-8">
+        <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+          <div className="flex shrink-0 size-9 items-center justify-center rounded-2xl bg-cyan-strong/15 text-cyan-strong">
+            <ImageIcon size={20}  />
+          </div>
+          <div>
+            <h3 className="font-display text-lg font-bold text-foreground">QRIS Bank (Pendaftaran Manual)</h3>
+            <p className="text-xs text-muted-foreground">Upload gambar QRIS bank yang akan digunakan ketika Admin mendaftarkan peserta secara manual</p>
+          </div>
+        </div>
+
+        <div className="flex flex-col md:flex-row items-start gap-6">
+          {settings["qris_bank_url"] ? (
+            <div className="relative group w-44 h-44 rounded-2xl border border-white/15 overflow-hidden bg-white p-2 shrink-0">
+              <Image
+                src={settings["qris_bank_url"]}
+                alt="QRIS Bank"
+                width={176}
+                height={176}
+                className="w-full h-full object-contain"
+              />
+            </div>
+          ) : (
+            <div className="w-44 h-44 rounded-2xl border border-dashed border-white/20 bg-white/5 flex flex-col items-center justify-center text-center p-4 text-xs text-muted-foreground shrink-0">
+              <ImageIcon size={24} className="mb-2 opacity-50" />
+              Belum ada QRIS
+            </div>
+          )}
+
+          <div className="space-y-3 flex-1">
+            <p className="text-xs text-muted-foreground">
+              Gambar ini akan ditampilkan kepada Admin & dapat dikirim langsung ke WhatsApp peserta saat pendaftaran manual diselesaikan. Format: PNG/JPG/WebP (Max 2MB).
+            </p>
+            <div className="flex flex-wrap gap-3">
+              <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-cyan-strong/20 px-5 py-2.5 text-xs font-semibold text-cyan-strong hover:bg-cyan-strong/30 transition border border-cyan-strong/20">
+                {uploadingLogo === "bank" ? <Loader2 size={14} className="animate-spin" /> : <ImageIcon size={14} />}
+                {settings["qris_bank_url"] ? "Ganti QRIS" : "Upload QRIS"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  disabled={uploadingLogo === "bank"}
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (!file) return;
+                    handleLogoUpload(e, "bank", (url) => {
+                      saveSettings.mutate({ qris_bank_url: url });
+                    });
+                  }}
+                />
+              </label>
+              {settings["qris_bank_url"] && (
+                <button
+                  type="button"
+                  onClick={() => saveSettings.mutate({ qris_bank_url: "" })}
+                  className="inline-flex items-center gap-1.5 rounded-full border border-red-500/20 bg-red-500/10 px-4 py-2.5 text-xs font-semibold text-red-400 hover:bg-red-500/20 transition cursor-pointer"
+                >
+                  <Trash2 size={13} /> Hapus QRIS
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
 
       <ConfirmModal
         open={!!confirmDeleteTimeline}

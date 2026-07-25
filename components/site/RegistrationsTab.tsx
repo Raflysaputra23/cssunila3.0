@@ -12,7 +12,6 @@ import {
   User,
   Phone,
   Mail,
-  Trophy,
   CreditCard,
   Calendar,
   ClipboardList,
@@ -22,6 +21,8 @@ import {
   Wallet,
   Users,
   Trash,
+  UserPlus,
+  History,
 } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState } from "react";
@@ -30,6 +31,8 @@ import { jsPDF } from "jspdf";
 import { useAuth } from "@/hooks/use-auth";
 import ConfirmModal from "./ConfirmModal";
 import ImagePreviewModal from "./ImagePreviewModal";
+import AdminRegisterModal, { type ResumePayData } from "./AdminRegisterModal";
+import Link from "next/link";
 
 type RegistrationAnswer = {
   field_key: string;
@@ -45,11 +48,21 @@ type AdminReg = {
   leader_email: string | null;
   slot: number;
   status: string;
+  is_manual?: boolean;
   rejection_reason: string | null;
   created_at: string;
   verified_at: string | null;
+  verified_by: { full_name: string } | null;
   competition: { name: string; slug: string; id: string } | null;
-  payments: { amount_idr: number; status: string; midtrans_order_id: string | null; paid_at: string | null; midtrans_payment_type: string | null };
+  payments: {
+    id?: string;
+    amount_idr: number;
+    status: string;
+    midtrans_order_id: string | null;
+    paid_at: string | null;
+    midtrans_payment_type: string | null;
+    payment_proof?: string | null;
+  };
   registration_answers: RegistrationAnswer[];
 };
 
@@ -178,14 +191,14 @@ function AnswerValue({
       );
     }
     return (
-      <a
+      <Link
         href={publicUrl}
         target="_blank"
         rel="noopener noreferrer"
         className="inline-flex items-center gap-1.5 text-sm text-cyan-strong hover:underline"
       >
         <ExternalLink size={12} /> Lihat File
-      </a>
+      </Link>
     );
   }
 
@@ -210,14 +223,14 @@ function AnswerValue({
       );
     }
     return (
-      <a
+      <Link
         href={value}
         target="_blank"
         rel="noopener noreferrer"
         className="inline-flex items-center gap-1.5 text-sm text-cyan-strong hover:underline"
       >
         <ExternalLink size={12} /> Buka Tautan
-      </a>
+      </Link>
     );
   }
 
@@ -353,11 +366,40 @@ function DetailModal({
                   label="Metode Payment"
                   value={payment?.midtrans_payment_type ?? "-"}
                 />
+                {reg.is_manual && (
+                  <>
+                    {payment?.payment_proof ? (
+                      <div className="flex items-start gap-3">
+                        <span className="mt-0.5 text-muted-foreground"><Wallet size={14} /></span>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-[10px] text-muted-foreground uppercase tracking-wide mb-1">Bukti Bayar</p>
+                          <AnswerValue
+                            value={payment?.payment_proof}
+                            onImageClick={setPreviewUrl}
+                          />
+                        </div>
+                      </div>
+                    ) : (
+                      <InfoRow
+                        icon={<Wallet size={14} />}
+                        label="Bukti Bayar"
+                        value="-"
+                        mono
+                      />
+                    )}
+                  </>
+                )}
                 <InfoRow
-                  icon={<Trophy size={14} />}
+                  icon={<History size={14} />}
                   label="Status Bayar"
                   value={payment?.status ?? "—"}
                   colorClass={paymentStatusColor}
+                />
+                <InfoRow
+                  icon={<User size={14} />}
+                  label="Di Verifikasi Oleh"
+                  value={reg?.verified_by?.full_name ?? "—"}
+                  mono
                 />
                 {payment?.midtrans_order_id && (
                   <InfoRow icon={<ClipboardList size={14} />} label="Order ID" value={payment.midtrans_order_id} mono />
@@ -464,6 +506,8 @@ const RegistrationsTab = () => {
   const [competitionFilter, setCompetitionFilter] = useState<string>("all");
   const [selectedReg, setSelectedReg] = useState<AdminReg | null>(null);
   const [rejectTarget, setRejectTarget] = useState<AdminReg | null>(null);
+  const [showRegisterModal, setShowRegisterModal] = useState(false);
+  const [resumePayTarget, setResumePayTarget] = useState<ResumePayData | null>(null);
   const suparef = useRef(createClient());
   const [confirmModal, setConfirmModal] = useState<{
     open: boolean;
@@ -495,7 +539,7 @@ const RegistrationsTab = () => {
       let query = supabase
         .from("registrations")
         .select(
-          "id, team_name, leader_name, leader_whatsapp, leader_email, status, rejection_reason, created_at, verified_at, slot, competition:competitions(id,name,slug), payments(amount_idr,status,midtrans_order_id,midtrans_payment_type,paid_at), registration_answers(field_key,field_label,value)"
+          "id, team_name, leader_name, leader_whatsapp, leader_email, status, is_manual, rejection_reason, created_at, verified_at, slot, is_manual, verified_by:profiles!registrations_verified_by_fkey(full_name), competition:competitions(id,name,slug), payments(id,amount_idr,status,midtrans_order_id,midtrans_payment_type,paid_at,payment_proof), registration_answers(field_key,field_label,value)"
         );
 
       if (role === "lomba") {
@@ -514,6 +558,8 @@ const RegistrationsTab = () => {
 
   const verify = useMutation({
     mutationFn: async ({ id, status, reason }: { id: string; status: "verified" | "rejected"; reason?: string }) => {
+      if (!user) throw new Error("Sesi tidak valid");
+
       const supabase = suparef.current;
       const { error } = await supabase
         .from("registrations")
@@ -521,6 +567,7 @@ const RegistrationsTab = () => {
           status,
           rejection_reason: status === "rejected" ? reason ?? null : null,
           verified_at: new Date().toISOString(),
+          verified_by: user.id,
         })
         .eq("id", id);
       if (error) throw error;
@@ -664,7 +711,7 @@ const RegistrationsTab = () => {
             doc.addPage();
             y = 50;
             drawHeader();
-  
+
             doc.setFillColor(241, 245, 249);
             doc.rect(40, y, w - 80, 20, "F");
             doc.setTextColor(15, 23, 42);
@@ -677,34 +724,34 @@ const RegistrationsTab = () => {
             doc.text("Biaya & Status", 445, y + 13);
             y += 20;
           }
-  
+
           if (idx % 2 === 1) {
             doc.setFillColor(248, 250, 252);
             doc.rect(40, y, w - 80, 20, "F");
           }
-  
+
           doc.setTextColor(71, 85, 105);
           doc.setFont("helvetica", "normal");
           doc.setFontSize(8.5);
-  
+
           doc.text(String(idx + 1), 45, y + 13);
-  
+
           const teamText = doc.splitTextToSize(r.team_name, 140);
           doc.text(teamText, 75, y + 13);
-  
+
           const leaderText = doc.splitTextToSize(r.leader_name, 110);
           doc.text(leaderText, 225, y + 13);
-  
+
           doc.text(r.leader_whatsapp, 345, y + 13);
-  
+
           const amount = r.payments?.amount_idr ?? 0;
           const pStatus = r.payments?.status || "—";
           const feeText = `Rp ${amount.toLocaleString("id-ID")} (${pStatus})`;
           doc.text(feeText, 445, y + 13);
-  
+
           const linesCount = Math.max(teamText.length, leaderText.length);
           y += Math.max(20, linesCount * 10 + 5);
-  
+
           doc.setDrawColor(226, 232, 240);
           doc.setLineWidth(0.5);
           doc.line(40, y, w - 40, y);
@@ -749,8 +796,8 @@ const RegistrationsTab = () => {
           <button
             onClick={() => setCompetitionFilter("all")}
             className={`rounded-full border px-3.5 py-1.5 cursor-pointer transition-colors ${competitionFilter === "all"
-                ? "border-cyan-strong/60 bg-cyan-strong/15 text-cyan-strong font-semibold"
-                : "border-white/10 text-muted-foreground hover:text-foreground hover:border-white/20"
+              ? "border-cyan-strong/60 bg-cyan-strong/15 text-cyan-strong font-semibold"
+              : "border-white/10 text-muted-foreground hover:text-foreground hover:border-white/20"
               }`}
           >
             Semua Lomba
@@ -760,8 +807,8 @@ const RegistrationsTab = () => {
               key={c.id}
               onClick={() => setCompetitionFilter(c.id)}
               className={`rounded-full border px-3.5 py-1.5 cursor-pointer transition-colors ${competitionFilter === c.id
-                  ? "border-cyan-strong/60 bg-cyan-strong/15 text-cyan-strong font-semibold"
-                  : "border-white/10 text-muted-foreground hover:text-foreground hover:border-white/20"
+                ? "border-cyan-strong/60 bg-cyan-strong/15 text-cyan-strong font-semibold"
+                : "border-white/10 text-muted-foreground hover:text-foreground hover:border-white/20"
                 }`}
             >
               {c.name}
@@ -780,8 +827,8 @@ const RegistrationsTab = () => {
               key={f.filter}
               onClick={() => setStatusFilter(f.filter)}
               className={`rounded-full border px-3.5 py-1.5 cursor-pointer transition-colors ${statusFilter === f.filter
-                  ? "border-white/30 bg-white/10 text-foreground font-semibold"
-                  : "border-white/10 text-muted-foreground hover:text-foreground hover:border-white/20"
+                ? "border-white/30 bg-white/10 text-foreground font-semibold"
+                : "border-white/10 text-muted-foreground hover:text-foreground hover:border-white/20"
                 }`}
             >
               {f.title}
@@ -796,12 +843,20 @@ const RegistrationsTab = () => {
             Menampilkan <span className="text-foreground font-semibold">{rows.length}</span> dari{" "}
             <span className="text-foreground font-semibold">{data?.length ?? 0}</span> pendaftaran
           </p>
-          <button
-            onClick={exportToPdf}
-            className="inline-flex items-center gap-1.5 rounded-full bg-cyan-strong/20 px-4 py-2 text-xs font-semibold text-cyan-strong hover:bg-cyan-strong/30 transition cursor-pointer"
-          >
-            <ExternalLink size={12} /> Export Laporan (PDF)
-          </button>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setShowRegisterModal(true)}
+              className="inline-flex items-center gap-1.5 rounded-full bg-cyan-strong/20 px-4 py-2 text-xs font-semibold text-cyan-strong hover:bg-cyan-strong/30 transition cursor-pointer border border-cyan-strong/20"
+            >
+              <UserPlus size={12} /> Daftarkan Peserta
+            </button>
+            <button
+              onClick={exportToPdf}
+              className="inline-flex items-center gap-1.5 rounded-full bg-white/5 border border-white/10 px-4 py-2 text-xs font-semibold text-foreground hover:bg-white/10 transition cursor-pointer"
+            >
+              <ExternalLink size={12} /> Export PDF
+            </button>
+          </div>
         </div>
       )}
 
@@ -837,7 +892,7 @@ const RegistrationsTab = () => {
                   </h4>
                   <p className="text-sm font-medium text-cyan-strong">{r.competition?.name}</p>
                   <p className="mt-1 text-xs text-muted-foreground">
-                    Ketua: {r.leader_name} · {r.leader_whatsapp}
+                    Pendaftar: {r.leader_name} · {r.leader_whatsapp}
                   </p>
                   <p className="text-xs text-muted-foreground">
                     Bayar: Rp {(payment?.amount_idr ?? 0).toLocaleString("id-ID")} ·{" "}
@@ -860,7 +915,24 @@ const RegistrationsTab = () => {
                       <Eye size={12} /> Detail
                     </button>
 
-                    {!(["pending_verification","verified"].includes(r.status)) && 
+                    {r.is_manual && r.status === "pending_payment" && r.payments?.status !== "success" && (
+                      <button
+                        onClick={() => setResumePayTarget({
+                          regId: r.id,
+                          paymentId: String(r.payments?.id ?? ""),
+                          amount: r.payments?.amount_idr ?? 0,
+                          teamName: r.team_name,
+                          leaderName: r.leader_name,
+                          leaderWa: r.leader_whatsapp,
+                          compName: r.competition?.name ?? "Lomba",
+                        })}
+                        className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-3 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/30 cursor-pointer transition border border-emerald-500/20"
+                      >
+                        <CheckCircle2 size={12} /> Lanjutkan
+                      </button>
+                    )}
+
+                    {!(["pending_verification", "verified"].includes(r.status)) &&
                       <button
                         onClick={() => handleDelete(r.id, r.team_name)}
                         className="inline-flex items-center gap-1.5 rounded-lg border border-destructive/25 bg-destructive/10 px-3 py-1.5 text-xs font-semibold text-destructive hover:bg-destructive/20 transition cursor-pointer"
@@ -934,14 +1006,26 @@ const RegistrationsTab = () => {
           confirmModal?.type === "verify"
             ? `Anda akan memverifikasi pendaftaran tim "${confirmModal.teamName}". Tindakan ini bersifat permanen dan tidak dapat diubah lagi. Lanjutkan?`
             : confirmModal?.type === "reject" ?
-             `Anda akan menolak pendaftaran tim "${confirmModal?.teamName}". Tindakan ini bersifat permanen dan tidak dapat diubah lagi. Lanjutkan?`
-            : `Apakah anda yakin ingin menghapus pendaftaran tim "${confirmModal?.teamName}"? Tindakan ini bersifat permanen dan tidak dapat diubah lagi. Lanjutkan?`
+              `Anda akan menolak pendaftaran tim "${confirmModal?.teamName}". Tindakan ini bersifat permanen dan tidak dapat diubah lagi. Lanjutkan?`
+              : `Apakah anda yakin ingin menghapus pendaftaran tim "${confirmModal?.teamName}"? Tindakan ini bersifat permanen dan tidak dapat diubah lagi. Lanjutkan?`
         }
         confirmLabel={confirmModal?.type === "verify" ? "Ya, Verifikasi" : confirmModal?.type === "reject" ? "Ya, Tolak" : "Ya, Hapus"}
         cancelLabel="Batal"
         onConfirm={handleConfirmModalProceed}
         onCancel={() => { setConfirmModal(null); setPendingRejectReg(null); }}
       />
+      {showRegisterModal && (
+        <AdminRegisterModal onClose={() => setShowRegisterModal(false)} />
+      )}
+      {resumePayTarget && (
+        <AdminRegisterModal
+          resumePay={resumePayTarget}
+          onClose={() => {
+            setResumePayTarget(null);
+            qc.invalidateQueries({ queryKey: ["admin-regs"] });
+          }}
+        />
+      )}
     </div>
   );
 };

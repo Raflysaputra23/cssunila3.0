@@ -125,10 +125,10 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                 .from("registrations")
                 .select("id")
                 .eq("competition_id", comp.id)
-                .in("status", ["verified","pending_verification"]);
+                .in("status", ["verified", "pending_verification"]);
 
             if (register && comp.quota > 0) {
-                if(register.length >= comp.quota) {
+                if (register.length >= comp.quota) {
                     throw new Error("Pendaftaran sudah penuh!");
                 }
             }
@@ -150,6 +150,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                     leader_email: leaderEmail.trim() || null,
                     slot,
                     status: "pending_payment",
+                    is_manual: false,
                 })
                 .select("id")
                 .single();
@@ -229,7 +230,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                     <Field label="Nama Tim" required>
                                         <input value={teamName} onChange={(e) => setTeamName(e.target.value)} className={"inputCls"} maxLength={100} placeholder="Radar" required />
                                     </Field>
-                                    <Field label="Nama Pendaftar" required>
+                                    <Field label="Nama Lengkap Pendaftar" required>
                                         <input value={leaderName} onChange={(e) => setLeaderName(e.target.value)} className={"inputCls"} maxLength={100} placeholder="Bangraff" required />
                                     </Field>
                                     <div className="grid gap-5 sm:grid-cols-2">
@@ -265,7 +266,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                                     placeholder={f.placeholder ?? ""}
                                                     rows={4}
                                                     maxLength={2000}
-                                                    className={"inputCls"}
+                                                    className={"inputCls resize-none"}
                                                     required={f.required}
                                                 />
                                             ) : f.field_type === "select" ? (
@@ -275,9 +276,9 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                                     className={"inputCls"}
                                                     required={f.required}
                                                 >
-                                                    <option value="">-- pilih --</option>
+                                                    <option value="">-- Pilih --</option>
                                                     {(f.options ?? []).map((o) => (
-                                                        <option key={o} value={o}>{o}</option>
+                                                        <option key={o} value={o} className="bg-background">{o}</option>
                                                     ))}
                                                 </select>
                                             ) : f.field_type === "file" ? (
@@ -289,6 +290,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                                             type="file"
                                                             className="hidden"
                                                             accept=".jpg,.jpeg,.png,.webp"
+                                                            required={f.required}
                                                             onChange={(e) => {
                                                                 const file = e.target.files?.[0];
                                                                 if (file) uploadFile(f.key, file);

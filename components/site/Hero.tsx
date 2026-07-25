@@ -23,7 +23,7 @@ const Hero = ({ totalLomba, totalHadiah, totalPeserta, logo, title, sub, tagline
 
   return (
     <section className="relative isolate overflow-hidden pt-32 pb-24 md:pt-44 md:pb-32">
-      <VideoBackground opacity={0.2} bgImageSrc={siteLogo} bgImageOpacity={0.2} />
+      <VideoBackground opacity={0.2} bgImageSrc={siteLogo} bgImageOpacity={0.1} />
 
       <div className="mx-auto max-w-7xl px-4 text-center">
         <span className="glass animate-pulse mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium tracking-widest text-cyan-strong uppercase">
@@ -39,16 +39,16 @@ const Hero = ({ totalLomba, totalHadiah, totalPeserta, logo, title, sub, tagline
           {heroSubtitle}
         </p>
 
-        <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
+        <div className="mt-9 flex items-center justify-center gap-3 flex-wrap">
           <a
             href="#lomba"
-            className="btn-hero hover:btn-hero-hover inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold"
+            className="btn-hero max-w-48 hover:btn-hero-hover inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold"
           >
             Daftar Lomba <ArrowRight size={16} />
           </a>
           <a
             href="#timeline"
-            className="inline-flex items-center gap-2 rounded-full border border-border bg-white/5 px-7 py-3.5 text-sm font-semibold text-foreground/90 backdrop-blur-md transition hover:bg-white/10"
+            className="inline-flex max-w-48 items-center gap-2 rounded-full border border-border bg-white/5 px-7 py-3.5 text-sm font-semibold text-foreground/90 backdrop-blur-md transition hover:bg-white/10"
           >
             <CalendarDays size={16} /> Lihat Timeline
           </a>

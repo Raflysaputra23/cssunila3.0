@@ -8,16 +8,17 @@ interface FlipCardProps {
 }
 
 export default function FlipCard({ logoCss }: FlipCardProps) {
-  const [isFlipped, setIsFlipped] = useState(false);
+  // const [isFlipped, setIsFlipped] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
-  const activeFlipped = isFlipped || isHovered;
+  const activeFlipped = isHovered;
 
   return (
     <div
       className="relative mx-auto flex aspect-square max-w-md w-full items-center justify-center select-none"
       style={{ perspective: "1000px" }}
-      onClick={() => setIsFlipped((prev) => !prev)}
+      onTouchStart={() => setIsHovered(true)}
+      onTouchEnd={() => setIsHovered(false)}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >

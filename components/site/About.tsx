@@ -1,6 +1,7 @@
 import { ArrowUpRight, Sparkles } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import FlipCard from "./FlipCard";
 
 type AboutProps = {
   title?: string;
@@ -39,9 +40,7 @@ const About = ({ title, description, highlights, logo }: AboutProps) => {
       <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 md:grid-cols-2">
         <div className="relative">
           <div className="absolute -inset-8 -z-10 rounded-full bg-linear-to-br from-sapphire/30 to-cyan-strong/20 blur-3xl" />
-          <div className="glass-strong relative mx-auto flex aspect-square max-w-md items-center justify-center rounded-3xl p-10">
-            <Image src={aboutLogo} width={200} height={400} alt="Logo CSS 3.0" className="w-full max-w-65" loading="eager" />
-          </div>
+          <FlipCard logoCss={aboutLogo} />
         </div>
 
         <div>

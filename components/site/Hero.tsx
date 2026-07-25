@@ -1,5 +1,5 @@
 import { ArrowRight, CalendarDays } from "lucide-react";
-import Image from "next/image";
+import VideoBackground from "@/components/site/VideoBackground";
 
 type HeroProps = {
   totalLomba: number;
@@ -23,17 +23,7 @@ const Hero = ({ totalLomba, totalHadiah, totalPeserta, logo, title, sub, tagline
 
   return (
     <section className="relative isolate overflow-hidden pt-32 pb-24 md:pt-44 md:pb-32">
-      <Image
-        src={siteLogo}
-        alt="CSS LOGO BACKGROUND"
-        aria-hidden
-        priority
-        loading="eager"
-        width={1920}
-        height={1088}
-        className="pointer-events-none absolute inset-0 -z-10 h-full w-full object-cover opacity-20"
-      />
-      <div className="pointer-events-none absolute inset-0 -z-10 bg-linear-to-b from-background/50 via-background/80 to-background" />
+      <VideoBackground opacity={0.2} bgImageSrc={siteLogo} bgImageOpacity={0.2} />
 
       <div className="mx-auto max-w-7xl px-4 text-center">
         <span className="glass animate-pulse mb-6 inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-xs font-medium tracking-widest text-cyan-strong uppercase">

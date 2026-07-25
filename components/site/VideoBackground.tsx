@@ -23,42 +23,54 @@ export default function VideoBackground({
     if (!video) return;
 
     video.muted = true;
-    video.play().catch(() => {
-      const unlock = () => {
-        video.play().catch(() => {});
-        window.removeEventListener("click", unlock);
-        window.removeEventListener("touchstart", unlock);
-      };
-      window.addEventListener("click", unlock, { once: true });
-      window.addEventListener("touchstart", unlock, { once: true });
-    });
 
-    const unmute = () => {
-      video.muted = false;
-      video.volume = 0.3;
-      window.removeEventListener("click", unmute);
-      window.removeEventListener("touchstart", unmute);
+    const startPlay = () => {
+      video.play().catch(() => {});
     };
-    window.addEventListener("click", unmute, { once: true });
-    window.addEventListener("touchstart", unmute, { once: true });
+
+    startPlay();
 
     const handleEnded = () => {
       setIsPlaying(false);
       setShowBg(true);
     };
 
+  
+    const handlePause = () => {
+      if (!video.ended) {
+        video.play().catch(() => {});
+      }
+    };
+
+    const handleStalled = () => {
+      video.load();
+      video.play().catch(() => {});
+    };
+
     video.addEventListener("ended", handleEnded);
+    video.addEventListener("pause", handlePause);
+    video.addEventListener("stalled", handleStalled);
+
+    const unlockPlay = () => {
+      if (video.paused && !video.ended) {
+        video.play().catch(() => {});
+      }
+    };
+    window.addEventListener("touchstart", unlockPlay, { once: true });
+    window.addEventListener("click", unlockPlay, { once: true });
 
     return () => {
       video.removeEventListener("ended", handleEnded);
-      window.removeEventListener("click", unmute);
-      window.removeEventListener("touchstart", unmute);
+      video.removeEventListener("pause", handlePause);
+      video.removeEventListener("stalled", handleStalled);
+      window.removeEventListener("touchstart", unlockPlay);
+      window.removeEventListener("click", unlockPlay);
     };
   }, []);
 
   const handleHeroClick = () => {
     const video = videoRef.current;
-    if (!video || isPlaying) return; 
+    if (!video || isPlaying) return;
 
     setShowBg(false);
     setIsPlaying(true);
@@ -88,7 +100,7 @@ export default function VideoBackground({
           }}
         />
       )}
-{/* 
+
       <div
         className="absolute inset-0 z-10 pointer-events-none"
         style={{
@@ -102,7 +114,7 @@ export default function VideoBackground({
           background:
             "radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%)",
         }}
-      /> */}
+      />
 
       <video
         ref={videoRef}

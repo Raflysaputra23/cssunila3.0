@@ -529,7 +529,7 @@ const LombaDetail = async ({ params }: Props) => {
             <div className="flex justify-center group items-center">
               <Image
                 src={c.banner}
-                alt="banner"
+                alt={`Logo banner ${c.name}`}
                 preload
                 width={120}
                 height={120}

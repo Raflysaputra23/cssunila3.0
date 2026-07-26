@@ -335,7 +335,7 @@ const LombaDetail = async ({ params }: Props) => {
               Pemenang dalam perlombaan {c.name} ini akan mendapatkan hadiah sebagai
               berikut
             </p>
-            <div className="space-y-6">
+            <div className="space-y-6 font-display">
               {c.juara_1 && (
                 <div className="flex items-center gap-6">
                   <div className="flex items-center justify-center w-14 h-14">
@@ -344,14 +344,14 @@ const LombaDetail = async ({ params }: Props) => {
                       alt="Gambar Juara 1"
                       width={200}
                       height={200}
-                      className="object-cover absolute z-10 w-32 h-32 pointer-events-none"
+                      className="object-cover absolute z-10 w-30 h-30 pointer-events-none"
                     />
                   </div>
                   <div>
                     <p className="uppercase text-xs font-semibold font-display text-cyan-strong">
                       Juara 1
                     </p>
-                    <span className="">{c.juara_1}</span>
+                    <span className="text-sm">{c.juara_1}</span>
                   </div>
                 </div>
               )}
@@ -363,14 +363,14 @@ const LombaDetail = async ({ params }: Props) => {
                       alt="Gambar Juara 2"
                       width={200}
                       height={200}
-                      className="object-cover absolute z-10 w-24 h-24 pointer-events-none"
+                      className="object-cover absolute z-10 w-22 h-22 pointer-events-none"
                     />
                   </div>
                   <div>
                     <p className="uppercase text-xs font-semibold font-display text-cyan-strong">
                       Juara 2
                     </p>
-                    <span className="">{c.juara_2}</span>
+                    <span className="text-sm">{c.juara_2}</span>
                   </div>
                 </div>
               )}
@@ -382,14 +382,14 @@ const LombaDetail = async ({ params }: Props) => {
                       alt="Gambar Juara 3"
                       width={200}
                       height={200}
-                      className="object-cover absolute z-10 w-24 h-24 pointer-events-none"
+                      className="object-cover absolute z-10 w-22 h-22 pointer-events-none"
                     />
                   </div>
                   <div>
                     <p className="uppercase text-xs font-semibold font-display text-cyan-strong">
                       Juara 3
                     </p>
-                    <span className="">{c.juara_3}</span>
+                    <span className="text-sm">{c.juara_3}</span>
                   </div>
                 </div>
               )}

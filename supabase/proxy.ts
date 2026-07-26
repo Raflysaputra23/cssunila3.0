@@ -61,7 +61,7 @@ export async function updateSession(request: NextRequest) {
   }
 
   const isLogin = ["/auth"].includes(request.nextUrl.pathname);
-  const isLogout = ["/history", "/admin", "/api/midtrans/snap"].includes(
+  const isLogout = ["/history", "/admin", "/api/admin/users", "/api/admin/analytics", "/api/midtrans/snap"].includes(
     request.nextUrl.pathname,
   );
 

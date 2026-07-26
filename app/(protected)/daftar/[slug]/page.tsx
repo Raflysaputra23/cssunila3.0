@@ -61,7 +61,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
         })();
     }, [user]);
 
-    async function uploadFile(fieldKey: string, file: File) {
+    const uploadFile = async (fieldKey: string, file: File) => {
         if (!user) return;
         if (file.size > 2 * 1024 * 1024) {
             toast.error("Ukuran file maksimum 2 MB");
@@ -190,7 +190,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                 <Navbar />
                 <section className="pt-30 md:pt-32 pb-26 md:pb-30">
                     <div className="mx-auto max-w-2xl px-4">
-                        <Link href={`/lomba/${slug}`} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                        <Link href={comp ? `/lomba/${comp.slug}` : `/#lomba`} className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
                             <ArrowLeft size={14} /> Kembali ke Lomba
                         </Link>
 
@@ -210,43 +210,45 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                 </p>
 
                                 {!comp.is_open && (
-                                    <div className="mt-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-200">
-                                        Pendaftaran cabang ini sedang ditutup.
+                                    <div className="mt-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-400">
+                                        Pendaftaran {comp.name} sedang ditutup.
                                     </div>
                                 )}
 
                                 <form
                                     onSubmit={(e) => {
                                         e.preventDefault();
-                                        if (!comp.is_open) return;
-                                        if (slot > 1) {
-                                            setOpenInformation(true);
-                                            return;
+                                        if (comp.is_open) {
+                                            if (slot > 1) {
+                                                setOpenInformation(true);
+                                                return;
+                                            }
+                                            submit.mutate();
                                         }
-                                        submit.mutate();
                                     }}
                                     className="glass mt-8 space-y-5 rounded-3xl p-6"
                                 >
                                     <Field label="Nama Tim" required>
-                                        <input value={teamName} onChange={(e) => setTeamName(e.target.value)} className={"inputCls"} maxLength={100} placeholder="Radar" required />
+                                        <input disabled={!comp.is_open} value={teamName} onChange={(e) => setTeamName(e.target.value)} className={"inputCls disabled:cursor-not-allowed"} maxLength={100} placeholder="Radar" required />
                                     </Field>
                                     <Field label="Nama Lengkap Pendaftar" required>
-                                        <input value={leaderName} onChange={(e) => setLeaderName(e.target.value)} className={"inputCls"} maxLength={100} placeholder="Bangraff" required />
+                                        <input disabled={!comp.is_open} value={leaderName} onChange={(e) => setLeaderName(e.target.value)} className={"inputCls disabled:cursor-not-allowed"} maxLength={100} placeholder="Bangraff" required />
                                     </Field>
                                     <div className="grid gap-5 sm:grid-cols-2">
                                         <Field label="WhatsApp Pendaftar" required>
-                                            <input value={leaderWhatsapp} onChange={(e) => setLeaderWhatsapp(e.target.value)} className={"inputCls"} maxLength={20} required placeholder="08xxxxxxxxxx" />
+                                            <input disabled={!comp.is_open} value={leaderWhatsapp} onChange={(e) => setLeaderWhatsapp(e.target.value)} className={"inputCls disabled:cursor-not-allowed"} maxLength={20} required placeholder="08xxxxxxxxxx" />
                                         </Field>
                                         <Field label="Email Pendaftar" required>
-                                            <input type="email" value={leaderEmail} onChange={(e) => setLeaderEmail(e.target.value)} className={"inputCls"} maxLength={255} required placeholder="cssunila25@gmail.com" />
+                                            <input disabled={!comp.is_open} type="email" value={leaderEmail} onChange={(e) => setLeaderEmail(e.target.value)} className={"inputCls disabled:cursor-not-allowed"} maxLength={255} required placeholder="cssunila25@gmail.com" />
                                         </Field>
                                     </div>
                                     {!!comp.is_multi_slot &&
                                         <Field label="Slot">
                                             <select
+                                                disabled={!comp.is_open}
                                                 value={slot}
                                                 onChange={(e) => setSlot(Number(e.target.value))}
-                                                className={"inputCls"}
+                                                className={"inputCls disabled:cursor-not-allowed"}
                                             >
                                                 {Array.from({ length: comp.slot }).map((_, index) => (
                                                     <option className="bg-background" key={index + 1} value={index + 1}>{index + 1}</option>
@@ -261,19 +263,21 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                         <Field key={f.id} label={f.label} required={f.required}>
                                             {f.field_type === "textarea" ? (
                                                 <textarea
+                                                    disabled={!comp.is_open}
                                                     value={answers[f.key] ?? ""}
                                                     onChange={(e) => setAnswers((a) => ({ ...a, [f.key]: e.target.value }))}
                                                     placeholder={f.placeholder ?? ""}
                                                     rows={4}
                                                     maxLength={2000}
-                                                    className={"inputCls resize-none"}
+                                                    className={"inputCls disabled:cursor-not-allowed resize-none"}
                                                     required={f.required}
                                                 />
                                             ) : f.field_type === "select" ? (
                                                 <select
+                                                    disabled={!comp.is_open}
                                                     value={answers[f.key] ?? ""}
                                                     onChange={(e) => setAnswers((a) => ({ ...a, [f.key]: e.target.value }))}
-                                                    className={"inputCls"}
+                                                    className={"inputCls disabled:cursor-not-allowed"}
                                                     required={f.required}
                                                 >
                                                     <option value="">-- Pilih --</option>
@@ -287,8 +291,9 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                                         {uploading[f.key] ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
                                                         <span>{uploading[f.key] ? "Mengunggah…" : (answers[f.key] ? "Ganti file" : (f.placeholder || "Pilih file (maks 5 MB)"))}</span>
                                                         <input
+                                                            disabled={!comp.is_open}
                                                             type="file"
-                                                            className="hidden"
+                                                            className="hidden disabled:cursor-not-allowed"
                                                             accept=".jpg,.jpeg,.png,.webp"
                                                             required={f.required}
                                                             onChange={(e) => {
@@ -306,12 +311,13 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                                 </div>
                                             ) : (
                                                 <input
+                                                    disabled={!comp.is_open}
                                                     type={f.field_type}
                                                     value={answers[f.key] ?? ""}
                                                     onChange={(e) => setAnswers((a) => ({ ...a, [f.key]: e.target.value }))}
                                                     placeholder={f.placeholder ?? ""}
                                                     maxLength={500}
-                                                    className={"inputCls"}
+                                                    className={"inputCls disabled:cursor-not-allowed"}
                                                     required={f.required}
                                                 />
                                             )}
@@ -321,7 +327,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                     <label htmlFor="agree"
                                         className="flex items-start gap-3 cursor-pointer"
                                     >
-                                        <input type="checkbox" id="agree" className="appearance-none mt-1 shrink-0 checked:bg-secondary size-3.5 bg-muted-foreground rounded-lg border-none" required onChange={(e) => setAggre(e.target.checked)} />
+                                        <input disabled={!comp.is_open} type="checkbox" id="agree" className="appearance-none mt-1 shrink-0 checked:bg-secondary size-3.5 bg-muted-foreground rounded-lg border-none" required onChange={(e) => setAggre(e.target.checked)} />
                                         <span className="text-sm text-muted-foreground">
                                             Saya menyetujui bahwa semua informasi yang saya berikan adalah benar dan akurat.
                                         </span>
@@ -337,7 +343,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                     <button
                                         type="submit"
                                         disabled={!comp.is_open || submit.isPending}
-                                        className="btn-hero cursor-pointer hover:btn-hero-hover inline-flex w-full items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold disabled:opacity-60"
+                                        className="btn-hero cursor-pointer disabled:cursor-not-allowed hover:btn-hero-hover inline-flex w-full items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold disabled:opacity-60"
                                     >
                                         {submit.isPending && <Loader2 size={16} className="animate-spin" />}
                                         Kirim Pendaftaran

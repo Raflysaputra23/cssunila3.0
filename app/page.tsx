@@ -33,12 +33,16 @@ export default async function Home() {
   function formatCurrencyShort(value: number) {
     const num = Number(value);
 
+    if (num >= 1_000_000_000_000) {
+      return `${parseFloat((num / 1_000_000_000_000).toFixed(1))}T`;
+    }
+
     if (num >= 1_000_000_000) {
-      return `${parseFloat((num / 1_000_000_000).toFixed(1))}B`;
+      return `${parseFloat((num / 1_000_000_000).toFixed(1))}M`;
     }
 
     if (num >= 1_000_000) {
-      return `${parseFloat((num / 1_000_000).toFixed(1))}M`;
+      return `${parseFloat((num / 1_000_000).toFixed(1))}Jt`;
     }
 
     if (num >= 1_000) {
@@ -57,15 +61,15 @@ export default async function Home() {
       let totalPrizeValue = 0;
       comps.forEach((c) => {
         if (c.juara_1) {
-          const clean = c.juara_1.replace(/[^0-9]/g, "");
+          const clean = c.juara_1.split(",")[0].replace(/\D/g, "");
           if (clean) totalPrizeValue += parseInt(clean, 10);
         }
         if (c.juara_2) {
-          const clean = c.juara_2.replace(/[^0-9]/g, "");
+          const clean = c.juara_2.split(",")[0].replace(/\D/g, "");
           if (clean) totalPrizeValue += parseInt(clean, 10);
         }
         if (c.juara_3) {
-          const clean = c.juara_3.replace(/[^0-9]/g, "");
+          const clean = c.juara_3.split(",")[0].replace(/\D/g, "");
           if (clean) totalPrizeValue += parseInt(clean, 10);
         }
       });

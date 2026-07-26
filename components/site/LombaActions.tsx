@@ -16,7 +16,9 @@ export const DownloadPanduanButton = ({
   panduanPath,
   slug,
 }: DownloadPanduanButtonProps) => {
-  async function downloadPdf(path: string) {
+
+  const downloadPdf = async (path: string) => {
+    toast.success("Sedang diunduh...");
     const supabase = createClient();
     const { data, error } = await supabase.storage
       .from("site_settings")
@@ -33,10 +35,11 @@ export const DownloadPanduanButton = ({
 
     link.href = url;
     link.download = `panduan-${slug ?? "lomba"}.pdf`;
-
+    
     document.body.appendChild(link);
     link.click();
     link.remove();
+    toast.success("Berhasil diunduh...");
 
     URL.revokeObjectURL(url);
   }

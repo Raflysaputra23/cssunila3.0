@@ -337,14 +337,16 @@ const LombaDetail = async ({ params }: Props) => {
             </p>
             <div className="space-y-6">
               {c.juara_1 && (
-                <div className="flex items-center gap-2">
-                  <Image
-                    src={"/assets/juara_1.png"}
-                    alt="Gambar Juara 1"
-                    width={100}
-                    height={100}
-                    className="object-contain w-12 h-auto pointer-events-none"
-                  />
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center justify-center w-14 h-14">
+                    <Image
+                      src={"/assets/juara_1.png"}
+                      alt="Gambar Juara 1"
+                      width={200}
+                      height={200}
+                      className="object-cover absolute z-10 w-32 h-32 pointer-events-none"
+                    />
+                  </div>
                   <div>
                     <p className="uppercase text-xs font-semibold font-display text-cyan-strong">
                       Juara 1
@@ -354,14 +356,16 @@ const LombaDetail = async ({ params }: Props) => {
                 </div>
               )}
               {c.juara_2 && (
-                <div className="flex items-center gap-2">
-                  <Image
-                    src={"/assets/juara_2.png"}
-                    alt="Gambar Juara 2"
-                    width={100}
-                    height={100}
-                    className="object-contain w-12 h-auto pointer-events-none"
-                  />
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center justify-center w-14 h-14">
+                    <Image
+                      src={"/assets/juara_2.png"}
+                      alt="Gambar Juara 2"
+                      width={200}
+                      height={200}
+                      className="object-cover absolute z-10 w-24 h-24 pointer-events-none"
+                    />
+                  </div>
                   <div>
                     <p className="uppercase text-xs font-semibold font-display text-cyan-strong">
                       Juara 2
@@ -371,14 +375,16 @@ const LombaDetail = async ({ params }: Props) => {
                 </div>
               )}
               {c.juara_3 && (
-                <div className="flex items-center gap-2">
-                  <Image
-                    src={"/assets/juara_3.png"}
-                    alt="Gambar Juara 3"
-                    width={100}
-                    height={100}
-                    className="object-contain w-12 h-auto pointer-events-none"
-                  />
+                <div className="flex items-center gap-6">
+                  <div className="flex items-center justify-center w-14 h-14">
+                    <Image
+                      src={"/assets/juara_3.png"}
+                      alt="Gambar Juara 3"
+                      width={200}
+                      height={200}
+                      className="object-cover absolute z-10 w-24 h-24 pointer-events-none"
+                    />
+                  </div>
                   <div>
                     <p className="uppercase text-xs font-semibold font-display text-cyan-strong">
                       Juara 3

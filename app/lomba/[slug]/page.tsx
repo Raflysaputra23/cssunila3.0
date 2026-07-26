@@ -256,7 +256,7 @@ const LombaDetail = async ({ params }: Props) => {
           {c.quota > 0 && (pendaftarCount ?? 0) >= c.quota && (
             <div className="mt-8 max-w-5xl flex items-center justify-center rounded-2xl p-4 bg-amber-500/15 text-amber-300 border border-amber-500/30">
               <span className="text-lg font-medium uppercase tracking-widest animate-pulse">
-                Pendaftaran Penuh
+                KUOTA PENDAFTARAN TELAH HABIS!
               </span>
             </div>
           )}
@@ -526,14 +526,14 @@ const LombaDetail = async ({ params }: Props) => {
       {c.banner && (
         <section className="py-16">
           <div className="mx-auto max-w-3xl px-4 text-center">
-            <div className="flex order-1 lg:order-2 justify-center items-center">
+            <div className="flex justify-center group items-center">
               <Image
                 src={c.banner}
                 alt="banner"
                 preload
                 width={120}
                 height={120}
-                className="pointer-events-none opacity-60 object-contain w-62 h-auto animate-floating-smooth"
+                className="pointer-events-none opacity-60 object-contain transition-all group-hover:scale-105 group-hover:animate-none w-auto rounded-lg shadow-[1px_1px_15px_rgba(0,0,0,0.2)] h-100 brightness-150 animate-floating-smooth"
               />
             </div>
           </div>

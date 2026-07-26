@@ -4,7 +4,7 @@ export const iconMap: Record<string, LucideIcon> = {
   Gamepad2, Trophy, Brain, Code2, Mic, Camera, Music, Palette, Sparkles, Star, Award, Cpu,
 };
 
-export const iconNames = Object.keys(iconMap);
+export const iconNames = Object.entries(iconMap);
 
 export function getIcon(name: string | null | undefined): LucideIcon {
   if (!name) return Trophy;

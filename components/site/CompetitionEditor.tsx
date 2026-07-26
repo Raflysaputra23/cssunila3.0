@@ -9,6 +9,7 @@ import { toast } from "sonner";
 import { createClient } from "@/supabase/client";
 import Image from "next/image";
 import Link from "next/link";
+import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 type CompRow = {
   id: string;
@@ -64,11 +65,11 @@ const CompetitionEditor = ({
 
   const loadFile = async (path: string | null) => {
     try {
-      if(!path) {
+      if (!path) {
         setPreview(null);
         return;
       }
-      
+
       setLoadingUploadFile(true);
       const supabase = suparef.current;
       const { data } = await supabase.storage.from("site_settings")
@@ -83,7 +84,7 @@ const CompetitionEditor = ({
   }
 
   useEffect(() => {
-    (async() => {
+    (async () => {
       await loadFile(value.panduan ?? null);
     })()
   }, []);
@@ -218,7 +219,7 @@ const CompetitionEditor = ({
           {preview &&
             <div className="flex items-center gap-2 mb-2">
               <Link target="_blank" href={preview ?? ""} className="text-cyan-strong text-sm bg-cyan-strong/10 px-2.5 py-1 rounded-lg border border-cyan-strong">Preview</Link>
-              <button type="button" onClick={() => {onChange({ ...value, panduan: null }); setPreview(null)}} className="text-xs text-destructive hover:underline flex items-center gap-1">
+              <button type="button" onClick={() => { onChange({ ...value, panduan: null }); setPreview(null) }} className="text-xs text-destructive hover:underline flex items-center gap-1">
                 <X size={12} /> Hapus Panduan
               </button>
             </div>
@@ -242,7 +243,7 @@ const CompetitionEditor = ({
           <input className={"inputCls"} required pattern="[a-z0-9-]+" value={value.slug ?? ""} onChange={(e) => onChange({ ...value, slug: e.target.value.toLowerCase() })} onKeyDown={(e) => {
             if (e.key === ' ') {
               e.preventDefault();
-              onChange({ ...value, slug: value.slug + '-'});
+              onChange({ ...value, slug: value.slug + '-' });
             }
           }} placeholder="mobile-legends" />
         </div>
@@ -253,17 +254,31 @@ const CompetitionEditor = ({
         <div>
           <HelpLabel label="Deskripsi" hint="Paragraf penjelasan lengkap di halaman detail lomba. Tekan enter untuk membuat setiap paragraf baru." required />
           <textarea rows={3} className={"inputCls"} required placeholder="Mobile Legends adalah game MOBA yang dimainkan oleh dua tim yang terdiri dari lima pemain." value={descriptionText} onChange={(e) => {
-              onChange({ ...value, description: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) });
-              setDescriptionText(e.target.value);
-            }} />
+            onChange({ ...value, description: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) });
+            setDescriptionText(e.target.value);
+          }} />
         </div>
 
         <div className="grid gap-3 sm:grid-cols-2">
           <div>
             <HelpLabel label="Ikon" hint="Ikon yang muncul di kartu lomba." required />
-            <select className={"inputCls"} value={value.icon ?? "Trophy"} onChange={(e) => onChange({ ...value, icon: e.target.value })}>
-              {iconNames.map((n) => <option className="bg-background" key={n} value={n}>{n}</option>)}
-            </select>
+            <Select defaultValue={value.icon ?? "Trophy"} onValueChange={(newValue: string) => onChange({ ...value, icon: newValue })}>
+              <SelectTrigger className="inputCls w-full rounded-2xl! px-4! py-5!">
+                <SelectValue placeholder="Pilih Ikon" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  {iconNames.map(([key, Icon]) => (
+                    <SelectItem className="bg-background" key={key} value={key}>
+                      <div className="flex items-center gap-2">
+                        <Icon size={18} />
+                        <span>{key}</span>
+                      </div>
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
           </div>
           <div>
             <HelpLabel label="Warna Tema" hint="Warna aksen kartu (efek cahaya & badge)." required />
@@ -334,10 +349,10 @@ const CompetitionEditor = ({
 
         <div>
           <HelpLabel label="Syarat & Ketentuan" required hint="Satu baris = satu poin syarat. Akan ditampilkan sebagai daftar di halaman detail." />
-          <textarea rows={4} required className={"inputCls"} value={rulesText} onChange={(e) => { 
-              onChange({ ...value, rules: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) });
-              setRulesText(e.target.value); 
-            }} placeholder={"Peserta adalah pelajar SMA/SMK aktif\nSatu tim 5 pemain + 1 cadangan"} />
+          <textarea rows={4} required className={"inputCls"} value={rulesText} onChange={(e) => {
+            onChange({ ...value, rules: e.target.value.split("\n").map((s) => s.trim()).filter(Boolean) });
+            setRulesText(e.target.value);
+          }} placeholder={"Peserta adalah pelajar SMA/SMK aktif\nSatu tim 5 pemain + 1 cadangan"} />
         </div>
 
         <div>
@@ -420,10 +435,10 @@ const CompetitionEditor = ({
             </span>
           </label>
           {!!value.is_multi_slot &&
-           <div className="px-3 pb-3">
-             <HelpLabel required label="Jumlah Slot" hint="Izinkan berapa maximal slot. Contoh: '5' berarti maximal 5 slot." />
-             <input className={"inputCls"} required type="number" min={2} value={value.slot} placeholder="Masukkan berapa slot yang diperbolehkan" onChange={(e) => onChange({ ...value, slot: + e.target.value })} />
-           </div>
+            <div className="px-3 pb-3">
+              <HelpLabel required label="Jumlah Slot" hint="Izinkan berapa maximal slot. Contoh: '5' berarti maximal 5 slot." />
+              <input className={"inputCls"} required type="number" min={2} value={value.slot} placeholder="Masukkan berapa slot yang diperbolehkan" onChange={(e) => onChange({ ...value, slot: + e.target.value })} />
+            </div>
           }
         </div>
         <label className="flex items-center gap-2 rounded-xl border border-white/10 bg-white/2 p-3 text-sm">

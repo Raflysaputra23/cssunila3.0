@@ -1,5 +1,6 @@
 import { ArrowRight, CalendarDays } from "lucide-react";
 import VideoBackground from "@/components/site/VideoBackground";
+import Link from "next/link";
 
 type HeroProps = {
   totalLomba: number;
@@ -22,7 +23,7 @@ const Hero = ({ totalLomba, totalHadiah, totalPeserta, logo, title, sub, tagline
   const heroTema = tema || "Dare to Grow Ready to Glow";
 
   return (
-    <section className="relative isolate overflow-hidden pt-32 pb-24 md:pt-44 md:pb-32">
+    <section id="hero" className="relative isolate overflow-hidden pt-32 pb-24 md:pt-34 md:pb-32">
       <VideoBackground opacity={0.2} bgImageSrc={siteLogo} bgImageOpacity={0.1} />
 
       <div className="mx-auto max-w-7xl px-4 text-center">
@@ -40,22 +41,22 @@ const Hero = ({ totalLomba, totalHadiah, totalPeserta, logo, title, sub, tagline
         </p>
 
         <div className="mt-9 flex items-center justify-center gap-3 flex-wrap">
-          <a
+          <Link
             href="#lomba"
             className="btn-hero max-w-48 hover:btn-hero-hover inline-flex items-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold"
           >
             Daftar Lomba <ArrowRight size={16} />
-          </a>
-          <a
+          </Link>
+          <Link
             href="#timeline"
             className="inline-flex max-w-48 items-center gap-2 rounded-full border border-border bg-white/5 px-7 py-3.5 text-sm font-semibold text-foreground/90 backdrop-blur-md transition hover:bg-white/10"
           >
             <CalendarDays size={16} /> Lihat Timeline
-          </a>
+          </Link>
         </div>
 
-        <dl className="mx-auto mt-16 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-3">
-          {[
+        <div className="mx-auto mt-16 grid max-w-3xl grid-cols-2 gap-3 sm:grid-cols-3">
+          {/* {[
             [totalLomba.toString(), "Cabang Lomba"],
             [totalHadiah, "Total Hadiah"],
             [totalPeserta >= 1000 ? `${(totalPeserta / 1000).toFixed(1)}k+` : totalPeserta.toString(), "Peserta"],
@@ -64,8 +65,8 @@ const Hero = ({ totalLomba, totalHadiah, totalPeserta, logo, title, sub, tagline
               <dt className="font-display text-2xl font-bold gradient-text">{n}</dt>
               <dd className="mt-1 text-xs text-muted-foreground">{l}</dd>
             </div>
-          ))}
-        </dl>
+          ))} */}
+        </div>
       </div>
 
       <div className="pointer-events-none absolute -left-20 top-1/3 -z-10 h-72 w-72 rounded-full bg-sapphire/30 blur-3xl animate-float" />

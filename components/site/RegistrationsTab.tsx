@@ -307,7 +307,7 @@ function DetailModal({
                   {status.label}
                 </span>
                 <span className="text-xs text-muted-foreground">
-                  {new Date(reg.created_at).toLocaleString("id-ID", {
+                  Pendaftaran dibuat {new Date(reg.created_at).toLocaleString("id-ID", {
                     day: "2-digit",
                     month: "short",
                     year: "numeric",
@@ -701,8 +701,8 @@ const RegistrationsTab = () => {
       doc.text("No", 45, y + 13);
       doc.text("Nama Tim / Instansi", 75, y + 13);
       doc.text("Ketua", 225, y + 13);
-      doc.text("WhatsApp", 345, y + 13);
-      doc.text("Biaya & Status", 445, y + 13);
+      doc.text("WhatsApp", 330, y + 13);
+      doc.text("Biaya & Status", 430, y + 13);
       y += 20;
 
       list.forEach((r, idx) => {
@@ -720,8 +720,8 @@ const RegistrationsTab = () => {
             doc.text("No", 45, y + 13);
             doc.text("Nama Tim / Instansi", 75, y + 13);
             doc.text("Ketua", 225, y + 13);
-            doc.text("WhatsApp", 345, y + 13);
-            doc.text("Biaya & Status", 445, y + 13);
+            doc.text("WhatsApp", 330, y + 13);
+            doc.text("Biaya & Metode", 430, y + 13);
             y += 20;
           }
 
@@ -742,12 +742,12 @@ const RegistrationsTab = () => {
           const leaderText = doc.splitTextToSize(r.leader_name, 110);
           doc.text(leaderText, 225, y + 13);
 
-          doc.text(r.leader_whatsapp, 345, y + 13);
+          doc.text(r.leader_whatsapp, 330, y + 13);
 
           const amount = r.payments?.amount_idr ?? 0;
-          const pStatus = r.payments?.status || "—";
-          const feeText = `Rp ${amount.toLocaleString("id-ID")} (${pStatus})`;
-          doc.text(feeText, 445, y + 13);
+          const metode = r.payments?.midtrans_payment_type || "—";
+          const feeText = `Rp. ${amount.toLocaleString("id-ID")} (${metode})`;
+          doc.text(feeText, 430, y + 13);
 
           const linesCount = Math.max(teamText.length, leaderText.length);
           y += Math.max(20, linesCount * 10 + 5);
@@ -919,12 +919,15 @@ const RegistrationsTab = () => {
                       <button
                         onClick={() => setResumePayTarget({
                           regId: r.id,
+                          compId: r.competition?.id ?? "",
                           paymentId: String(r.payments?.id ?? ""),
                           amount: r.payments?.amount_idr ?? 0,
                           teamName: r.team_name,
                           leaderName: r.leader_name,
                           leaderWa: r.leader_whatsapp,
+                          leaderEmail: r.leader_email ?? "",
                           compName: r.competition?.name ?? "Lomba",
+                          slot: r.slot
                         })}
                         className="inline-flex items-center gap-1 rounded-full bg-emerald-500/20 px-3 py-1.5 text-xs font-semibold text-emerald-300 hover:bg-emerald-500/30 cursor-pointer transition border border-emerald-500/20"
                       >

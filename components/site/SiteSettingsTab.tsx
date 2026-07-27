@@ -1266,7 +1266,7 @@ const SiteSettingsTab = () => {
       <div className="glass rounded-3xl p-4 space-y-6 border border-white/10 mt-8">
         <div className="flex items-center gap-3 border-b border-white/10 pb-4">
           <div className="flex shrink-0 size-9 items-center justify-center rounded-2xl bg-cyan-strong/15 text-cyan-strong">
-            <ImageIcon size={20}  />
+            <ImageIcon size={20} />
           </div>
           <div>
             <h3 className="font-display text-lg font-bold text-foreground">QRIS Bank (Pendaftaran Manual)</h3>
@@ -1293,9 +1293,24 @@ const SiteSettingsTab = () => {
           )}
 
           <div className="space-y-3 flex-1">
-            <p className="text-xs text-muted-foreground">
-              Gambar ini akan ditampilkan kepada Admin & dapat dikirim langsung ke WhatsApp peserta saat pendaftaran manual diselesaikan. Format: PNG/JPG/WebP (Max 2MB).
-            </p>
+            <div className="space-y-1">
+              <label className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Nomor Rekening & Atas Nama</label>
+              <input
+                className="inputCls"
+                placeholder="Contoh: 0123456789 - Rafly Saputra"
+                value={settings["rekening_bank"] ?? ""}
+                onChange={(e) => {
+                  setSettings((prev) => ({ ...prev, rekening_bank: e.target.value }));
+                  setEditingSettings((prev) => ({ ...prev, rekening_bank: e.target.value }));
+                }}
+              />
+            </div>
+            <fieldset className="bg-background/10 border border-white/15 rounded-2xl p-4">
+              <legend className="text-xs text-muted-foreground uppercase italic">Catatan</legend>
+              <p className="text-xs text-muted-foreground">
+                Gambar ini akan ditampilkan kepada Admin & dapat dikirim langsung ke WhatsApp peserta saat pendaftaran manual diselesaikan. Format: PNG/JPG/WebP (Max 2MB).
+              </p>
+            </fieldset>
             <div className="flex flex-wrap gap-3">
               <label className="inline-flex cursor-pointer items-center gap-2 rounded-full bg-cyan-strong/20 px-5 py-2.5 text-xs font-semibold text-cyan-strong hover:bg-cyan-strong/30 transition border border-cyan-strong/20">
                 {uploadingLogo === "bank" ? <Loader2 size={14} className="animate-spin" /> : <ImageIcon size={14} />}
@@ -1309,7 +1324,8 @@ const SiteSettingsTab = () => {
                     const file = e.target.files?.[0];
                     if (!file) return;
                     handleLogoUpload(e, "bank", (url) => {
-                      saveSettings.mutate({ qris_bank_url: url });
+                      setSettings((prev) => ({ ...prev, qris_bank_url: url }));
+                      setEditingSettings((prev) => ({ ...prev, qris_bank_url: url }));
                     });
                   }}
                 />
@@ -1323,6 +1339,14 @@ const SiteSettingsTab = () => {
                   <Trash2 size={13} /> Hapus QRIS
                 </button>
               )}
+              <button
+                onClick={handleSaveSettings}
+                disabled={saveSettings.isPending || settingsLoading}
+                className="inline-flex items-center gap-1.5 rounded-full border border-cyan-strong/20 bg-cyan-strong/20 px-4 py-2.5 text-xs font-semibold text-cyan-strong hover:bg-cyan-strong/30 transition cursor-pointer"
+              >
+                {saveSettings.isPending ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} 
+                Simpan
+              </button>
             </div>
           </div>
         </div>

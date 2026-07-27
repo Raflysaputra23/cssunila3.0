@@ -54,12 +54,15 @@ function FieldLabel({ label, required }: { label: string; required?: boolean }) 
 
 export type ResumePayData = {
   regId: string;
+  compId: string;
   paymentId: string;
   amount: number;
   teamName: string;
   leaderName: string;
   leaderWa: string;
+  leaderEmail: string;
   compName: string;
+  slot: number;
 };
 
 interface AdminRegisterModalProps {
@@ -73,13 +76,13 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
   const suparef = useRef(createClient());
 
   const [step, setStep] = useState<1 | 2 | 3>(resumePay ? 3 : 1);
-  const [selectedCompId, setSelectedCompId] = useState<string>("");
+  const [selectedCompId, setSelectedCompId] = useState<string>(resumePay?.compId ?? "");
 
   const [teamName, setTeamName] = useState(resumePay?.teamName ?? "");
   const [leaderName, setLeaderName] = useState(resumePay?.leaderName ?? "");
   const [leaderWa, setLeaderWa] = useState(resumePay?.leaderWa ?? "");
-  const [leaderEmail, setLeaderEmail] = useState("");
-  const [slotCount, setSlotCount] = useState(1);
+  const [leaderEmail, setLeaderEmail] = useState(resumePay?.leaderEmail ?? "");
+  const [slotCount, setSlotCount] = useState(resumePay?.slot ?? 1);
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [uploading, setUploading] = useState<Record<string, boolean>>({});
 
@@ -131,16 +134,22 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
 
   const selectedComp = competitions.find((c) => c.id === selectedCompId) ?? null;
 
-  const { data: qrisUrl = "" } = useQuery({
+  const { data: { qrisBankUrl, rekeningBank } = { qrisBankUrl: "", rekeningBank: "" } } = useQuery({
     queryKey: ["site-qris-url"],
-    queryFn: async (): Promise<string> => {
+    queryFn: async (): Promise<{ qrisBankUrl: string, rekeningBank: string }> => {
       const supabase = suparef.current;
       const { data } = await supabase
         .from("site_settings")
-        .select("value")
-        .eq("id", "qris_bank_url")
-        .maybeSingle();
-      return data?.value ?? "";
+        .select("id, value")
+        .in("id", ["qris_bank_url", "rekening_bank"]);
+
+      const qrisBankUrl = data?.find((s) => s.id === "qris_bank_url");
+      const rekeningBank = data?.find((s) => s.id === "rekening_bank");
+
+      return {
+        qrisBankUrl: qrisBankUrl?.value ?? "",
+        rekeningBank: rekeningBank?.value ?? "",
+      };
     },
   });
 
@@ -306,9 +315,25 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
   function sendWhatsApp() {
     const compName = selectedComp?.name ?? resumePay?.compName ?? "Lomba";
     const waNumber = leaderWa.replace(/[^0-9]/g, "").replace(/^0/, "62");
-    const msg = encodeURIComponent(
-      `Halo ${leaderName},\n\nBerikut adalah QRIS pembayaran untuk pendaftaran *${compName}* — *${teamName}*.\n\nNominal: Rp ${createdAmount.toLocaleString("id-ID")}\n\nSilakan scan QRIS berikut:\n${qrisUrl}\n\nSetelah membayar, konfirmasi ke admin CSS 3.0. Terima kasih! 🙏`
+    let msg = encodeURIComponent(
+      `Halo ${leaderName},\n\nBerikut adalah QRIS pembayaran untuk pendaftaran *${compName}* — *${teamName}*.\n\nNominal:\n*Rp. ${createdAmount.toLocaleString("id-ID")}*\n\n`
     );
+
+    if(qrisBankUrl) {
+      msg += encodeURIComponent(
+        `Silakan scan QRIS berikut:\n${qrisBankUrl}\n`
+      );
+    }
+    if(rekeningBank) {
+      msg += encodeURIComponent(
+        `Rekening tujuan:\n*${rekeningBank}*\n\n`
+      );
+    }
+
+    msg += encodeURIComponent(
+      `*Pastikan membayar sesuai nominal yang tertera.* Setelah membayar, konfirmasi ke panitia lomba CSS 3.0 dan sertakan bukti pembayarannya. Terima kasih!`
+    );
+
     window.open(`https://wa.me/${waNumber}?text=${msg}`, "_blank");
   }
 
@@ -421,7 +446,12 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
           )}
 
           {step === 2 && selectedComp && (
-            <div className="space-y-5">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                submitReg.mutate();
+              }}
+              className="space-y-5">
               <div className="flex items-center gap-3 rounded-2xl bg-cyan-strong/10 border border-cyan-strong/20 p-3">
                 <Trophy size={16} className="text-cyan-strong shrink-0" />
                 <p className="text-sm font-semibold text-cyan-strong">{selectedComp.name}</p>
@@ -563,23 +593,24 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
 
               <div className="flex gap-3 pt-1">
                 <button
+                  type="button"
                   onClick={() => setStep(1)}
                   className="inline-flex items-center gap-2 rounded-full border border-white/10 px-5 py-2.5 text-sm font-semibold text-muted-foreground hover:bg-white/5 hover:text-foreground transition cursor-pointer"
                 >
                   <ChevronLeft size={14} /> Kembali
                 </button>
                 <button
+                  type="submit"
                   disabled={submitReg.isPending}
-                  onClick={() => submitReg.mutate()}
                   className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-cyan-strong px-5 py-2.5 text-sm font-bold text-slate-950 hover:bg-cyan-strong/90 disabled:opacity-60 transition cursor-pointer"
                 >
                   {submitReg.isPending && (
                     <Loader2 size={14} className="animate-spin" />
                   )}
-                  {submitReg.isPending ? "Mendaftarkan…" : "Daftarkan & Lanjut"}
+                  {submitReg.isPending ? "Mendaftarkan…" : "Daftarkan"}
                 </button>
               </div>
-            </div>
+            </form>
           )}
 
           {step === 3 && (
@@ -588,16 +619,51 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
                 <CheckCircle2 size={16} className="shrink-0" />
                 Peserta berhasil didaftarkan! Sekarang lanjutkan konfirmasi pembayaran.
               </div>
+              <fieldset className="bg-background/10 border border-white/15 rounded-2xl p-4 space-y-2">
+                <legend className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Detail Pendaftaran</legend>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Nama Tim</label>
+                  <input
+                    readOnly
+                    className="inputCls"
+                    value={teamName}
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Nama Pendaftar</label>
+                  <input
+                    readOnly
+                    className="inputCls"
+                    value={leaderName}
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">No. WhatsApp Pendaftar</label>
+                  <input
+                    readOnly
+                    className="inputCls"
+                    value={leaderWa}
+                  />
+                </div>
+                <div className="flex flex-col gap-1">
+                  <label className="text-xs text-muted-foreground font-semibold uppercase tracking-wider">Email Pendaftar</label>
+                  <input
+                    readOnly
+                    className="inputCls"
+                    value={leaderEmail}
+                  />
+                </div>
+              </fieldset>
 
               {/* QRIS */}
               <div>
                 <p className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
                   <QrCode size={12} /> QRIS Pembayaran
                 </p>
-                {qrisUrl ? (
+                {qrisBankUrl ? (
                   <div className="mx-auto w-fit rounded-2xl border border-white/10 bg-white p-3 shadow-lg">
                     <Image
-                      src={qrisUrl}
+                      src={qrisBankUrl}
                       alt="QRIS Bank"
                       width={220}
                       height={220}
@@ -612,16 +678,17 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
                 )}
 
                 {selectedComp && (
-                  <p className="mt-3 text-center text-sm text-muted-foreground">
-                    Total:{" "}
-                    <span className="font-bold text-foreground">
-                      Rp {createdAmount.toLocaleString("id-ID")}
-                    </span>
-                  </p>
+                  <div className="mt-3 flex flex-col items-center justify-center gap-2">
+                    {rekeningBank && <p className="text-sm text-muted-foreground font-semibold tracking-wider">{rekeningBank}</p>}
+                    <h2 className="text-lg font-semibold">{selectedComp.name}</h2>
+                    <p className="px-2.5 py-1.5 bg-cyan-strong/10 text-cyan-strong border border-cyan-strong/30 text-sm rounded-lg">
+                      Rp. {createdAmount.toLocaleString("id-ID")}
+                    </p>
+                  </div>
                 )}
               </div>
 
-              {qrisUrl && leaderWa && (
+              {(qrisBankUrl || rekeningBank) && leaderWa && (
                 <button
                   onClick={sendWhatsApp}
                   className="w-full inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500/20 px-5 py-3 text-sm font-semibold text-emerald-300 hover:bg-emerald-500/30 transition cursor-pointer border border-emerald-500/20"
@@ -655,7 +722,7 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
                   <div>
                     <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-semibold text-foreground hover:bg-white/10 transition">
                       <Upload size={13} />
-                      {proofFile ? proofFile.name : "Upload Bukti Bayar (foto)"}
+                      {proofFile ? proofFile.name : "Upload Bukti Bayar"}
                       <input
                         type="file"
                         accept="image/*"

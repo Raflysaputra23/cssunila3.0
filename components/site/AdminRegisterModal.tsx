@@ -316,22 +316,22 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
     const compName = selectedComp?.name ?? resumePay?.compName ?? "Lomba";
     const waNumber = leaderWa.replace(/[^0-9]/g, "").replace(/^0/, "62");
     let msg = encodeURIComponent(
-      `Halo ${leaderName},\n\nBerikut adalah QRIS pembayaran untuk pendaftaran *${compName}* — *${teamName}*.\n\nNominal:\n*Rp. ${createdAmount.toLocaleString("id-ID")}*\n\n`
+      `Halo ${leaderName},\n\nBerikut adalah QRIS pembayaran untuk pendaftaran *${compName}* — *${teamName}*.\n\nNominal:\n*Rp. ${createdAmount.toLocaleString("id-ID")}* ${slotCount > 1 && `- ${slotCount} Slot`}\n\n`
     );
 
-    if(qrisBankUrl) {
+    if (qrisBankUrl) {
       msg += encodeURIComponent(
         `Silakan scan QRIS berikut:\n${qrisBankUrl}\n`
       );
     }
-    if(rekeningBank) {
+    if (rekeningBank) {
       msg += encodeURIComponent(
         `Rekening tujuan:\n*${rekeningBank}*\n\n`
       );
     }
 
     msg += encodeURIComponent(
-      `*Pastikan membayar sesuai nominal yang tertera.* Setelah membayar, konfirmasi ke panitia lomba CSS 3.0 dan sertakan bukti pembayarannya. Terima kasih!`
+      `*Pastikan membayar sesuai nominal yang tertera.*\n\nSetelah membayar, konfirmasi ke panitia lomba CSS 3.0 dan sertakan bukti pembayarannya.\n\nTerima kasih`
     );
 
     window.open(`https://wa.me/${waNumber}?text=${msg}`, "_blank");
@@ -680,10 +680,17 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
                 {selectedComp && (
                   <div className="mt-3 flex flex-col items-center justify-center gap-2">
                     {rekeningBank && <p className="text-sm text-muted-foreground font-semibold tracking-wider">{rekeningBank}</p>}
-                    <h2 className="text-lg font-semibold">{selectedComp.name}</h2>
-                    <p className="px-2.5 py-1.5 bg-cyan-strong/10 text-cyan-strong border border-cyan-strong/30 text-sm rounded-lg">
-                      Rp. {createdAmount.toLocaleString("id-ID")}
-                    </p>
+                    <h2 className="text-lg font-semibold text-center">{selectedComp.name}</h2>
+                    <div className="flex items-center justify-center gap-3">
+                      <p className="px-2.5 py-1.5 bg-cyan-strong/10 text-cyan-strong border border-cyan-strong/30 text-sm rounded-lg">
+                        Rp. {createdAmount.toLocaleString("id-ID")}
+                      </p>
+                      {slotCount > 1 &&
+                        <p className="px-2.5 py-1.5 bg-amber-500/10 text-amber-300 border border-amber-500/30 text-sm rounded-lg">
+                          {slotCount} slot
+                        </p>
+                      }
+                    </div>
                   </div>
                 )}
               </div>

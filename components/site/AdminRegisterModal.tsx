@@ -316,7 +316,7 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
     const compName = selectedComp?.name ?? resumePay?.compName ?? "Lomba";
     const waNumber = leaderWa.replace(/[^0-9]/g, "").replace(/^0/, "62");
     let msg = encodeURIComponent(
-      `Halo ${leaderName},\n\nBerikut adalah QRIS pembayaran untuk pendaftaran *${compName}* — *${teamName}*.\n\nNominal:\n*Rp. ${createdAmount.toLocaleString("id-ID")}* ${slotCount > 1 && `- ${slotCount} Slot`}\n\n`
+      `Halo ${leaderName},\n\nBerikut adalah pembayaran untuk pendaftaran *${compName}* — *${teamName}*.\n\nNominal:\n*Rp. ${createdAmount.toLocaleString("id-ID")}* ${slotCount > 1 ? `- ${slotCount} Slot` : ''}\n\n`
     );
 
     if (qrisBankUrl) {

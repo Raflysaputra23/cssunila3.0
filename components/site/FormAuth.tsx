@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import { useEffect, useRef, useState } from "react";
@@ -7,6 +8,7 @@ import { Mail, Lock, User as UserIcon, Loader2, Eye, EyeClosed } from "lucide-re
 import { Metadata } from "next";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/supabase/client";
+import { Turnstile } from "@marsidev/react-turnstile";
 import Link from "next/link";
 
 export const metadata: Metadata = {
@@ -68,7 +70,9 @@ const FormAuth = () => {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [googleLoading, setGoogleLoading] = useState(false);
     const [agree, setAgree] = useState<boolean>(false);
+    const [captchaToken, setCaptchaToken] = useState<string>("");
     const suparef = useRef(createClient());
+    const captcharef = useRef<any>(null);
 
     useEffect(() => {
         const supabase = suparef.current;
@@ -111,6 +115,7 @@ const FormAuth = () => {
                     options: {
                         emailRedirectTo: `${window.location.origin}/auth`,
                         data: { full_name: fullName },
+                        captchaToken
                     },
                 });
 
@@ -118,14 +123,21 @@ const FormAuth = () => {
                 toast.success("Akun berhasil dibuat. Silakan login.");
                 setMode("login");
             } else {
-                const { error } = await supabase.auth.signInWithPassword({ email, password });
+                const { error } = await supabase.auth.signInWithPassword({
+                    email,
+                    password,
+                    options: {
+                        captchaToken
+                    }
+                });
                 if (error) throw error;
-                toast.success("Berhasil masuk!");
+                toast.success("Berhasil login!");
                 router.push("/");
             }
         } catch (err) {
-            const msg = err instanceof Error ? err.message : "Terjadi kesalahan";
-            toast.error(msg);
+            toast.error(err instanceof Error ? err.message : "Terjadi kesalahan!");
+            const captcha = captcharef.current;
+            if (captcha) captcha.reset();
         } finally {
             setLoading(false);
         }
@@ -144,6 +156,9 @@ const FormAuth = () => {
             if (error) throw error;
         } catch (err) {
             toast.error(err instanceof Error ? err.message : "Gagal masuk dengan Google");
+            const captcha = captcharef.current;
+            if (captcha) captcha.reset();
+        } finally {
             setGoogleLoading(false);
         }
     };
@@ -161,11 +176,20 @@ const FormAuth = () => {
                     : "Daftar akun untuk mulai mendaftar cabang lomba CSS 3.0."}
             </p>
 
+            <Turnstile
+                ref={captcharef}
+                className="mt-4 flex items-center justify-center"
+                siteKey={process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY ?? ""}
+                onSuccess={(token: string) => {
+                    setCaptchaToken(token)
+                }}
+            />
+
             <button
                 type="button"
                 onClick={handleGoogle}
-                disabled={googleLoading}
-                className="mt-6 cursor-pointer flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-white/5 px-4 py-3 text-sm font-semibold transition hover:bg-white/10 disabled:opacity-60"
+                disabled={googleLoading || !captchaToken}
+                className="mt-4 cursor-pointer disabled:cursor-not-allowed flex w-full items-center justify-center gap-2 rounded-xl border border-border bg-white/5 px-4 py-3 text-sm font-semibold transition hover:bg-white/10 disabled:opacity-60"
             >
                 {googleLoading ? <Loader2 size={16} className="animate-spin" /> : <GoogleIcon />}
                 Lanjutkan dengan Google
@@ -199,8 +223,8 @@ const FormAuth = () => {
 
                 <button
                     type="submit"
-                    disabled={loading}
-                    className="btn-hero cursor-pointer hover:btn-hero-hover flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold disabled:opacity-60"
+                    disabled={loading || !captchaToken}
+                    className="btn-hero cursor-pointer disabled:cursor-not-allowed hover:btn-hero-hover flex w-full items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold disabled:opacity-60"
                 >
                     {loading && <Loader2 size={16} className="animate-spin" />}
                     {mode === "login" ? "Masuk" : "Daftar"}

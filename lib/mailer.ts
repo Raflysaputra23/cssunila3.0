@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import path from "path";
+import fs from "fs";
 import { generateVerificationEmailHtml } from "@/lib/email-template";
 
 const transporter = nodemailer.createTransport({
@@ -20,17 +21,23 @@ export const sendVerificationEmail = async (
   const html = generateVerificationEmailHtml(to, code, fullName);
   const logoPath = path.join(process.cwd(), "public", "css-logo.png");
 
+  const attachments: nodemailer.SendMailOptions["attachments"] = [];
+
+  if (fs.existsSync(logoPath)) {
+    attachments.push({
+      filename: "css-logo.png",
+      path: logoPath,
+      cid: "csslogo@cssunila",
+      contentType: "image/png",
+      contentDisposition: "inline",
+    });
+  }
+
   await transporter.sendMail({
     from: `"CSS 3.0 — Computer Science Showdown" <${process.env.EMAIL_SMTP_USER}>`,
     to,
     subject: `[CSS 3.0] Kode Verifikasi Email`,
     html,
-    attachments: [
-      {
-        filename: "css-logo.png",
-        path: logoPath,
-        cid: "csslogo",
-      },
-    ],
+    attachments,
   });
 };

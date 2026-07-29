@@ -51,7 +51,7 @@ export const generateVerificationEmailHtml = (
                 <tr>
                   <td align="center">
                     <img
-                      src="cid:csslogo@cssunila"
+                      src="https://www.cssunila.com/css-logo.png"
                       alt="CSS 3.0 Logo"
                       width="72"
                       height="72"

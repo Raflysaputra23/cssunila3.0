@@ -1,5 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createAdmin } from "@/supabase/admin";
+import { createServerClient } from "@supabase/ssr";
+import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { createHash } from "crypto";
 
@@ -7,7 +9,7 @@ const hashOTP = (code: string) => {
   return createHash("sha256")
     .update(code + (process.env.OTP_SALT ?? "css-unila-otp-2026"))
     .digest("hex");
-}
+};
 
 export const POST = async (req: Request) => {
   try {
@@ -76,8 +78,7 @@ export const POST = async (req: Request) => {
         .eq("email", normalizedEmail);
       return NextResponse.json(
         {
-          error:
-            "Terlalu banyak percobaan yang salah. Silakan daftar ulang.",
+          error: "Terlalu banyak percobaan yang salah. Silakan daftar ulang.",
         },
         { status: 429 }
       );
@@ -105,7 +106,7 @@ export const POST = async (req: Request) => {
     const { error: createError } = await adminClient.auth.admin.createUser({
       email: normalizedEmail,
       password: password,
-      email_confirm: true, 
+      email_confirm: true,
       user_metadata: {
         full_name: resolvedFullName,
       },
@@ -126,6 +127,46 @@ export const POST = async (req: Request) => {
       .update({ verified: true })
       .eq("email", normalizedEmail);
 
+    const cookieStore = await cookies();
+    const serverSupabase = createServerClient(
+      process.env.NEXT_PUBLIC_SUPABASE_URL!,
+      process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
+      {
+        cookies: {
+          getAll() {
+            return cookieStore.getAll();
+          },
+          setAll(cookiesToSet) {
+            try {
+              cookiesToSet.forEach(({ name, value, options }) =>
+                cookieStore.set(name, value, options)
+              );
+            } catch {}
+          },
+        },
+      }
+    );
+
+    const { error: signInError } = await serverSupabase.auth.signInWithPassword({
+      email: normalizedEmail,
+      password: password,
+    });
+
+    if (signInError) {
+      const { data: linkData } = await adminClient.auth.admin.generateLink({
+        type: "magiclink",
+        email: normalizedEmail,
+      });
+
+      if (linkData?.properties?.email_otp) {
+        await serverSupabase.auth.verifyOtp({
+          email: normalizedEmail,
+          token: linkData.properties.email_otp,
+          type: "magiclink",
+        });
+      }
+    }
+
     return NextResponse.json({ success: true, fullName: resolvedFullName });
   } catch (err: any) {
     console.error("[verify-otp] error:", err);
@@ -134,4 +175,4 @@ export const POST = async (req: Request) => {
       { status: 500 }
     );
   }
-}
+};

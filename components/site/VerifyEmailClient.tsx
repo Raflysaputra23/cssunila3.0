@@ -13,7 +13,6 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { toast } from "sonner";
-import { createClient } from "@/supabase/client";
 
 function maskEmail(email: string): string {
   const [local, domain] = email.split("@");
@@ -69,7 +68,6 @@ const VerifyEmailClient = () => {
   const [countdown, setCountdown] = useState(60);
   const [canResend, setCanResend] = useState(false);
   const verifyingRef = useRef(false);
-  const supabase = useRef(createClient()).current;
 
   useEffect(() => {
     if (!email) router.replace("/auth");
@@ -119,15 +117,9 @@ const VerifyEmailClient = () => {
           return;
         }
 
-        const { error: signInErr } = await supabase.auth.signInWithPassword({
-          email,
-          password,
-        });
-        if (signInErr) throw signInErr;
-
         sessionStorage.removeItem(`css_reg:${email}`);
         toast.success("Akun berhasil dibuat!");
-        router.push("/");
+        router.replace("/");
       } catch (err) {
         toast.error(
           err instanceof Error ? err.message : "Terjadi kesalahan, coba lagi"
@@ -138,7 +130,7 @@ const VerifyEmailClient = () => {
         verifyingRef.current = false;
       }
     },
-    [email, router, supabase]
+    [email, router]
   );
 
   const handleOTPChange = useCallback(

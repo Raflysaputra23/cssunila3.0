@@ -49,7 +49,7 @@ export const generateVerificationEmailHtml = (
               text-align:center;
             ">
               <img
-                src="${domainUrl}/css-logo.png"
+                src="cid:csslogo"
                 alt="CSS 3.0 Logo"
                 width="72"
                 height="72"

@@ -1115,3 +1115,22 @@ CREATE INDEX IF NOT EXISTS idx_export_logs_entity_type ON public.export_logs(ent
 CREATE INDEX IF NOT EXISTS idx_export_logs_actor_id ON public.export_logs(actor_id);
 
 
+-- =========================================================================
+-- Email Verifications Table
+-- =========================================================================
+
+CREATE TABLE IF NOT EXISTS public.email_verifications (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  email text NOT NULL,
+  code text NOT NULL,
+  full_name text,
+  expires_at timestamp with time zone NOT NULL,
+  attempts integer NOT NULL DEFAULT 0,
+  verified boolean NOT NULL DEFAULT false,
+  created_at timestamp with time zone NOT NULL DEFAULT now()
+);
+
+CREATE INDEX IF NOT EXISTS idx_email_verifications_email
+  ON public.email_verifications (email);
+
+ALTER TABLE public.email_verifications ENABLE ROW LEVEL SECURITY;

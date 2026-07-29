@@ -214,7 +214,7 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
           team_name: teamName.trim(),
           leader_name: leaderName.trim(),
           leader_whatsapp: leaderWa.trim(),
-          leader_email: leaderEmail.trim() || null,
+          leader_email: leaderEmail.trim(),
           slot: slotCount,
           status: "pending_payment",
           is_manual: true,

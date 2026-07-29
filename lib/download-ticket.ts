@@ -57,7 +57,7 @@ const downloadTicket = async (r: Row) => {
     };
     line("Lomba", r.competition?.name ?? "-");
     line("Nama Tim", r.team_name);
-    line("Ketua", `${r.leader_name} · ${r.leader_whatsapp}`);
+    line("Pendaftar", `${r.leader_name} · ${r.leader_whatsapp}`);
     line("Biaya", `Rp. ${(r.payments?.amount_idr ?? 0).toLocaleString("id-ID")}`);
 
     try {
@@ -96,16 +96,13 @@ const downloadTicket = async (r: Row) => {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(9);
     doc.setTextColor(80, 90, 110);
-    const msg = "Terima kasih telah mendaftar di CSS 3.0. Tunjukkan tiket ini saat technical meeting & hari-H. Gabung grup peserta untuk info teknis:";
+    const msg = "Terima kasih telah mendaftar di CSS 3.0.";
     doc.text(doc.splitTextToSize(msg, w - 56), 28, gy + 36);
-    doc.setFont("helvetica", "bold");
-    doc.setTextColor(16, 99, 184);
-    doc.text(group?.link_url ?? "Link grup akan dibagikan panitia.", 28, gy + 78);
 
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(8);
-    doc.setTextColor(140, 145, 155);
-    doc.text("Tiket sah jika QR dapat diverifikasi panitia.", 28, h - 22);
+    // doc.setFont("helvetica", "normal");
+    // doc.setFontSize(8);
+    // doc.setTextColor(140, 145, 155);
+    // doc.text("Tiket sah jika QR dapat diverifikasi panitia.", 28, h - 22);
 
     doc.save(`tiket-CSS3.0-${r.team_name}.pdf`);
 }

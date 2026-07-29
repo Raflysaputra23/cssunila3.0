@@ -45,7 +45,7 @@ type AdminReg = {
   team_name: string;
   leader_name: string;
   leader_whatsapp: string;
-  leader_email: string | null;
+  leader_email: string;
   slot: number;
   status: string;
   is_manual?: boolean;
@@ -895,7 +895,7 @@ const RegistrationsTab = () => {
                     Pendaftar: {r.leader_name} · {r.leader_whatsapp}
                   </p>
                   <p className="text-xs text-muted-foreground">
-                    Bayar: Rp {(payment?.amount_idr ?? 0).toLocaleString("id-ID")} ·{" "}
+                    Nominal: Rp. {(payment?.amount_idr ?? 0).toLocaleString("id-ID")} ·{" "}
                     <span className={payment?.status === "success" ? "text-emerald-400" : "text-amber-400"}>
                       {payment?.status ?? "—"}
                     </span>
@@ -925,7 +925,7 @@ const RegistrationsTab = () => {
                           teamName: r.team_name,
                           leaderName: r.leader_name,
                           leaderWa: r.leader_whatsapp,
-                          leaderEmail: r.leader_email ?? "",
+                          leaderEmail: r.leader_email,
                           compName: r.competition?.name ?? "Lomba",
                           slot: r.slot
                         })}

@@ -109,19 +109,24 @@ const FormAuth = () => {
                     return;
                 }
 
-                const { error } = await supabase.auth.signUp({
-                    email,
-                    password,
-                    options: {
-                        emailRedirectTo: `${window.location.origin}/auth`,
-                        data: { full_name: fullName },
-                        captchaToken
-                    },
+                const res = await fetch("/api/auth/send-otp", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, fullName, captchaToken }),
                 });
+                
+                const data = await res.json();
+                if (!res.ok) throw new Error(data.error || "Gagal mengirim kode verifikasi");
 
-                if (error) throw error;
-                toast.success("Akun berhasil dibuat. Silakan login.");
-                setMode("login");
+                sessionStorage.setItem(
+                    `css_reg:${email}`,
+                    JSON.stringify({ password, fullName })
+                );
+
+                toast.success("Kode verifikasi telah dikirim ke email Anda!");
+                router.push(`/auth/verify-email?email=${encodeURIComponent(email)}`);
+                return;
+
             } else {
                 const { error } = await supabase.auth.signInWithPassword({
                     email,

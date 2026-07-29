@@ -98,9 +98,8 @@ export default function Error({
             Halaman Populer
           </p>
           {[
-            { href: "/lomba", label: "Daftar Lomba" },
-            { href: "/pengumuman", label: "Pengumuman" },
-            { href: "/kontak", label: "Hubungi Kami" },
+            { href: "/#lomba", label: "Daftar Lomba" },
+            { href: "/kontak", label: "Hubungi Kami" }
           ].map(({ href, label }) => (
             <Link
               key={href}

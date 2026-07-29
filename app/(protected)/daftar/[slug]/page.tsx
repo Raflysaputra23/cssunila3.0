@@ -147,7 +147,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                     team_name: teamName.trim(),
                     leader_name: leaderName.trim(),
                     leader_whatsapp: leaderWhatsapp.trim(),
-                    leader_email: leaderEmail.trim() || null,
+                    leader_email: leaderEmail.trim(),
                     slot,
                     status: "pending_payment",
                     is_manual: false,

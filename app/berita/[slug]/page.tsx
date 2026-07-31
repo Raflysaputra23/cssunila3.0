@@ -99,6 +99,7 @@ const NewsDetailPage = async ({ params }: Props) => {
     "@context": "https://schema.org",
     "@type": "NewsArticle",
     headline: news.title,
+    url: `${baseUrl}/berita/${slug}`,
     description: news.content?.slice(0, 200) ?? "",
     image: news.image_url ? [news.image_url] : [],
     datePublished: news.published_at ?? new Date().toISOString(),

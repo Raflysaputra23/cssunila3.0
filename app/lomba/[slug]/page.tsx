@@ -21,6 +21,7 @@ import { dateActive } from "@/lib/formatTanggal";
 import ShareButton from "@/components/site/ShareButton";
 import { Metadata } from "next";
 import { DownloadPanduanButton, DaftarActionButton } from "@/components/site/LombaActions";
+import parseDateRange from "@/lib/parseDate";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -166,14 +167,21 @@ const LombaDetail = async ({ params }: Props) => {
   }
 
   const currentUrl = `${baseUrl}/lomba/${slug}`;
+  const date = parseDateRange(c.timeline.length > 0 ? c.timeline[0].date : "");
 
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "Event",
     name: `${c.name} – CSS UNILA 3.0`,
+    startDate: date?.startDate || "", 
     description: Array.isArray(c.description) ? c.description.join(" ") : "",
     url: currentUrl,
     image: c.banner || `${baseUrl}/css-logo.png`,
+    offers: {
+      "@type": "Offer",
+      price: c.fee_idr,
+      priceCurrency: "IDR",
+    },
     organizer: {
       "@type": "Organization",
       name: "Himakom UNILA – CSS UNILA 3.0",
@@ -189,9 +197,6 @@ const LombaDetail = async ({ params }: Props) => {
         addressCountry: "ID",
       },
     },
-    eventStatus: c.is_open
-      ? "https://schema.org/EventScheduled"
-      : "https://schema.org/EventCancelled",
   };
 
   return (

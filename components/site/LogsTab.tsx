@@ -186,7 +186,7 @@ export default function LogsTab() {
   const totalPages = Math.max(1, Math.ceil(total / 30));
 
   const totalSample = logs.length || 1;
-  const successRatio = Math.round((stats.success / totalSample) * 100);
+  const successRatio = Math.round((totalSample - stats.error) / totalSample * 100);
 
   const handleFilterChange = (setter: (v: string) => void) => (v: string) => {
     setter(v);

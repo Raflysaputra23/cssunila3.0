@@ -17,7 +17,7 @@ const jsonLd = {
     "@type": "Event",
     name: "Computer Science Showdown 3.0 (CSS UNILA)",
     description:
-        "CSS 3.0 adalah kegiatan tahunan dalam rangka Dies Natalis Jurusan Ilmu Komputer FMIPA Universitas Lampung yang menampilkan berbagai kompetisi teknologi, olahraga, dan seni.",
+        "CSS 3.0 adalah kegiatan tahunan dalam rangka Dies Natalis Jurusan Ilmu Komputer FMIPA Universitas Lampung yang menampilkan berbagai kompetisi teknologi, olahraga, dan logika matematika bagi siswa.",
     url: `${baseUrl}/tentang-kami`,
     image: `${baseUrl}/css-logo.png`,
     organizer: {

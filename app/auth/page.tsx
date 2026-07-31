@@ -9,7 +9,7 @@ export const metadata: Metadata = {
     title: "Masuk / Daftar",
     description: "Masuk atau daftar akun untuk mendaftar lomba",
     openGraph: {
-        title: "Masuk / Daftar",
+        title: "Masuk / Daftar - CSS UNILA 3.0",
         description: "Masuk atau daftar akun untuk mendaftar lomba",
     }
 };

@@ -14,14 +14,16 @@ const transporter = nodemailer.createTransport({
 export const sendVerificationEmail = async (
   to: string,
   code: string,
-  fullName: string
+  fullName: string,
 ) => {
+  const plainText = `Halo ${fullName || "Peserta"},\n\nKode verifikasi akun CSS 3.0 Anda adalah: ${code}\n\nKode ini berlaku selama 15 menit.\nJika Anda tidak mendaftar di CSS 3.0, abaikan email ini.`;
   const html = generateVerificationEmailHtml(to, code, fullName);
 
   await transporter.sendMail({
     from: `"CSS 3.0 — Computer Science Showdown" <${process.env.EMAIL_SMTP_USER}>`,
     to,
-    subject: `[CSS 3.0] Kode Verifikasi Email Anda: ${code}`,
+    subject: `[CSS 3.0] Kode Verifikasi Email`,
+    text: plainText,
     html,
   });
-}
+};

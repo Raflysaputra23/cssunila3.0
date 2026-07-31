@@ -28,6 +28,7 @@ export const metadata: Metadata = {
     "event teknologi Universitas Lampung", "lomba coding Lampung",
     "kompetisi IT siswa"
   ],
+  icons: "/favicon.ico",
   robots: {
     index: true,
     follow: true,
@@ -45,7 +46,7 @@ export const metadata: Metadata = {
         url: `/css-logo.png`,
         width: 1200,
         height: 630,
-        alt: "CSS UNILA 3.0",
+        alt: "Logo CSS UNILA 3.0",
       },
     ],
     locale: "id_ID",

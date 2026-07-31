@@ -28,7 +28,7 @@ export const generateVerificationEmailHtml = (
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
-  <title>Verifikasi Email — CSS 3.0</title>
+  <title>Kode Verifikasi Email — CSS 3.0</title>
 </head>
 <body style="margin:0;padding:0;background-color:#0b0f19;font-family:'Helvetica Neue',Helvetica,Arial,sans-serif;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;">
 

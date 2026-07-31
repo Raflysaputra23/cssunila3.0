@@ -1263,14 +1263,16 @@ const SiteSettingsTab = () => {
         </div>
       )}
 
+      <div className="border-t border-white/10 pt-8" />
+
       <div className="glass rounded-3xl p-4 space-y-6 border border-white/10 mt-8">
         <div className="flex items-center gap-3 border-b border-white/10 pb-4">
           <div className="flex shrink-0 size-9 items-center justify-center rounded-2xl bg-cyan-strong/15 text-cyan-strong">
             <ImageIcon size={20} />
           </div>
           <div>
-            <h3 className="font-display text-lg font-bold text-foreground">QRIS Bank (Pendaftaran Manual)</h3>
-            <p className="text-xs text-muted-foreground">Upload gambar QRIS bank yang akan digunakan ketika Admin mendaftarkan peserta secara manual</p>
+            <h3 className="font-display text-lg font-bold text-foreground">Qris/Rekening Bank (Pendaftaran Manual)</h3>
+            <p className="text-xs text-muted-foreground">Upload QRIS / cantumkan rekening bank yang akan digunakan ketika Admin mendaftarkan peserta secara manual</p>
           </div>
         </div>
 

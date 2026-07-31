@@ -512,7 +512,7 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
                     className="inputCls w-full"
                   >
                     {Array.from({ length: selectedComp.slot }).map((_, i) => (
-                      <option key={i + 1} value={i + 1}>
+                      <option className="bg-background" key={i + 1} value={i + 1}>
                         {i + 1} Slot
                       </option>
                     ))}

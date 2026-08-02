@@ -1,4 +1,4 @@
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Info } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
@@ -46,48 +46,35 @@ const AuthPage = async () => {
             <div className="pointer-events-none absolute -left-20 top-20 -z-10 h-72 w-72 rounded-full bg-sapphire/30 blur-3xl" />
             <div className="pointer-events-none absolute -right-20 bottom-20 -z-10 h-72 w-72 rounded-full bg-cyan-strong/25 blur-3xl" />
 
-            {!registrasi ? (
-                <div className="w-full max-w-md">
-                    <Link href="/" className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-                        <ArrowLeft size={14} /> Kembali ke beranda
-                    </Link>
+            <div className="w-full max-w-md">
+                <Link href="/" className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+                    <ArrowLeft size={14} /> Kembali ke beranda
+                </Link>
 
-                    <div className="glass-strong rounded-3xl p-7">
-                        <div className="flex items-center gap-3">
-                            <Image src={logo} width={80} height={80} alt={`${titleMain} ${titleSub}`} className="h-8 w-auto" />
-                            <div>
-                                <p className="font-display text-lg font-bold">
-                                    {titleMain} <span className="gradient-text">{titleSub}</span>
-                                </p>
-                                <p className="text-xs text-muted-foreground">Computer Science Showdown</p>
-                            </div>
+                <div className="glass-strong rounded-3xl p-7">
+                    <div className="flex items-center gap-3">
+                        <Image src={logo} width={80} height={80} alt={`${titleMain} ${titleSub}`} className="h-8 w-auto" />
+                        <div>
+                            <p className="font-display text-lg font-bold">
+                                {titleMain} <span className="gradient-text">{titleSub}</span>
+                            </p>
+                            <p className="text-xs text-muted-foreground">Computer Science Showdown</p>
                         </div>
-
-                        <FormAuth />
-
                     </div>
+
+                    {registrasi &&
+                        <div className="mt-4 flex items-start gap-2 bg-cyan-strong/10 border border-cyan-strong/15 rounded-2xl p-4">
+                            <Info className="shrink-0 size-4 text-cyan-strong" />
+                            <p className="text-sm text-cyan-strong">
+                                Pendaftaran akun sedang ditutup.
+                            </p>
+                        </div>
+                    }
+
+                    <FormAuth openRegistrasi={registrasi} />
+
                 </div>
-            ) :
-                (
-                    <div>
-                        <Link href="/" className="mb-6 inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-                            <ArrowLeft size={14} /> Kembali ke beranda
-                        </Link>
-                        <div className="glass rounded-xl w-full p-7 flex flex-col gap-1 items-start max-w-lg">
-                            <div className="flex items-center gap-3 mb-6">
-                                <Image src={logo} width={80} height={80} alt={`${titleMain} ${titleSub}`} className="h-8 w-auto" />
-                                <div>
-                                    <p className="font-display text-lg font-bold">
-                                        {titleMain} <span className="gradient-text">{titleSub}</span>
-                                    </p>
-                                    <p className="text-xs text-muted-foreground">Computer Science Showdown</p>
-                                </div>
-                            </div>
-                            <h1 className="font-bold text-3xl font-display">Pendaftaran sedang ditutup</h1>
-                            <p className="text-muted-foreground text-sm">Silahkan tunggu informasi selanjutnya</p>
-                        </div>
-                    </div>
-                )}
+            </div>
         </div>
     );
 }

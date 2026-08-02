@@ -244,7 +244,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                 )}
 
                                 {isAdmin && (
-                                    <div className="mt-6 flex items-center gap-2 bg-cyan-strong/10 border border-cyan-strong/15 rounded-2xl p-4">
+                                    <div className="mt-6 flex items-start gap-2 bg-cyan-strong/10 border border-cyan-strong/15 rounded-2xl p-4">
                                         <Info className="shrink-0 size-4 text-cyan-strong" />
                                         <p className="text-sm text-cyan-strong">
                                             Sebagai Admin, anda dapat mendaftarkan peserta melalui halaman <Link href="/admin" className="text-cyan-strong font-semibold">admin</Link>.

@@ -60,7 +60,7 @@ const GoogleIcon = () => {
     );
 }
 
-const FormAuth = () => {
+const FormAuth = ({ openRegistrasi }: { openRegistrasi: boolean }) => {
     const router = useRouter();
     const [mode, setMode] = useState<"login" | "register">("login");
     const [fullName, setFullName] = useState("");
@@ -114,7 +114,7 @@ const FormAuth = () => {
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, fullName, captchaToken }),
                 });
-                
+
                 const data = await res.json();
                 if (!res.ok) throw new Error(data.error || "Gagal mengirim kode verifikasi");
 
@@ -236,15 +236,17 @@ const FormAuth = () => {
                 </button>
             </form>
 
-            <p className="mt-5 text-center text-sm text-muted-foreground">
-                {mode === "login" ? "Belum punya akun? " : "Sudah punya akun? "}
-                <button
-                    onClick={() => setMode(mode === "login" ? "register" : "login")}
-                    className="font-semibold cursor-pointer text-cyan-strong hover:underline"
-                >
-                    {mode === "login" ? "Daftar di sini" : "Masuk"}
-                </button>
-            </p>
+            {openRegistrasi &&
+                <p className="mt-5 text-center text-sm text-muted-foreground">
+                    {mode === "login" ? "Belum punya akun? " : "Sudah punya akun? "}
+                    <button
+                        onClick={() => setMode(mode === "login" ? "register" : "login")}
+                        className="font-semibold cursor-pointer text-cyan-strong hover:underline"
+                    >
+                        {mode === "login" ? "Daftar di sini" : "Masuk"}
+                    </button>
+                </p>
+            }
         </section>
     );
 }

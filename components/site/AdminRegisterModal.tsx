@@ -43,7 +43,7 @@ type CompetitionOption = {
   competition_fields: FieldRow[];
 };
 
-function FieldLabel({ label, required }: { label: string; required?: boolean }) {
+const FieldLabel = ({ label, required }: { label: string; required?: boolean }) => {
   return (
     <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-muted-foreground">
       {label}
@@ -153,7 +153,7 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
     },
   });
 
-  async function uploadFieldFile(fieldKey: string, file: File) {
+  const uploadFieldFile = async (fieldKey: string, file: File) => {
     if (!user || !selectedComp) return;
     if (file.size > 2 * 1024 * 1024) {
       toast.error("Ukuran file maksimum 2 MB");
@@ -304,6 +304,7 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
     onSuccess: () => {
       toast.success("Pendaftaran berhasil diverifikasi!");
       qc.invalidateQueries({ queryKey: ["admin-regs"] });
+      setUploadingProof(false);
       onClose();
     },
     onError: (e: Error) => {

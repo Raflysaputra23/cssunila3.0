@@ -2,7 +2,7 @@
 
 import { createClient } from "@/supabase/client";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { GripVertical, Loader2, Plus, Trash2 } from "lucide-react";
+import { GripVertical, Info, Loader2, Plus, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { toast } from "sonner";
 
@@ -116,6 +116,12 @@ const FieldManager = ({ comp, onClose }: { comp: { id: string; name: string }; o
             <p className="text-xs text-muted-foreground">{comp.name} — atur input apa saja yang akan diisi peserta.</p>
           </div>
           <button onClick={onClose} className="rounded-full border border-white/10 px-3 py-1.5 text-xs cursor-pointer">Tutup</button>
+        </div>
+        <div className="flex items-start gap-3 bg-cyan-strong/10 border border-cyan-strong/15 rounded-2xl p-4">
+          <Info className="shrink-0 size-4 text-cyan-strong" />
+          <p className="text-sm text-cyan-strong">
+            Perhatian untuk tidak menambahkan input data upload bukti pembayaran, karena validasi pembayaran sudah dilakukan otomatis oleh sistem. Fokus saja untuk menambahkan field input data yang sekiranya penting untuk kebutuhan masing - masing lomba
+          </p>
         </div>
 
         {isLoading && <div className="glass rounded-2xl p-6 text-center text-sm text-muted-foreground">Memuat…</div>}

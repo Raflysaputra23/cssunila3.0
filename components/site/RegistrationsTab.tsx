@@ -42,6 +42,7 @@ type RegistrationAnswer = {
 
 type AdminReg = {
   id: string;
+  user_id: string;
   team_name: string;
   leader_name: string;
   leader_whatsapp: string;
@@ -55,7 +56,7 @@ type AdminReg = {
   verified_by: { full_name: string } | null;
   competition: { name: string; slug: string; id: string } | null;
   payments: {
-    id?: string;
+    id: string;
     amount_idr: number;
     status: string;
     midtrans_order_id: string | null;
@@ -539,7 +540,7 @@ const RegistrationsTab = () => {
       let query = supabase
         .from("registrations")
         .select(
-          "id, team_name, leader_name, leader_whatsapp, leader_email, status, is_manual, rejection_reason, created_at, verified_at, slot, is_manual, verified_by:profiles!registrations_verified_by_fkey(full_name), competition:competitions(id,name,slug), payments(id,amount_idr,status,midtrans_order_id,midtrans_payment_type,paid_at,payment_proof), registration_answers(field_key,field_label,value)"
+          "id, user_id, team_name, leader_name, leader_whatsapp, leader_email, status, is_manual, rejection_reason, created_at, verified_at, slot, is_manual, verified_by:profiles!registrations_verified_by_fkey(full_name), competition:competitions(id,name,slug), payments(id,amount_idr,status,midtrans_order_id,midtrans_payment_type,paid_at,payment_proof), registration_answers(field_key,field_label,value)"
         );
 
       if (role === "lomba") {
@@ -915,7 +916,7 @@ const RegistrationsTab = () => {
                       <Eye size={12} /> Detail
                     </button>
 
-                    {r.is_manual && r.status === "pending_payment" && r.payments?.status !== "success" && (
+                    {r.is_manual && (user?.id === r.user_id) && r.status === "pending_payment" && r.payments?.status !== "success" && (
                       <button
                         onClick={() => setResumePayTarget({
                           regId: r.id,

@@ -20,6 +20,8 @@ const clientKey = isProd
   ? process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY_PROD
   : process.env.NEXT_PUBLIC_MIDTRANS_CLIENT_KEY_SAND;
 
+const appUrl = process.env.NEXT_PUBLIC_DOMAIN_URL ?? "http://localhost:3000";
+
 export const POST = async (req: Request) => {
   const ip = getClientIp(req);
   const { allowed, remaining, resetAt } = rateLimit(`midtrans-snap:${ip}`, 5, 60_000);
@@ -146,7 +148,6 @@ export const POST = async (req: Request) => {
       ? reg.competition[0]?.slug
       : (reg.competition as { slug: string } | null)?.slug;
 
-    const appUrl = process.env.NEXT_PUBLIC_DOMAIN_URL ?? "http://localhost:3000";
 
     const body = {
       transaction_details: {

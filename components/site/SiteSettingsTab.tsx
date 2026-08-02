@@ -20,6 +20,7 @@ import {
   ImageIcon,
   Wrench,
   Lock,
+  Wallet2,
 } from "lucide-react";
 import Image from "next/image";
 import { useRef, useState, useEffect } from "react";
@@ -1090,7 +1091,7 @@ const SiteSettingsTab = () => {
                 <input type="checkbox" onChange={(e) => {
                   setSettings((prev) => ({ ...prev, site_maintenance: String(e.target.checked) }));
                   setEditingSettings((prev) => ({ ...prev, site_maintenance: String(e.target.checked) }));
-                }} checked={settings['site_maintenance'] && settings['site_maintenance'] == 'true' ? true : false} id="maintenance" className="appearance-none mt-1 shrink-0 size-5 rounded-2xl border-none bg-white/20 checked:bg-primary" />
+                }} checked={settings['site_maintenance'] && settings['site_maintenance'] == 'true' ? true : false} id="maintenance" className="appearance-none shrink-0 size-5 rounded-2xl border-none bg-white/20 checked:bg-primary" />
               </div>
             </label>
             <hr />
@@ -1108,9 +1109,35 @@ const SiteSettingsTab = () => {
                 <input type="checkbox" onChange={(e) => {
                   setSettings((prev) => ({ ...prev, site_registrasi: String(e.target.checked) }));
                   setEditingSettings((prev) => ({ ...prev, site_registrasi: String(e.target.checked) }));
-                }} checked={settings['site_registrasi'] && settings['site_registrasi'] == 'true' ? true : false} id="registrasi" className="appearance-none mt-1 shrink-0 size-5 rounded-2xl border-none bg-white/20 checked:bg-primary" />
+                }} checked={settings['site_registrasi'] && settings['site_registrasi'] == 'true' ? true : false} id="registrasi" className="appearance-none shrink-0 size-5 rounded-2xl border-none bg-white/20 checked:bg-primary" />
               </div>
             </label>
+            <hr />
+            <div className="flex items-center gap-3">
+              <div className="flex shrink-0 size-9 items-center justify-center rounded-xl bg-primary/10">
+                <Wallet2 size={16} className="text-primary" />
+              </div>
+              <div>
+                <h2 className="font-semibold text-lg text-foreground truncate">Setting Pembayaran</h2>
+                <span className="text-sm text-muted-foreground">Atur metode pembayaran yang akan digunakan saat pendaftaran</span>
+                <div className="mt-3 flex items-center gap-2 shrink-0">
+                  <label htmlFor="midtrans" className="flex cursor-pointer items-center gap-2 glass rounded-xl p-3">
+                    <input type="radio" name="site_metode_payment" value="midtrans" onChange={(e) => {
+                      setSettings((prev) => ({ ...prev, site_metode_payment: String(e.target.value) }));
+                      setEditingSettings((prev) => ({ ...prev, site_metode_payment: String(e.target.value) }));
+                    }} checked={settings['site_metode_payment'] && settings['site_metode_payment'] == 'midtrans' ? true : false} id="midtrans" className="appearance-none shrink-0 size-5 rounded-2xl border-none bg-white/20 checked:bg-primary" />
+                    <span>Midtrans</span>
+                  </label>
+                  <label htmlFor="manual" className="flex cursor-pointer items-center gap-2 glass rounded-xl p-3">
+                    <input type="radio" name="site_metode_payment" value="manual" onChange={(e) => {
+                      setSettings((prev) => ({ ...prev, site_metode_payment: String(e.target.value) }));
+                      setEditingSettings((prev) => ({ ...prev, site_metode_payment: String(e.target.value) }));
+                    }} checked={settings['site_metode_payment'] && settings['site_metode_payment'] == 'manual' ? true : false} id="manual" className="appearance-none shrink-0 size-5 rounded-2xl border-none bg-white/20 checked:bg-primary" />
+                    <span>Transfer Manual</span>
+                  </label>
+                </div>
+              </div>
+            </div>
           </div>
         )}
         <div className="flex items-center justify-end">
@@ -1271,8 +1298,8 @@ const SiteSettingsTab = () => {
             <ImageIcon size={20} />
           </div>
           <div>
-            <h3 className="font-display text-lg font-bold text-foreground">Qris/Rekening Bank (Pendaftaran Manual)</h3>
-            <p className="text-xs text-muted-foreground">Upload QRIS / cantumkan rekening bank yang akan digunakan ketika Admin mendaftarkan peserta secara manual</p>
+            <h3 className="font-display text-lg font-bold text-foreground">QRIS / Rekening Bank (Metode Pembayaran Manual)</h3>
+            <p className="text-xs text-muted-foreground">Upload QRIS / cantumkan rekening bank yang akan digunakan ketika metode pembayaran adalah manual</p>
           </div>
         </div>
 
@@ -1307,10 +1334,10 @@ const SiteSettingsTab = () => {
                 }}
               />
             </div>
-            <fieldset className="bg-background/10 border border-white/15 rounded-2xl p-4">
-              <legend className="text-xs text-muted-foreground uppercase italic">Catatan</legend>
-              <p className="text-xs text-muted-foreground">
-                Gambar ini akan ditampilkan kepada Admin & dapat dikirim langsung ke WhatsApp peserta saat pendaftaran manual diselesaikan. Format: PNG/JPG/WebP (Max 2MB).
+            <fieldset className="bg-amber-500/10 border border-amber-500/15 rounded-2xl p-4">
+              <legend className="text-xs text-amber-500 font-semibold uppercase italic">Catatan</legend>
+              <p className="text-xs text-amber-500">
+                Gambar ini akan ditampilkan ketika metode pembayaran adalah manual dan pendaftar diharapkan mengupload bukti pembayaran yang sudah disediakan. Format: PNG/JPG/WebP (Max 2MB).
               </p>
             </fieldset>
             <div className="flex flex-wrap gap-3">
@@ -1346,7 +1373,7 @@ const SiteSettingsTab = () => {
                 disabled={saveSettings.isPending || settingsLoading}
                 className="inline-flex items-center gap-1.5 rounded-full border border-cyan-strong/20 bg-cyan-strong/20 px-4 py-2.5 text-xs font-semibold text-cyan-strong hover:bg-cyan-strong/30 transition cursor-pointer"
               >
-                {saveSettings.isPending ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} 
+                {saveSettings.isPending ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />}
                 Simpan
               </button>
             </div>

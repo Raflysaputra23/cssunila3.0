@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import {
   Inbox,
   ArrowLeft,
@@ -10,8 +10,9 @@ import {
   Wallet,
   Download,
   Loader2,
-  ShieldCheck,
   X,
+  QrCode,
+  Upload,
 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
@@ -24,6 +25,7 @@ import { createClient } from "@/supabase/client";
 import downloadTicket from "@/lib/download-ticket";
 import GroupLinkPanel from "@/components/site/GroupLinkPanel";
 import { useAuth } from "@/hooks/use-auth";
+import Image from "next/image";
 
 type Row = {
   id: string;
@@ -36,19 +38,21 @@ type Row = {
   created_at: string;
   competition: { id: string; slug: string; name: string } | null;
   payments:
-    | {
-        amount_idr: number;
-        status: string;
-        midtrans_token: string | null;
-        midtrans_order_id: string | null;
-      }
-    | {
-        amount_idr: number;
-        status: string;
-        midtrans_token: string | null;
-        midtrans_order_id: string | null;
-      }[]
-    | null;
+  | {
+    id: string;
+    amount_idr: number;
+    status: string;
+    midtrans_token: string | null;
+    midtrans_order_id: string | null;
+  }
+  | {
+    id: string;
+    amount_idr: number;
+    status: string;
+    midtrans_token: string | null;
+    midtrans_order_id: string | null;
+  }[]
+  | null;
 };
 
 type SnapResult = {
@@ -90,12 +94,13 @@ const statusMeta: Record<
 };
 
 const HistoryPage = () => {
-  const [payingId, setPayingId] = useState<string | null>(null);
-  const suparef = useRef(createClient());
-  const [rows, setRows] = useState<Row[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [modalData, setModalData] = useState<{ registrationId: string; midtransToken: string } | null>(null);
   const { role, loading, user } = useAuth();
+  const [payingId, setPayingId] = useState<string | null>(null);
+  const [modalData, setModalData] = useState<{ registrationId: string; midtransToken: string } | null>(null);
+  const [proofFile, setProofFile] = useState<File | null>(null);
+  const [uploadingProof, setUploadingProof] = useState(false);
+  const suparef = useRef(createClient());
+  const qc = useQueryClient();
   const router = useRouter();
 
   useEffect(() => {
@@ -127,35 +132,45 @@ const HistoryPage = () => {
     document.head.appendChild(s);
   }, []);
 
-  const fetchRows = async () => {
-    if (!user) return;
+  const { data: rows, isLoading } = useQuery({
+    queryKey: ["user-registrations", user?.id],
+    queryFn: async (): Promise<Row[]> => {
+      if (!user) return [];
 
-    const supabase = suparef.current;
-    setIsLoading(true);
+      const supabase = suparef.current;
+      const { data, error } = await supabase
+        .from("registrations")
+        .select(
+          "id, team_name, leader_name, leader_whatsapp, status, rejection_reason, created_at, slot, competition:competitions(id, slug, name), payments(id, amount_idr, status, midtrans_token, midtrans_order_id)"
+        )
+        .eq("user_id", user.id)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      return (data ?? []) as unknown as Row[];
+    },
+    enabled: !!user
+  });
 
-    const { data, error } = await supabase
-      .from("registrations")
-      .select(
-        "id, team_name, leader_name, leader_whatsapp, status, rejection_reason, created_at, slot, competition:competitions(id, slug, name), payments(amount_idr, status, midtrans_token, midtrans_order_id)"
-      )
-      .eq("user_id", user.id)
-      .order("created_at", { ascending: false });
+  const { data: { qrisBankUrl, rekeningBank, metodePay } = { qrisBankUrl: "", rekeningBank: "", metodePay: "midtrans" } } = useQuery({
+    queryKey: ["site-qris-url"],
+    queryFn: async (): Promise<{ qrisBankUrl: string, rekeningBank: string, metodePay: "midtrans" | "manual" }> => {
+      const supabase = suparef.current;
+      const { data } = await supabase
+        .from("site_settings")
+        .select("id, value")
+        .in("id", ["qris_bank_url", "rekening_bank", "site_metode_payment"]);
 
-    if (error) {
-      setIsLoading(false);
-      setRows([]);
-      return;
-    }
+      const qrisBankUrl = data?.find((s) => s.id === "qris_bank_url");
+      const rekeningBank = data?.find((s) => s.id === "rekening_bank");
+      const metodePay = data?.find((s) => s.id === "site_metode_payment")
 
-    setRows((data ?? []) as unknown as Row[]);
-    setIsLoading(false);
-  };
-
-  useEffect(() => {
-    (async()=>{
-      await fetchRows();
-    })()
-  }, [user]);
+      return {
+        qrisBankUrl: qrisBankUrl?.value ?? "",
+        rekeningBank: rekeningBank?.value ?? "",
+        metodePay: metodePay?.value ?? "",
+      };
+    },
+  });
 
   const pay = useMutation({
     mutationFn: async ({
@@ -165,8 +180,9 @@ const HistoryPage = () => {
       registrationId: string;
       forceNew?: boolean;
     }) => {
-      setPayingId(registrationId);
+      if (metodePay === "manual") throw new Error("Metode pembayaran tidak aktif");
 
+      setPayingId(registrationId);
       const response = await fetch("/api/midtrans/snap", {
         method: "POST",
         headers: {
@@ -179,9 +195,7 @@ const HistoryPage = () => {
         message?: string;
       };
 
-      if (!response.ok) {
-        throw new Error(res.message ?? "Gagal membuat transaksi Midtrans");
-      }
+      if (!response.ok) throw new Error(res.message ?? "Gagal membuat transaksi Midtrans");
 
       const w = window as unknown as {
         snap?: {
@@ -228,10 +242,66 @@ const HistoryPage = () => {
       });
     },
     onSettled: () => {
+      qc.invalidateQueries({ queryKey: ["user-registrations", user?.id] });
       setPayingId(null);
-      fetchRows();
     },
     onError: (e: Error) => toast.error(e.message),
+  });
+
+  const payManual = useMutation({
+    mutationFn: async (
+      { registrationId, paymentId }: { registrationId: string; paymentId: string }
+    ) => {
+      if (metodePay === "midtrans") throw new Error("Metode pembayaran tidak aktif");
+      if (!proofFile) throw new Error("Pilih foto bukti pembayaran terlebih dahulu");
+      if (!user) throw new Error("Sesi tidak valid");
+
+      setUploadingProof(true);
+      if (proofFile.size > 2 * 1024 * 1024) {
+        throw new Error("Ukuran file maksimum 2 MB");
+      }
+
+      const validExts = ["jpg", "jpeg", "png"];
+      const fileExt = proofFile.name.split(".").pop()?.toLowerCase() ?? "";
+      if (!validExts.includes(fileExt)) {
+        throw new Error("Ekstensi file harus .jpg, .jpeg, atau .png");
+      }
+
+      const supabase = suparef.current;
+      const ext = proofFile.name.split(".").pop()?.toLowerCase() ?? "jpg";
+      const proofPath = `bukti-bayar/${user.id}/${registrationId}-${crypto.randomUUID()}.${ext}`;
+
+      const { error: upErr } = await supabase.storage
+        .from("registration-files")
+        .upload(proofPath, proofFile, { upsert: false, contentType: proofFile.type });
+      if (upErr) throw upErr;
+
+      const { error: payErr } = await supabase
+        .from("payments")
+        .update({
+          status: "success",
+          paid_at: new Date().toISOString(),
+          payment_proof: proofPath,
+          midtrans_payment_type: "manual",
+        })
+        .eq("id", paymentId);
+      if (payErr) throw payErr;
+
+      const { error: regErr } = await supabase
+        .from("registrations")
+        .update({ status: "pending_verification" })
+        .eq("id", registrationId);
+      if (regErr) throw regErr;
+    },
+    onSuccess: () => {
+      toast.success("Pendaftaran berhasil dibayar!");
+      qc.invalidateQueries({ queryKey: ["user-registrations", user?.id] });
+      setUploadingProof(false);
+    },
+    onError: (e: Error) => {
+      toast.error(e.message);
+      setUploadingProof(false);
+    },
   });
 
   return (
@@ -286,7 +356,7 @@ const HistoryPage = () => {
             {rows?.map((r) => {
               const meta = statusMeta[r.status] ?? statusMeta.draft;
               const Icon = meta.icon;
-              
+
               const paymentsArr = Array.isArray(r.payments)
                 ? r.payments
                 : r.payments
@@ -327,7 +397,8 @@ const HistoryPage = () => {
                         <Icon size={12} /> {meta.label}
                       </span>
 
-                      {r.status === "pending_payment" && (
+                      {/* Metode pembayaran midtrans */}
+                      {r.status === "pending_payment" && metodePay === "midtrans" && (
                         <button
                           onClick={() => {
                             if (payment?.midtrans_token) {
@@ -351,7 +422,7 @@ const HistoryPage = () => {
                         </button>
                       )}
 
-                      {r.status === "verified" ? (
+                      {r.status === "verified" && (
                         <button
                           onClick={() => {
                             const paymentsArr = Array.isArray(r.payments)
@@ -369,17 +440,11 @@ const HistoryPage = () => {
                         >
                           <Download size={12} /> Tiket PDF
                         </button>
-                      ) : (
-                        <span
-                          title="Tiket aktif setelah pembayaran diverifikasi panitia"
-                          className="inline-flex items-center gap-1.5 rounded-full border border-white/10 px-3 py-1.5 text-xs text-muted-foreground/60"
-                        >
-                          <ShieldCheck size={12} /> Tiket tersedia setelah
-                          verifikasi
-                        </span>
                       )}
                     </div>
                   </div>
+
+                  {/* Alasan Penolakan */}
                   {r.status === "rejected" && r.rejection_reason && (
                     <div className="mt-4 rounded-2xl bg-destructive/10 border border-destructive/40 p-5">
                       <h4 className="text-sm font-semibold text-destructive">
@@ -390,6 +455,99 @@ const HistoryPage = () => {
                       </p>
                     </div>
                   )}
+
+                  {/* Metode Pembayaran Manual */}
+                  {r.status === "pending_payment" && metodePay === "manual" && (
+                    <div className="mt-4 rounded-2xl bg-amber-500/10 border border-amber-500/40 p-5">
+                      <div className="space-y-4">
+                        {qrisBankUrl && (
+                          <>
+                            <p className="mb-2 text-xs font-semibold uppercase tracking-wider text-muted-foreground flex items-center gap-1.5">
+                              <QrCode size={12} /> QRIS Pembayaran
+                            </p>
+                            <div className="w-fit rounded-2xl border border-white/10 bg-white p-3 shadow-lg">
+                              <Image
+                                src={qrisBankUrl}
+                                alt="QRIS Bank"
+                                width={220}
+                                height={220}
+                                className="rounded-xl object-contain"
+                              />
+                            </div>
+                          </>
+                        )}
+                        {rekeningBank && (
+                          <div className="space-y-2">
+                            <h4 className="font-semibold text-amber-500 font-display">BANK SEABANK INDONESIA</h4>
+                            <div className="inline-flex flex-col gap-2 items-start px-3 py-2 bg-amber-500/10 text-amber-300 border border-amber-500/30 text-sm rounded-lg">
+                              <div>
+                                <h4 className="uppercase text-[10px] font-semibold tracking-wider">No. Rekening</h4>
+                                <p className="font-display text-white text-sm mt-0.5">{rekeningBank.split("-")[0]}</p>
+                              </div>
+                              <div>
+                                <h4 className="uppercase text-[10px] font-semibold tracking-wider">Atas Nama</h4>
+                                <p className="font-display text-white text-sm mt-0.5">{rekeningBank.split("-")[1]}</p>
+                              </div>
+                              <div>
+                                <h4 className="uppercase text-[10px] font-semibold tracking-wider">Harga</h4>
+                                <p className="font-display text-white text-sm mt-0.5">Rp. {amount.toLocaleString("id-ID")}</p>
+                              </div>
+                              {r.slot > 1 &&
+                                <div>
+                                  <h4 className="uppercase text-[10px] font-semibold tracking-wider">Slot</h4>
+                                  <p className="font-display text-white text-sm mt-0.5">{r.slot} slot</p>
+                                </div>
+                              }
+                            </div>
+                          </div>
+                        )}
+                        {(!qrisBankUrl && !rekeningBank) ? (
+                          <p className="inline-block px-3 py-2 bg-destructive/10 text-destructive border border-destructive/30 text-sm rounded-lg">Metode pembayaran belum ditentukan. Harap hubungi panitia CSS untuk informasi lebih lanjut</p>
+                        ) : (
+                          <>
+                            <p className="text-xs text-muted-foreground">
+                              Upload foto bukti pembayaran, pastikan bukti pembayaran valid dan sesuai dengan nominal yang tertera.
+                            </p>
+
+                            <div>
+                              <label className="inline-flex cursor-pointer items-center gap-2 rounded-full border border-white/15 bg-white/5 px-4 py-2.5 text-xs font-semibold text-foreground hover:bg-white/10 transition">
+                                <Upload size={13} />
+                                {proofFile ? proofFile.name : "Upload Bukti Bayar"}
+                                <input
+                                  type="file"
+                                  accept=".png, .jpg, .jpeg"
+                                  className="hidden"
+                                  onChange={(e) => {
+                                    const f = e.target.files?.[0];
+                                    if (f) setProofFile(f);
+                                  }}
+                                />
+                              </label>
+                              {proofFile && (
+                                <p className="mt-1 text-xs text-emerald-400">✓ {proofFile.name}</p>
+                              )}
+                            </div>
+
+
+                            <button
+                              disabled={payManual.isPending || uploadingProof || !proofFile}
+                              onClick={() => payManual.mutate({ registrationId: r.id, paymentId: payment.id })}
+                              className="flex-1 inline-flex items-center justify-center gap-2 rounded-full bg-emerald-500/25 px-4 py-2.5 text-sm font-bold text-emerald-300 hover:bg-emerald-500/35 disabled:opacity-60 transition cursor-pointer border border-emerald-500/20"
+                            >
+                              {payManual.isPending || uploadingProof ? (
+                                <Loader2 size={14} className="animate-spin" />
+                              ) : (
+                                <CheckCircle2 size={14} />
+                              )}
+                              Upload
+                            </button>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Grup Lomba */}
                   {r.status === "verified" && r.competition && (
                     <GroupLinkPanel competitionId={r.competition.id} />
                   )}
@@ -425,7 +583,7 @@ const HistoryPage = () => {
             <div className="confirm-modal-content">
               <h2 className="confirm-modal-title">Lanjutkan Pembayaran</h2>
               <p className="confirm-modal-message">
-                Anda memiliki transaksi pembayaran yang sedang aktif untuk pendaftaran ini. 
+                Anda memiliki transaksi pembayaran yang sedang aktif untuk pendaftaran ini.
                 Apakah Anda ingin melanjutkan pembayaran sebelumnya, atau membuat metode pembayaran baru (untuk mengganti metode pembayaran)?
               </p>
             </div>

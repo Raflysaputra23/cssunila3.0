@@ -260,14 +260,14 @@ const Navbar = () => {
 
     const [showLogoutConfirm, setShowLogoutConfirm] = useState(false);
 
-    async function doSignOut() {
+    const doSignOut = async () => {
         const supabase = suparef.current;
         await supabase.auth.signOut();
         toast.success("Berhasil keluar");
         router.push("/");
     }
 
-    function handleSignOut() {
+    const handleSignOut = () => {
         setShowLogoutConfirm(true);
     }
 

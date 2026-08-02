@@ -37,6 +37,17 @@ type CompRow = {
     competition_fields: FieldRow[];
 };
 
+const Field = ({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) => {
+    return (
+        <label className="block">
+            <span className="mb-1.5 block text-sm font-medium text-foreground/90">
+                {label} {required && <span className="text-destructive">*</span>}
+            </span>
+            {children}
+        </label>
+    );
+}
+
 const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
     const { slug } = use(params);
     const { user } = useAuth();
@@ -108,6 +119,21 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
         },
     });
 
+    const { data: { metodePay } = { metodePay: "midtrans" } } = useQuery({
+        queryKey: ["site-qris-url"],
+        queryFn: async (): Promise<{ metodePay: "midtrans" | "manual" }> => {
+            const supabase = suparef.current;
+            const { data } = await supabase
+                .from("site_settings")
+                .select("id, value")
+                .in("id", ["site_metode_payment"]);
+
+            const metodePay = data?.find((s) => s.id === "site_metode_payment")
+
+            return { metodePay: metodePay?.value ?? "" };
+        },
+    });
+
     const submit = useMutation({
         mutationFn: async () => {
             if (!comp || !user) throw new Error("Data belum siap");
@@ -150,7 +176,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                     leader_email: leaderEmail.trim(),
                     slot,
                     status: "pending_payment",
-                    is_manual: false,
+                    is_manual: metodePay === "manual" ? true : false,
                 })
                 .select("id")
                 .single();
@@ -175,6 +201,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                 status: "pending",
             });
             if (e3) throw e3;
+
             return reg.id;
         },
         onSuccess: () => {
@@ -372,15 +399,6 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
     );
 }
 
-const Field = ({ label, required, children }: { label: string; required?: boolean; children: React.ReactNode }) => {
-    return (
-        <label className="block">
-            <span className="mb-1.5 block text-sm font-medium text-foreground/90">
-                {label} {required && <span className="text-destructive">*</span>}
-            </span>
-            {children}
-        </label>
-    );
-}
+
 
 export default DaftarLomba;

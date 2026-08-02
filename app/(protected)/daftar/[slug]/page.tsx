@@ -3,7 +3,7 @@
 import { use, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Loader2, ShieldCheck, Upload, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Loader2, ShieldCheck, Upload, CheckCircle2, Info } from "lucide-react";
 import { toast } from "sonner";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
@@ -50,8 +50,9 @@ const Field = ({ label, required, children }: { label: string; required?: boolea
 
 const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
     const { slug } = use(params);
-    const { user } = useAuth();
+    const { user, role } = useAuth();
     const router = useRouter();
+    const isAdmin = ["lomba", "admin"].includes(role || "");
 
     const [teamName, setTeamName] = useState("");
     const [leaderName, setLeaderName] = useState("");
@@ -242,6 +243,15 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                     </div>
                                 )}
 
+                                {isAdmin && (
+                                    <div className="mt-6 flex items-center gap-2 bg-cyan-strong/10 border border-cyan-strong/15 rounded-2xl p-4">
+                                        <Info className="shrink-0 size-4 text-cyan-strong" />
+                                        <p className="text-sm text-cyan-strong">
+                                            Sebagai Admin, anda dapat mendaftarkan peserta melalui halaman <Link href="/admin" className="text-cyan-strong font-semibold">admin</Link>.
+                                        </p>
+                                    </div>
+                                )}
+
                                 <form
                                     onSubmit={(e) => {
                                         e.preventDefault();
@@ -369,7 +379,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
 
                                     <button
                                         type="submit"
-                                        disabled={!comp.is_open || submit.isPending}
+                                        disabled={!comp.is_open || submit.isPending || isAdmin}
                                         className="btn-hero cursor-pointer disabled:cursor-not-allowed hover:btn-hero-hover inline-flex w-full items-center justify-center gap-2 rounded-full px-7 py-3.5 text-sm font-semibold disabled:opacity-60"
                                     >
                                         {submit.isPending && <Loader2 size={16} className="animate-spin" />}

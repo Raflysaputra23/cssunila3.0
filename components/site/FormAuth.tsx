@@ -236,7 +236,7 @@ const FormAuth = ({ openRegistrasi }: { openRegistrasi: boolean }) => {
                 </button>
             </form>
 
-            {openRegistrasi &&
+            {!openRegistrasi &&
                 <p className="mt-5 text-center text-sm text-muted-foreground">
                     {mode === "login" ? "Belum punya akun? " : "Sudah punya akun? "}
                     <button

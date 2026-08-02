@@ -14,7 +14,7 @@ export const metadata: Metadata = {
   title: "Computer Science Showdown",
 }
 
-export default async function Home() {
+const Home = async () => {
   let totalLomba = 4;
   let totalHadiah = "35Jt+";
   let totalPeserta = 0;
@@ -30,7 +30,7 @@ export default async function Home() {
   let siteLogo: string | undefined;
   let timelineItems: { start_date: string; end_date: string; label: string; description: string }[] | undefined;
 
-  function formatCurrencyShort(value: number) {
+  const formatCurrencyShort = (value: number) => {
     const num = Number(value);
 
     if (num >= 1_000_000_000_000) {
@@ -170,3 +170,5 @@ export default async function Home() {
     </div>
   );
 }
+
+export default Home;

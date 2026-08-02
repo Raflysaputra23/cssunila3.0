@@ -5,11 +5,11 @@ interface RateLimitEntry {
 
 const store = new Map<string, RateLimitEntry>();
 
-export function rateLimit(
+export const rateLimit = (
   key: string,
   limit: number,
   windowMs: number
-): { allowed: boolean; remaining: number; resetAt: number } {
+): { allowed: boolean; remaining: number; resetAt: number } => {
   const now = Date.now();
   const entry = store.get(key);
 
@@ -30,7 +30,7 @@ export function rateLimit(
   };
 }
 
-export function getClientIp(req: Request): string {
+export const getClientIp = (req: Request): string => {
   const headers = req.headers;
   return (
     headers.get("x-real-ip") ??

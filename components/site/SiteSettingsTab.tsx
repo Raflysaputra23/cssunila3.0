@@ -334,15 +334,18 @@ const SiteSettingsTab = () => {
   ) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
     const ext = file.name.split(".").pop()?.toLowerCase() ?? "";
     if (!["png", "jpg", "jpeg", "webp", "svg"].includes(ext)) {
       toast.error("Format gambar tidak valid (png/jpg/webp/svg)");
       return;
     }
+
     if (file.size > 2 * 1024 * 1024) {
       toast.error("Ukuran file maksimal 2MB");
       return;
     }
+
     setUploadingLogo(bucket);
     const supabase = suparef.current;
     const fileName = `${bucket}/${crypto.randomUUID()}.${ext}`;
@@ -352,6 +355,7 @@ const SiteSettingsTab = () => {
       setUploadingLogo(null);
       return;
     }
+    
     const { data: urlData } = supabase.storage.from("site_settings").getPublicUrl(fileName);
     onDone(urlData.publicUrl);
     toast.success("Logo berhasil diunggah");
@@ -1113,22 +1117,22 @@ const SiteSettingsTab = () => {
               </div>
             </label>
             <hr />
-            <div className="flex items-center gap-3">
+            <div className="flex items-start gap-3">
               <div className="flex shrink-0 size-9 items-center justify-center rounded-xl bg-primary/10">
                 <Wallet2 size={16} className="text-primary" />
               </div>
               <div>
                 <h2 className="font-semibold text-lg text-foreground truncate">Setting Pembayaran</h2>
                 <span className="text-sm text-muted-foreground">Atur metode pembayaran yang akan digunakan saat pendaftaran</span>
-                <div className="mt-3 flex items-center gap-2 shrink-0">
-                  <label htmlFor="midtrans" className="flex cursor-pointer items-center gap-2 glass rounded-xl p-3">
+                <div className="mt-3 flex items-center gap-2 flex-wrap">
+                  <label htmlFor="midtrans" className="flex w-fit shrink-0 cursor-pointer items-center gap-2 glass rounded-xl p-3">
                     <input type="radio" name="site_metode_payment" value="midtrans" onChange={(e) => {
                       setSettings((prev) => ({ ...prev, site_metode_payment: String(e.target.value) }));
                       setEditingSettings((prev) => ({ ...prev, site_metode_payment: String(e.target.value) }));
                     }} checked={settings['site_metode_payment'] && settings['site_metode_payment'] == 'midtrans' ? true : false} id="midtrans" className="appearance-none shrink-0 size-5 rounded-2xl border-none bg-white/20 checked:bg-primary" />
                     <span>Midtrans</span>
                   </label>
-                  <label htmlFor="manual" className="flex cursor-pointer items-center gap-2 glass rounded-xl p-3">
+                  <label htmlFor="manual" className="flex w-fit shrink-0 cursor-pointer items-center gap-2 glass rounded-xl p-3">
                     <input type="radio" name="site_metode_payment" value="manual" onChange={(e) => {
                       setSettings((prev) => ({ ...prev, site_metode_payment: String(e.target.value) }));
                       setEditingSettings((prev) => ({ ...prev, site_metode_payment: String(e.target.value) }));
@@ -1293,7 +1297,7 @@ const SiteSettingsTab = () => {
       <div className="border-t border-white/10 pt-8" />
 
       <div className="glass rounded-3xl p-4 space-y-6 border border-white/10 mt-8">
-        <div className="flex items-center gap-3 border-b border-white/10 pb-4">
+        <div className="flex items-start gap-3 border-b border-white/10 pb-4">
           <div className="flex shrink-0 size-9 items-center justify-center rounded-2xl bg-cyan-strong/15 text-cyan-strong">
             <ImageIcon size={20} />
           </div>

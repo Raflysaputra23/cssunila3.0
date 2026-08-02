@@ -1,10 +1,7 @@
-"use client"
-
 import { ArrowUpRight, Users, Wallet, Lock, User } from "lucide-react";
 import { getIcon, accentGlow } from "@/lib/icons";
-import { useEffect, useRef, useState } from "react";
-import { createClient } from "@/supabase/client";
 import Link from "next/link";
+import { createClient } from "@/supabase/server";
 
 type CompCard = {
     slug: string; name: string; tagline: string | null; description: string[];
@@ -12,31 +9,18 @@ type CompCard = {
     team_size: string | null; is_open: boolean;
 };
 
-const Competitions = () => {
-    const [data, setData] = useState<CompCard[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const suparef = useRef(createClient());
+const Competitions = async () => {
+    let data: CompCard[] = [];
 
-    const loadData = async () => {
-        const supabase = suparef.current;
-        const { data, error } = await supabase
+    try {
+        const supabase = await createClient();
+        const { data: competitions } = await supabase
             .from("competitions")
             .select("slug,name,tagline,description,icon,accent,fee_idr,quota,team_size,is_open")
             .order("position");
-        if (error || !data) {
-            setData([]);
-            setIsLoading(false);
-            return;
-        };
-        setData(data as CompCard[]);
-        setIsLoading(false);
-    }
 
-    useEffect(() => {
-        (async () => {
-            await loadData();
-        })();
-    }, []);
+        if (competitions) data = competitions as CompCard[];
+    } catch { }
 
     return (
         <section id="lomba" className="relative py-24">
@@ -54,18 +38,15 @@ const Competitions = () => {
                     </p>
                 </div>
 
-                {isLoading && (
-                    <div className="glass rounded-3xl p-10 text-center text-sm text-muted-foreground">Memuat lomba…</div>
-                )}
-
-                {!isLoading && (!data || data.length === 0) && (
+                {data.length === 0 && (
                     <div className="glass rounded-3xl p-10 text-center text-sm text-muted-foreground">Belum ada lomba.</div>
                 )}
 
                 <div className="grid gap-5 grid-cols-1 md:grid-cols-3 xl:grid-cols-4">
-                    {data?.map((c) => {
+                    {data.map((c) => {
                         const Icon = getIcon(c.icon);
                         const accent = c.accent ?? "cyan";
+                        
                         return (
                             <article
                                 key={c.slug}

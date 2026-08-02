@@ -33,6 +33,7 @@ import ConfirmModal from "./ConfirmModal";
 import ImagePreviewModal from "./ImagePreviewModal";
 import AdminRegisterModal, { type ResumePayData } from "./AdminRegisterModal";
 import Link from "next/link";
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 
 type RegistrationAnswer = {
   field_key: string;
@@ -77,18 +78,18 @@ const STATUS_LABELS: Record<string, { label: string; tone: string }> = {
 
 const IMAGE_EXTENSIONS = ["jpg", "jpeg", "png", "webp"];
 
-function isImagePath(value: string): boolean {
+const isImagePath = (value: string): boolean => {
   const ext = value.split(".").pop()?.toLowerCase() ?? "";
   return IMAGE_EXTENSIONS.includes(ext);
 }
 
-function getStoragePublicUrl(path: string): string {
+const getStoragePublicUrl = (path: string): string => {
   const supabase = createClient();
   const { data } = supabase.storage.from("registration-files").getPublicUrl(path);
   return data.publicUrl;
 }
 
-function RejectDialog({
+const RejectDialog = ({
   teamName,
   onConfirm,
   onCancel,
@@ -98,7 +99,7 @@ function RejectDialog({
   onConfirm: (reason: string) => void;
   onCancel: () => void;
   isLoading: boolean;
-}) {
+}) => {
   const [reason, setReason] = useState("");
 
   return (
@@ -160,13 +161,13 @@ function RejectDialog({
   );
 }
 
-function AnswerValue({
+const AnswerValue = ({
   value,
   onImageClick,
 }: {
   value: string;
   onImageClick: (url: string) => void;
-}) {
+}) => {
   const isStoragePath = !value.startsWith("http") && value.includes("/");
   const isExternalUrl = value.startsWith("http");
 
@@ -191,15 +192,24 @@ function AnswerValue({
         </div>
       );
     }
+
     return (
-      <Link
-        href={publicUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 text-sm text-cyan-strong hover:underline"
-      >
-        <ExternalLink size={12} /> Lihat File
-      </Link>
+      <Dialog>
+        <DialogTrigger asChild>
+          <button type="button" className="inline-flex items-center gap-1.5 text-sm text-cyan-strong hover:underline">
+            <ExternalLink size={12} />
+            Lihat File
+          </button>
+        </DialogTrigger>
+
+        <DialogContent className="max-w-7xl h-[90vh] px-8">
+          <iframe
+            src={publicUrl}
+            className="w-full h-full rounded-2xl"
+            title="File"
+          />
+        </DialogContent>
+      </Dialog>
     );
   }
 
@@ -223,6 +233,7 @@ function AnswerValue({
         </div>
       );
     }
+    
     return (
       <Link
         href={value}
@@ -238,7 +249,7 @@ function AnswerValue({
   return <p className="text-sm text-foreground font-medium wrap-break-word">{value}</p>;
 }
 
-function InfoRow({
+const InfoRow = ({
   icon,
   label,
   value,
@@ -250,7 +261,7 @@ function InfoRow({
   value: string;
   mono?: boolean;
   colorClass?: string;
-}) {
+}) => {
   return (
     <div className="flex items-start gap-3">
       <span className="mt-0.5 text-muted-foreground">{icon}</span>
@@ -266,7 +277,7 @@ function InfoRow({
   );
 }
 
-function DetailModal({
+const DetailModal = ({
   reg,
   onClose,
   onVerify,
@@ -278,7 +289,7 @@ function DetailModal({
   onVerify: (id: string) => void;
   onReject: (id: string) => void;
   isPending: boolean;
-}) {
+}) => {
   const payment = reg.payments;
   const status = STATUS_LABELS[reg.status] ?? STATUS_LABELS.draft;
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);

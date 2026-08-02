@@ -10,6 +10,7 @@ import { createClient } from "@/supabase/client";
 import Image from "next/image";
 import Link from "next/link";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
 
 type CompRow = {
   id: string;
@@ -116,7 +117,7 @@ const CompetitionEditor = ({
     const allowed = ["jpg", "jpeg", "png", "webp", "svg"];
     if (!allowed.includes(ext ?? "")) {
       setLoadingUpload(false);
-      toast.error("Format file harus berupa JPG, JPEG, PNG, WEBP, atau SVG");
+      toast.error("Format file harus berupa JPG, PNG, WEBP, atau SVG");
       return;
     }
 
@@ -164,7 +165,7 @@ const CompetitionEditor = ({
 
     if (file.size > 3 * 1024 * 1024) {
       setLoadingUploadFile(false);
-      toast.error("Ukuran file maksimal 3MB");
+      toast.error("Ukuran file maksimal 3 MB");
       return;
     }
 
@@ -218,7 +219,19 @@ const CompetitionEditor = ({
           <HelpLabel label="Panduan Lomba" hint="Panduan lomba, file yang diperbolehkan hanya PDF" />
           {preview &&
             <div className="flex items-center gap-2 mb-2">
-              <Link target="_blank" href={preview ?? ""} className="text-cyan-strong text-sm bg-cyan-strong/10 px-2.5 py-1 rounded-lg border border-cyan-strong">Preview</Link>
+              <Dialog>
+                <DialogTrigger asChild>
+                  <button type="button" className="cursor-pointer text-cyan-strong text-xs bg-cyan-strong/10 px-3 py-1.5 rounded-lg border border-cyan-strong">Lihat PDF</button>
+                </DialogTrigger>
+
+                <DialogContent className="max-w-7xl h-[90vh] px-8">
+                  <iframe
+                    src={preview ?? ""}
+                    className="w-full h-full rounded-2xl"
+                    title="Panduan Lomba"
+                  />
+                </DialogContent>
+              </Dialog>
               <button type="button" onClick={() => { onChange({ ...value, panduan: null }); setPreview(null) }} className="text-xs text-destructive hover:underline flex items-center gap-1">
                 <X size={12} /> Hapus Panduan
               </button>

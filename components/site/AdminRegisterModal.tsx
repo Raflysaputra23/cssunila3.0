@@ -159,12 +159,14 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
       toast.error("Ukuran file maksimum 2 MB");
       return;
     }
-    const extAccept = ["jpg", "jpeg", "png", "webp"];
+
+    const extAccept = ["jpg", "jpeg", "png", "webp", "pdf"];
     const ext = file.name.split(".").pop()?.toLowerCase() ?? "bin";
     if (!extAccept.includes(ext)) {
-      toast.error("Ekstensi file tidak didukung (jpg/png/webp)");
+      toast.error("Ekstensi file tidak didukung (jpg/png/webp/pdf)");
       return;
     }
+
     setUploading((u) => ({ ...u, [fieldKey]: true }));
     try {
       const path = `${selectedComp.slug}/${user.id}/${fieldKey}-${crypto.randomUUID()}.${ext}`;
@@ -173,6 +175,7 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
         .from("registration-files")
         .upload(path, file, { upsert: false, contentType: file.type });
       if (error) throw error;
+
       setAnswers((a) => ({ ...a, [fieldKey]: path }));
       toast.success(`File "${file.name}" terunggah`);
     } catch (e) {
@@ -559,10 +562,10 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
                           ) : (
                             <Upload size={13} />
                           )}
-                          {answers[f.key] ? "Ganti File" : "Pilih File"}
+                          {answers[f.key] ? "Ganti File" : "Pilih File (Max 2 MB)"}
                           <input
                             type="file"
-                            accept=".jpg,.jpeg,.png,.webp"
+                            accept=".jpg,.jpeg,.png,.webp,.pdf"
                             className="hidden"
                             required={f.required}
                             disabled={uploading[f.key]}
@@ -573,10 +576,10 @@ export default function AdminRegisterModal({ onClose, resumePay }: AdminRegister
                           />
                         </label>
                         {answers[f.key] && (
-                          <span className="text-xs text-emerald-400 font-medium">✓ Terunggah</span>
+                          <span className="text-xs text-emerald-400 font-medium">✓ Terunggah {answers[f.key]}</span>
                         )}
                       </div>
-                      <p className="text-xs text-muted-foreground">Tip: File yang diterima &quot;.jpg&quot;, &quot;.jpeg&quot;, &quot;.png&quot;, &quot;.webp&quot;. Max 2mb</p>
+                      <p className="text-xs text-muted-foreground">Tip: File yang diterima &quot;.jpg&quot;, &quot;.jpeg&quot;, &quot;.png&quot;, &quot;.webp&quot;, &quot;.pdf&quot;. Max 2mb</p>
                     </div>
                   ) : (
                     <input

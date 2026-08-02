@@ -1,41 +1,24 @@
-"use client"
-
-import { createClient } from "@/supabase/client";
+import { createClient } from "@/supabase/server";
 import { Mic, MapPin, Calendar, ArrowUpRight } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 
 type SeminarItem = {
     slug: string; title: string; speaker: string | null; description: string | null;
     image_url: string | null; scheduled_at: string | null; location: string | null;
 };
 
-const Seminars = () => {
-    const [data, setData] = useState<SeminarItem[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const suparef = useRef(createClient());
+const Seminars = async () => {
+    let data: SeminarItem[] = [];
 
-    const loadData = async () => {
-        const supabase = suparef.current;
-        const { data, error } = await supabase
+    try {
+        const supabase = await createClient();
+        const { data: seminars } = await supabase
             .from("seminars")
             .select("slug,title,speaker,description,image_url,scheduled_at,location")
             .eq("status", "published")
-            .order("scheduled_at", { ascending: true, nullsFirst: false });
-        if (error || !data) {
-            setData([]);
-            setIsLoading(false);
-            return;
-        };
-        setData(data as SeminarItem[]);
-        setIsLoading(false);
-    }
-
-    useEffect(() => {
-        (async () => {
-            await loadData();
-        })();
-    }, []);
+            .order("scheduled_at", { ascending: true, nullsFirst: false })
+        if (seminars) data = seminars as SeminarItem[];
+    } catch { }
 
     return (
         <section id="seminar" className="relative py-24">
@@ -49,14 +32,12 @@ const Seminars = () => {
                     </h2>
                 </div>
 
-                {isLoading && (
-                    <div className="glass rounded-3xl p-10 text-center text-sm text-muted-foreground">Memuat seminar…</div>
-                )}
-                {!isLoading && (!data || data.length === 0) && (
+                {data.length === 0 && (
                     <div className="glass rounded-3xl p-10 text-center text-sm text-muted-foreground">Belum ada seminar.</div>
                 )}
+                
                 <div className="grid gap-5 md:grid-cols-3">
-                    {data?.map((s) => (
+                    {data.map((s) => (
                         <Link
                             key={s.slug}
                             href={`/seminar/${s.slug}`}

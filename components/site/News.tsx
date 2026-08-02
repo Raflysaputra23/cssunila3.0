@@ -1,43 +1,26 @@
-"use client"
-
-import { createClient } from "@/supabase/client";
+import { createClient } from "@/supabase/server";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 
 type NewsItem = {
     slug: string; title: string; excerpt: string | null; category: string | null;
     image_url: string | null; published_at: string | null;
 };
 
-const News = () => {
-    const [data, setData] = useState<NewsItem[]>([]);
-    const [isLoading, setIsLoading] = useState<boolean>(true);
-    const suparef = useRef(createClient());
+const News = async () => {
+    let data: NewsItem[] = [];
 
-    const loadData = async () => {
-        const supabase = suparef.current;
-        const { data, error } = await supabase
+    try {
+        const supabase = await createClient();
+        const { data: news } = await supabase
             .from("news")
             .select("slug,title,excerpt,category,image_url,published_at")
             .eq("status", "published")
             .order("published_at", { ascending: false })
             .limit(6);
-        if (error || !data) {
-            setData([]);
-            setIsLoading(false);
-            return;
-        };
-        setData(data as NewsItem[]);
-        setIsLoading(false);
-    }
-
-    useEffect(() => {
-        (async () => {
-            await loadData();
-        })();
-    }, []);
+        if (news) data = news as NewsItem[];
+    } catch { }
 
     return (
         <section id="berita" className="relative py-24">
@@ -53,15 +36,12 @@ const News = () => {
                     </div>
                 </div>
 
-                {isLoading && (
-                    <div className="glass rounded-3xl p-10 text-center text-sm text-muted-foreground">Memuat berita…</div>
-                )}
-                {!isLoading && (!data || data.length === 0) && (
+                {data.length === 0 && (
                     <div className="glass rounded-3xl p-10 text-center text-sm text-muted-foreground">Belum ada berita.</div>
                 )}
 
                 <div className="grid gap-5 md:grid-cols-3">
-                    {data?.map((n) => (
+                    {data.map((n) => (
                         <Link
                             key={n.slug}
                             href={`/berita/${n.slug}`}

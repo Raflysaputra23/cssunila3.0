@@ -97,7 +97,7 @@ const SeminarsTab = () => {
     const ext = file.name.split(".").pop()?.toLowerCase();
     const allowed = ["jpg", "jpeg", "png", "webp", "svg"];
     if (!allowed.includes(ext ?? "")) {
-      toast.error("Format file harus berupa JPG, JPEG, PNG, WEBP, atau SVG");
+      toast.error("Format file harus berupa JPG, PNG, WEBP, atau SVG");
       return;
     }
 

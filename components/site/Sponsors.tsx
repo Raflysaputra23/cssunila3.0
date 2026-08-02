@@ -1,9 +1,6 @@
-"use client"
-
-import { createClient } from "@/supabase/client";
+import { createClient } from "@/supabase/server";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
 
 type Sponsor = {
   id: string;
@@ -21,49 +18,17 @@ type MediaPartner = {
   position: number;
 };
 
-const Sponsors = () => {
-  const suparef = useRef(createClient());
-  const [sponsors, setSponsors] = useState<Sponsor[]>([]);
-  const [mediaPartners, setMediaPartners] = useState<MediaPartner[]>([]);
-  const [loading, setLoading] = useState(true);
+const Sponsors = async () => {
+  let sponsors: Sponsor[] = [];
+  let mediaPartners: MediaPartner[] = [];
 
-  useEffect(() => {
-    const load = async () => {
-      const supabase = suparef.current;
-      const [{ data: sp }, { data: mp }] = await Promise.all([
-        supabase.from("sponsors").select("*").order("position", { ascending: true }),
-        supabase.from("media_partners").select("*").order("position", { ascending: true }),
-      ]);
-      setSponsors(sp ?? []);
-      setMediaPartners(mp ?? []);
-      setLoading(false);
-    };
-    load();
-  }, []);
-
-  if (loading) {
-    return (
-      <section id="sponsor" className="relative py-24">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="mb-12 text-center">
-            <span className="text-xs font-medium uppercase tracking-widest text-cyan-strong">Didukung Oleh</span>
-            <h2 className="mt-3 font-display text-4xl font-bold sm:text-5xl">
-              <span className="gradient-text">Sponsor </span> &amp; Media Partner
-            </h2>
-          </div>
-          <div className="flex items-center justify-center py-16">
-            <div className="flex items-center gap-2 text-sm text-muted-foreground">
-              <svg className="animate-spin h-4 w-4 text-cyan-strong" fill="none" viewBox="0 0 24 24">
-                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
-                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
-              </svg>
-              Memuat data...
-            </div>
-          </div>
-        </div>
-      </section>
-    );
-  }
+  try {
+    const supabase = await createClient();
+    const { data: sp } = await supabase.from("sponsors").select("*").order("position", { ascending: true });
+    const { data: mp } = await supabase.from("media_partners").select("*").order("position", { ascending: true });
+    if (sp) sponsors = sp as Sponsor[];
+    if (mp) mediaPartners = mp as MediaPartner[];
+  } catch { }
 
   if (sponsors.length === 0 && mediaPartners.length === 0) return null;
 
@@ -75,7 +40,7 @@ const Sponsors = () => {
             Didukung Oleh
           </span>
           <h2 className="mt-3 font-display text-4xl font-bold sm:text-5xl">
-            <span className="gradient-text">Sponsor </span> & Media Partner
+            <span className="gradient-text">{sponsors.length > 0 ? "Sponsor" : ""}</span> {(sponsors.length > 0 && mediaPartners.length > 0) ? " & " : ""} {mediaPartners.length > 0 ? "Media Partner" : ""}
           </h2>
         </div>
 

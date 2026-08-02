@@ -82,7 +82,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
         setUploading((u) => ({ ...u, [fieldKey]: true }));
         try {
             const ext = file.name.split(".").pop() ?? "bin";
-            const extAccept = ["jpg", "jpeg", "png", "webp"];
+            const extAccept = ["jpg", "jpeg", "png", "webp", "pdf"];
             if (!extAccept.includes(ext.toLowerCase())) {
                 toast.error("Ekstensi file tidak didukung");
                 return;
@@ -316,12 +316,12 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                                 <div className="space-y-2">
                                                     <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border border-dashed border-white/15 bg-white/2 px-4 py-4 text-sm text-muted-foreground hover:bg-white/5">
                                                         {uploading[f.key] ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
-                                                        <span>{uploading[f.key] ? "Mengunggah…" : (answers[f.key] ? "Ganti file" : (f.placeholder || "Pilih file (maks 5 MB)"))}</span>
+                                                        <span>{uploading[f.key] ? "Mengunggah…" : (answers[f.key] ? "Ganti file" : (f.placeholder || "Pilih file (Max 2 MB)"))}</span>
                                                         <input
                                                             disabled={!comp.is_open}
                                                             type="file"
                                                             className="hidden disabled:cursor-not-allowed"
-                                                            accept=".jpg,.jpeg,.png,.webp"
+                                                            accept=".jpg,.jpeg,.png,.webp,.pdf"
                                                             required={f.required}
                                                             onChange={(e) => {
                                                                 const file = e.target.files?.[0];
@@ -329,7 +329,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                                             }}
                                                         />
                                                     </label>
-                                                    <p className="text-xs text-muted-foreground">Tip: File yang diterima &quot;.jpg&quot;, &quot;.jpeg&quot;, &quot;.png&quot;, &quot;.webp&quot;. Max 2mb</p>
+                                                    <p className="text-xs text-muted-foreground">Tip: File yang diterima &quot;.jpg&quot;, &quot;.jpeg&quot;, &quot;.png&quot;, &quot;.webp&quot;, &quot;.pdf&quot;. Max 2 MB</p>
                                                     {answers[f.key] && (
                                                         <p className="flex items-center gap-1.5 text-xs text-emerald-300">
                                                             <CheckCircle2 size={12} /> {answers[f.key].split("/").pop()}

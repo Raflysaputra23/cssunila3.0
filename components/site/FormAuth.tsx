@@ -98,6 +98,11 @@ const FormAuth = ({ openRegistrasi }: { openRegistrasi: boolean }) => {
 
             const supabase = suparef.current;
             if (mode === "register") {
+                if (openRegistrasi) {
+                    toast.error("Pendaftaran akun sedang ditutup.");
+                    return;
+                }
+                
                 if (!agree) {
                     toast.error("Anda harus menyetujui syarat & ketentuan sebelum mendaftarkan akun anda");
                     return;

@@ -44,6 +44,7 @@ const News = async () => {
                     {data.map((n) => (
                         <Link
                             key={n.slug}
+                            scroll={false}
                             href={`/berita/${n.slug}`}
                             className="glass group relative flex h-full flex-col overflow-hidden rounded-3xl p-6 transition hover:-translate-y-1 hover:border-white/20"
                         >

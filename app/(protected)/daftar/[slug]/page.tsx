@@ -366,7 +366,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                     >
                                         <input disabled={!comp.is_open} type="checkbox" id="agree" className="appearance-none mt-1 shrink-0 checked:bg-secondary size-3.5 bg-muted-foreground rounded-lg border-none" required onChange={(e) => setAggre(e.target.checked)} />
                                         <span className="text-sm text-muted-foreground">
-                                            Saya menyetujui bahwa semua informasi yang saya berikan adalah benar dan akurat.
+                                            Saya menyetujui bahwa saya telah membaca <Link href={`/lomba/${slug}#S&K`} scroll={false} className="text-cyan-strong">S&K</Link> dan semua informasi yang saya berikan adalah benar dan akurat.
                                         </span>
                                     </label>
 

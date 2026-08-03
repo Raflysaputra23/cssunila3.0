@@ -207,7 +207,7 @@ const LombaDetail = async ({ params }: Props) => {
       />
       <Navbar />
 
-      <section className="relative pt-30 md:pt-32 pb-26 md:pb-30">
+      <section className="relative pt-30 md:pt-32 pb-18 md:pb-20">
         <div className="mx-auto max-w-5xl px-4">
           <div className="flex items-center justify-between gap-3">
             <Link
@@ -304,7 +304,7 @@ const LombaDetail = async ({ params }: Props) => {
         </div>
       </section>
 
-      <section className="py-12">
+      <section id="S&K" className="py-12 pt-24">
         <div className="mx-auto grid max-w-5xl items-start gap-8 px-4 md:grid-cols-2">
           <div className="glass rounded-3xl p-7">
             <h2 className="font-display text-2xl font-bold">Syarat & Ketentuan</h2>

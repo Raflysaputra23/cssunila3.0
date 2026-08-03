@@ -35,11 +35,12 @@ const Seminars = async () => {
                 {data.length === 0 && (
                     <div className="glass rounded-3xl p-10 text-center text-sm text-muted-foreground">Belum ada seminar.</div>
                 )}
-                
+
                 <div className="grid gap-5 md:grid-cols-3">
                     {data.map((s) => (
                         <Link
                             key={s.slug}
+                            scroll={false}
                             href={`/seminar/${s.slug}`}
                             className="glass group relative overflow-hidden rounded-3xl p-6 transition hover:-translate-y-1 hover:border-white/20 block"
                         >

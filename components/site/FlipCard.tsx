@@ -8,7 +8,6 @@ interface FlipCardProps {
 }
 
 export default function FlipCard({ logoCss }: FlipCardProps) {
-  // const [isFlipped, setIsFlipped] = useState(false);
   const [isHovered, setIsHovered] = useState(false);
 
   const activeFlipped = isHovered;

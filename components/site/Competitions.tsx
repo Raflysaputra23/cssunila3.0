@@ -27,7 +27,7 @@ const Competitions = async () => {
             <div className="mx-auto max-w-7xl px-4">
                 <div className="mb-12 text-center">
                     <span className="text-xs font-medium uppercase tracking-widest text-cyan-strong">
-                        {data?.length ?? ""} Cabang
+                        {data.length} Cabang
                     </span>
                     <h2 className="mt-3 font-display text-4xl font-bold sm:text-5xl">
                         Lomba <span className="gradient-text">CSS 3.0</span>
@@ -46,9 +46,10 @@ const Competitions = async () => {
                     {data.map((c) => {
                         const Icon = getIcon(c.icon);
                         const accent = c.accent ?? "cyan";
-                        
+
                         return (
                             <article
+                                id={c.slug}
                                 key={c.slug}
                                 className="glass group flex flex-col relative overflow-hidden rounded-3xl p-6 transition hover:-translate-y-1 hover:border-white/20"
                             >
@@ -88,6 +89,7 @@ const Competitions = async () => {
 
                                 <Link
                                     href={`/lomba/${c.slug}`}
+                                    scroll={false}
                                     className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground group-hover:text-cyan-strong transition hover:gap-2.5"
                                 >
                                     Lihat Detail <ArrowUpRight size={14} />

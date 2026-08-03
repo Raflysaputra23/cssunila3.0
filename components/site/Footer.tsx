@@ -7,7 +7,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 
 const Footer = ({ marginTop = true }: { marginTop?: boolean }) => {
-  const [lomba, setLomba] = useState<string[]>([]);
+  const [lomba, setLomba] = useState<{ name: string, slug: string }[]>([]);
   const suparef = useRef(createClient());
   const [settings, setSettings] = useState<Record<string, string>>({
     site_logo: "/css-logo.png",
@@ -19,10 +19,8 @@ const Footer = ({ marginTop = true }: { marginTop?: boolean }) => {
     (async () => {
       const supabase = suparef.current;
 
-      const { data: compData } = await supabase.from('competitions').select("name");
-      if (compData) {
-        setLomba(compData.map(comp => comp.name));
-      }
+      const { data: compData } = await supabase.from('competitions').select("name,slug");
+      if (compData) setLomba(compData);
 
       const { data: setValues } = await supabase
         .from("site_settings")
@@ -91,7 +89,7 @@ const Footer = ({ marginTop = true }: { marginTop?: boolean }) => {
             <ul className="space-y-2 text-sm text-muted-foreground">
               {lomba.length > 0 ?
                 lomba.map((comp, idx) => (
-                  <li key={idx} className="flex items-center gap-2 group"><ArrowUpRight size={14} className="group-hover:text-cyan-strong group-hover:translate-x-0.5 transition-all" /> <Link href="#lomba" className="group-hover:text-foreground">{comp}</Link></li>
+                  <li key={idx} className="flex items-center gap-2 group"><ArrowUpRight size={14} className="group-hover:text-cyan-strong group-hover:translate-x-0.5 transition-all" /> <Link href={`#${comp.slug}`} className="group-hover:text-foreground">{comp.name}</Link></li>
                 ))
                 :
                 <li><Link href="#lomba" className="hover:text-foreground">Belum tersedia</Link></li>

@@ -25,13 +25,13 @@ const links = [
 ];
 
 const Navbar = () => {
-    const [scrolled, setScrolled] = useState(false);
-    const [open, setOpen] = useState(false);
     const { user, loading, role } = useAuth();
     const suparef = useRef(createClient());
     const router = useRouter();
     const isAdmin = ["petugas", "lomba", "admin"].includes(role || "");
-
+    
+    const [scrolled, setScrolled] = useState(false);
+    const [open, setOpen] = useState(false);
     const [notifications, setNotifications] = useState<any[]>([]);
     const [showNotif, setShowNotif] = useState(false);
     const notifRef = useRef<HTMLDivElement>(null);

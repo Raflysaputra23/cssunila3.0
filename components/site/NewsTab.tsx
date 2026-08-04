@@ -341,7 +341,7 @@ const NewsTab = () => {
 
             <div className="flex justify-end gap-2 pt-2">
               <button type="button" onClick={() => setEditing(null)} className="rounded-full border border-white/10 px-4 py-2 text-sm">Batal</button>
-              <button type="submit" disabled={save.isPending || uploadingBanner || uploadingGallery} className="btn-hero inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold">
+              <button type="submit" disabled={save.isPending || uploadingBanner || uploadingGallery || !editing.content} className="btn-hero inline-flex items-center gap-2 rounded-full px-5 py-2 text-sm font-semibold">
                 {save.isPending && <Loader2 size={14} className="animate-spin" />} Simpan
               </button>
             </div>

@@ -14,6 +14,10 @@ type TimelineProps = {
 
 const Timeline = ({ items }: TimelineProps) => {
   const timelineItems: TimelineItem[] = items ?? [];
+  let activeIndex: number | undefined;
+  timelineItems.forEach((item, index) => {
+    if (dateActive(item.start_date)) activeIndex = index;
+  });
 
   return (
     <section id="timeline" className="relative py-24">
@@ -41,11 +45,11 @@ const Timeline = ({ items }: TimelineProps) => {
               className="relative group mb-8 md:mb-12 w-full"
             >
               <span
-                className={`absolute left-4 top-6 size-4 -translate-x-1/2 rounded-full border-2 group-hover:scale-125 transition-all duration-200 border-cyan-strong ${dateActive(item.start_date) ? "bg-cyan-strong" : "bg-cyan-strong/60"} shadow-[0_0_14px_var(--cyan-strong)] md:left-1/2`}
+                className={`absolute left-4 top-6 size-4 -translate-x-1/2 rounded-full border-2 group-hover:scale-125 transition-all duration-300 border-cyan-strong ${activeIndex == i ? "animate-pulse" : ""} ${dateActive(item.start_date) ? "bg-cyan-strong" : "bg-cyan-strong/60"} shadow-[0_0_14px_var(--cyan-strong)] md:left-1/2`}
                 aria-hidden
               />
               <div
-                className={`glass group-hover:scale-105 ${dateActive(item.start_date) ? "border-2! border-cyan-strong/60!" : ""} transition-all duration-300 ml-10 p-5 rounded-2xl md:ml-0 md:w-[calc(50%-2.5rem)] ${i % 2 === 0
+                className={`glass group-hover:scale-105 ${activeIndex == i ? "animate-pulse" : ""} ${dateActive(item.start_date) ? "border! border-cyan-strong/60!" : ""} transition-all duration-300 ml-10 p-5 rounded-2xl md:ml-0 md:w-[calc(50%-2.5rem)] ${i % 2 === 0
                   ? "md:mr-auto md:text-right"
                   : "md:ml-auto md:text-left"
                   }`}

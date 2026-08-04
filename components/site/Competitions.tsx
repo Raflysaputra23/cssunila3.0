@@ -89,7 +89,6 @@ const Competitions = async () => {
 
                                 <Link
                                     href={`/lomba/${c.slug}`}
-                                    scroll={false}
                                     className="mt-auto inline-flex items-center gap-1.5 text-sm font-semibold text-muted-foreground group-hover:text-cyan-strong transition hover:gap-2.5"
                                 >
                                     Lihat Detail <ArrowUpRight size={14} />

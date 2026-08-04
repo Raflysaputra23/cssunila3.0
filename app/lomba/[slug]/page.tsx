@@ -173,7 +173,7 @@ const LombaDetail = async ({ params }: Props) => {
     "@context": "https://schema.org",
     "@type": "Event",
     name: `${c.name} – CSS UNILA 3.0`,
-    startDate: date?.startDate || "", 
+    startDate: date?.startDate || "",
     description: Array.isArray(c.description) ? c.description.join(" ") : "",
     url: currentUrl,
     image: c.banner || `${baseUrl}/css-logo.png`,
@@ -198,6 +198,12 @@ const LombaDetail = async ({ params }: Props) => {
       },
     },
   };
+
+  let activeIndex: number | undefined;
+  c.timeline.forEach((item, index) => {
+    const date = parseDateRange(item.date);
+    if (dateActive(date?.startDate ?? "")) activeIndex = index;
+  });
 
   return (
     <div className="relative min-h-screen overflow-x-hidden">
@@ -423,33 +429,34 @@ const LombaDetail = async ({ params }: Props) => {
             {c.timeline.length > 0 && (
               <>
                 <div className="absolute left-4 top-0 bottom-0 w-px bg-linear-to-b from-sapphire via-cyan-strong to-transparent md:left-1/2" />
-                {c.timeline.map((item, i) => (
-                  <li
-                    key={`${item.label}-${i}`}
-                    className="relative group mb-8 md:mb-12 w-full"
-                  >
-                    <span
-                      className={`absolute left-4 top-6 size-4 -translate-x-1/2 rounded-full border-2 group-hover:scale-125 transition-all duration-200 border-cyan-strong ${
-                        dateActive(item.date) ? "bg-cyan-strong" : "bg-cyan-strong/60"
-                      } shadow-[0_0_14px_var(--cyan-strong)] md:left-1/2`}
-                      aria-hidden
-                    />
-                    <div
-                      className={`glass group-hover:scale-105 transition-all duration-300 ml-10 p-5 rounded-2xl md:ml-0 md:w-[calc(50%-2.5rem)] ${
-                        i % 2 === 0
-                          ? "md:mr-auto md:text-right"
-                          : "md:ml-auto md:text-left"
-                      }`}
+                {c.timeline.map((item, i) => {
+                  const date = parseDateRange(item.date);
+                  return (
+                    <li
+                      key={`${item.label}-${i}`}
+                      className="relative group mb-8 md:mb-12 w-full"
                     >
-                      <div className="text-xs font-medium tracking-wider text-cyan-strong uppercase glass inline-flex justify-center items-center rounded-xl px-2.5 py-2">
-                        {item.date}
+                      <span
+                        className={`absolute left-4 top-6 size-4 -translate-x-1/2 rounded-full border-2 group-hover:scale-125 transition-all duration-300 border-cyan-strong ${activeIndex === i ? "animate-pulse" : ""} ${dateActive(date?.startDate ?? "") ? "bg-cyan-strong" : "bg-cyan-strong/60"
+                          } shadow-[0_0_14px_var(--cyan-strong)] md:left-1/2`}
+                        aria-hidden
+                      />
+                      <div
+                        className={`glass group-hover:scale-105 ${activeIndex === i ? "animate-pulse" : ""} ${dateActive(date?.startDate ?? "") ? "border! border-cyan-strong/60!" : ""} transition-all duration-300 ml-10 p-5 rounded-2xl md:ml-0 md:w-[calc(50%-2.5rem)] ${i % 2 === 0
+                            ? "md:mr-auto md:text-right"
+                            : "md:ml-auto md:text-left"
+                          }`}
+                      >
+                        <div className="text-xs font-medium tracking-wider text-cyan-strong uppercase glass inline-flex justify-center items-center rounded-xl px-2.5 py-2">
+                          {item.date}
+                        </div>
+                        <h3 className="mt-1 group-hover:text-cyan-strong transition-all duration-200 font-display text-xl font-semibold">
+                          {item.label}
+                        </h3>
                       </div>
-                      <h3 className="mt-1 group-hover:text-cyan-strong transition-all duration-200 font-display text-xl font-semibold">
-                        {item.label}
-                      </h3>
-                    </div>
-                  </li>
-                ))}
+                    </li>
+                  )
+                })}
               </>
             )}
             {c.timeline.length <= 0 && (
@@ -466,14 +473,12 @@ const LombaDetail = async ({ params }: Props) => {
 
       <section className="py-12">
         <div
-          className={`mx-auto grid grid-cols-1 justify-center ${
-            c.panduan ? "md:grid-cols-2" : ""
-          } items-start max-w-5xl px-4 gap-8`}
+          className={`mx-auto grid grid-cols-1 justify-center ${c.panduan ? "md:grid-cols-2" : ""
+            } items-start max-w-5xl px-4 gap-8`}
         >
           <div
-            className={`glass order-2 lg:order-1 rounded-3xl p-7 ${
-              c.panduan ? "" : "max-w-lg mx-auto"
-            }`}
+            className={`glass order-2 lg:order-1 rounded-3xl p-7 ${c.panduan ? "" : "max-w-lg mx-auto"
+              }`}
           >
             <h2 className="font-display text-3xl font-bold mb-1">Narahubung</h2>
             <p className="text-sm text-muted-foreground mb-8">

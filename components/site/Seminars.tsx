@@ -40,7 +40,6 @@ const Seminars = async () => {
                     {data.map((s) => (
                         <Link
                             key={s.slug}
-                            scroll={false}
                             href={`/seminar/${s.slug}`}
                             className="glass group relative overflow-hidden rounded-3xl p-6 transition hover:-translate-y-1 hover:border-white/20 block"
                         >

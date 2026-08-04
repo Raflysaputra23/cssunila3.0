@@ -688,6 +688,16 @@ const RegistrationsTab = () => {
       grouped[cName].push(r);
     });
 
+    const totalPerLomba: Record<string, number> = {};
+    let grandTotal = 0;
+    Object.entries(grouped).forEach(([cName, list]) => {
+      const subtotal = list
+        .filter((r) => r.status === "verified")
+        .reduce((sum, r) => sum + (r.payments?.amount_idr ?? 0), 0);
+      totalPerLomba[cName] = subtotal;
+      grandTotal += subtotal;
+    });
+
     Object.entries(grouped).forEach(([cName, list]) => {
       if (y > h - 180) {
         doc.addPage();
@@ -769,6 +779,89 @@ const RegistrationsTab = () => {
           doc.line(40, y, w - 40, y);
         }
       });
+
+      const subtotal = totalPerLomba[cName];
+      const verifiedCount = list.filter((r) => r.status === "verified").length;
+      if (y > h - 40) {
+        doc.addPage();
+        y = 50;
+        drawHeader();
+      }
+      doc.setFillColor(209, 250, 229);
+      doc.rect(40, y, w - 80, 22, "F");
+      doc.setDrawColor(16, 185, 129);
+      doc.setLineWidth(2);
+      doc.line(40, y, 40, y + 22);
+      doc.setLineWidth(0.5);
+      doc.setTextColor(6, 78, 59);
+      doc.setFont("helvetica", "bold");
+      doc.setFontSize(9);
+      doc.text(`Subtotal ${cName}: ${verifiedCount} tim terverifikasi`, 52, y + 14);
+      doc.text(`Rp. ${subtotal.toLocaleString("id-ID")}`, w - 50, y + 14, { align: "right" });
+      y += 32;
+    });
+
+    if (y > h - 90) {
+      doc.addPage();
+      y = 50;
+      drawHeader();
+    }
+
+    y += 14;
+
+    doc.setDrawColor(30, 41, 59);
+    doc.setLineWidth(1.5);
+    doc.line(40, y, w - 40, y);
+    y += 14;
+
+    doc.setFillColor(11, 18, 32);
+    doc.rect(40, y, w - 80, 42, "F");
+
+    doc.setTextColor(255, 255, 255);
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(11);
+    doc.text("TOTAL KESELURUHAN BIAYA PENDAFTARAN", 52, y + 16);
+
+    const totalVerified = rows.filter((r) => r.status === "verified").length;
+    doc.setFont("helvetica", "normal");
+    doc.setFontSize(8.5);
+    doc.setTextColor(148, 163, 184);
+    doc.text(`${totalVerified} tim terverifikasi dari ${rows.length} total pendaftar`, 52, y + 30);
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(14);
+    doc.setTextColor(52, 211, 153);
+    doc.text(`Rp. ${grandTotal.toLocaleString("id-ID")}`, w - 50, y + 26, { align: "right" });
+
+    y += 52;
+
+    doc.setFont("helvetica", "bold");
+    doc.setFontSize(9);
+    doc.setTextColor(15, 23, 42);
+    doc.text("Ringkasan Biaya Per Cabang Lomba:", 52, y + 8);
+    y += 20;
+
+    Object.entries(totalPerLomba).forEach(([cName, subtotal], i) => {
+      if (y > h - 30) {
+        doc.addPage();
+        y = 50;
+        drawHeader();
+      }
+      if (i % 2 === 0) {
+        doc.setFillColor(248, 250, 252);
+        doc.rect(40, y - 2, w - 80, 18, "F");
+      }
+      const count = (grouped[cName] ?? []).filter((r) => r.status === "verified").length;
+      doc.setFont("helvetica", "normal");
+      doc.setFontSize(8.5);
+      doc.setTextColor(71, 85, 105);
+      doc.text(`${cName}  (${count} tim terverifikasi)`, 52, y + 10);
+      doc.setFont("helvetica", "bold");
+      doc.setTextColor(6, 78, 59);
+      doc.text(`Rp. ${subtotal.toLocaleString("id-ID")}`, w - 50, y + 10, { align: "right" });
+      doc.setDrawColor(226, 232, 240);
+      doc.setLineWidth(0.3);
+      doc.line(40, y + 16, w - 40, y + 16);
       y += 20;
     });
 

@@ -278,6 +278,7 @@ const SiteSettingsTab = () => {
         website: v.website ?? null,
         position: v.position ?? (mediaPartnersData?.length ?? 0) + 1,
       };
+      console.log(payload);
       if (v.id) {
         const { error } = await supabase.from("media_partners").update(payload).eq("id", v.id);
         if (error) throw error;
@@ -1208,7 +1209,7 @@ const SiteSettingsTab = () => {
                 {uploadingLogo === "sponsors" ? "Mengunggah..." : "Upload logo (PNG/JPG/WebP/SVG, max 2MB)"}
                 <input
                   type="file" className="hidden" accept=".jpg,.jpeg,.png,.webp,.svg"
-                  required
+                  required={!editingSponsor.logo_url}
                   disabled={uploadingLogo === "sponsors"}
                   onChange={(e) => handleLogoUpload(e, "sponsors", (url) => setEditingSponsor((p) => ({ ...p, logo_url: url })))}
                 />
@@ -1277,7 +1278,7 @@ const SiteSettingsTab = () => {
                 {uploadingLogo === "media-partners" ? "Mengunggah..." : "Upload logo (PNG/JPG/WebP/SVG, max 2MB)"}
                 <input
                   type="file" className="hidden" accept=".jpg,.jpeg,.png,.webp,.svg"
-                  required
+                  required={!editingMediaPartner.logo_url}
                   disabled={uploadingLogo === "media-partners"}
                   onChange={(e) => handleLogoUpload(e, "media-partners", (url) => setEditingMediaPartner((p) => ({ ...p, logo_url: url })))}
                 />

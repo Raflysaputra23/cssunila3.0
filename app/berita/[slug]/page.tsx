@@ -8,6 +8,7 @@ import NotFound from "@/components/site/NotFound";
 import { Metadata } from "next";
 import ShareButton from "@/components/site/ShareButton";
 import Gallery from "@/components/site/Gallery";
+import Remarkdown from "@/components/site/Remarkdown";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -186,11 +187,10 @@ const NewsDetailPage = async ({ params }: Props) => {
               </div>
             )}
 
-            <div className="glass mt-10 rounded-3xl p-6 md:p-10 leading-relaxed text-foreground/90 space-y-6 text-base sm:text-lg">
-              <h2 className="mb-1 text-lg font-semibold">Deskripsi</h2>
-              {news.content?.split("\n").map((paragraph, index) => (
-                <p key={index} className="text-justify text-muted-foreground">{paragraph}</p>
-              ))}
+            <div className="glass mt-10 rounded-3xl p-6 md:p-8 leading-relaxed text-foreground/90 space-y-6 text-base sm:text-lg">
+              <div className="max-w-none prose dark:prose-invert prose-pre:bg-transparent prose-pre:p-0 prose-pre:m-0">
+                <Remarkdown content={news.content || ""} />
+              </div>
 
               {news.drive_link && (
                 <div className="pt-6 border-t border-white/10 flex flex-col sm:flex-row items-center gap-4 justify-between">

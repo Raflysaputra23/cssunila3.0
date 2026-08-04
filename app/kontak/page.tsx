@@ -220,8 +220,8 @@ const KontakPage = () => {
                             <span className="inline-flex items-center gap-2 text-xs font-medium uppercase tracking-widest text-cyan-strong">
                                 <HelpCircle size={14} /> Pertanyaan Umum
                             </span>
-                            <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">
-                                <span className="gradient-text">FAQ</span>.
+                            <h2 className="mt-3 font-display text-4xl font-bold sm:text-5xl">
+                                <span className="gradient-text">FAQ</span>
                             </h2>
                             <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground sm:text-base">
                                 Temukan jawaban atas pertanyaan umum seputar pendaftaran, kompetisi, pembayaran, dan fitur platform CSS 3.0.

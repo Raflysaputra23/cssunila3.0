@@ -9,6 +9,7 @@ import { useRef, useState } from "react";
 import { toast } from "sonner";
 import ConfirmModal from "./ConfirmModal";
 import { usePageVisibility, useToggleVisibility } from "@/hooks/use-page-visibility";
+import TextEditor from "./TextEditor";
 
 type NewsRow = {
   id: string;
@@ -49,7 +50,12 @@ const NewsTab = () => {
         toast.error("Slug tidak boleh mengandung spasi, gunakan - jika ingin membuat kata baru!");
         return;
       }
-      
+
+      if (!v.content) {
+        toast.error("Konten tidak boleh kosong!");
+        return;
+      }
+
       const payload = {
         slug: v.slug!, title: v.title!, excerpt: v.excerpt ?? null, category: v.category ?? null,
         status: v.status ?? "draft", image_url: v.image_url ?? null, content: v.content ?? null,
@@ -329,7 +335,8 @@ const NewsTab = () => {
 
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground after:content-['*'] after:ml-1 after:text-red-500">Konten Lengkap</label>
-              <textarea className="inputCls" rows={8} placeholder="Isi berita selengkapnya... (bisa multi-paragraf, tekan Enter untuk paragraf baru)" value={editing.content ?? ""} onChange={(e) => setEditing({ ...editing, content: e.target.value })} />
+              <TextEditor value={editing.content ?? ""} onChange={(value) => setEditing({ ...editing, content: value })} />
+              <p className="text-xs text-muted-foreground mt-1">Tips: Gunakan markdown atau text editor yang sudah disediakan untuk format teks. Contoh markdown: # Judul, **Tebal**, *Miring*, dll.</p>
             </div>
 
             <div className="flex justify-end gap-2 pt-2">

@@ -327,7 +327,6 @@ const NewsTab = () => {
               </label>
             </div>
 
-            {/* Konten */}
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground after:content-['*'] after:ml-1 after:text-red-500">Ringkasan</label>
               <textarea className="inputCls" rows={2} placeholder="Ringkasan singkat berita..." value={editing.excerpt ?? ""} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })} />

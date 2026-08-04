@@ -187,7 +187,7 @@ const NewsDetailPage = async ({ params }: Props) => {
               </div>
             )}
 
-            <div className="glass mt-10 rounded-3xl p-6 md:p-8 leading-relaxed text-foreground/90 space-y-6 text-base sm:text-lg">
+            <div className="md:glass mt-10 md:rounded-3xl md:p-8 leading-relaxed text-foreground/90 space-y-6 text-base sm:text-lg">
               <div className="max-w-none prose dark:prose-invert prose-pre:bg-transparent prose-pre:p-0 prose-pre:m-0">
                 <Remarkdown content={news.content || ""} />
               </div>

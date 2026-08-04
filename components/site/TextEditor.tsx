@@ -12,7 +12,7 @@ interface TextEditorProps {
 const TextEditor = ({ value, onChange }: TextEditorProps) => {
 
     return (
-        <div className="w-full max-h-96 overflow-auto mt-1 rounded-lg">
+        <div className="w-full max-h-96 overflow-y-auto mt-1 rounded-lg">
             <MDEditor
                 value={value}
                 preview="edit"
@@ -23,7 +23,7 @@ const TextEditor = ({ value, onChange }: TextEditorProps) => {
                 }}
             />
             {value &&
-                <div className="mt-2 border rounded-lg bg-black/60 px-4 py-2 max-w-none prose dark:prose-invert prose-pre:bg-transparent prose-pre:p-0 prose-pre:m-0">
+                <div className="mt-2 border rounded-lg bg-black/60 px-3 py-2 max-w-none prose dark:prose-invert prose-pre:bg-transparent prose-pre:p-0 prose-pre:m-0">
                     <Remarkdown content={value || ""} />
                 </div>
             }

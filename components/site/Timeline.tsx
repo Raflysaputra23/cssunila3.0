@@ -49,7 +49,7 @@ const Timeline = ({ items }: TimelineProps) => {
                 aria-hidden
               />
               <div
-                className={`glass group-hover:scale-105 ${activeIndex == i ? "animate-pulse" : ""} ${dateActive(item.start_date) ? "border! border-cyan-strong/60!" : ""} transition-all duration-300 ml-10 p-5 rounded-2xl md:ml-0 md:w-[calc(50%-2.5rem)] ${i % 2 === 0
+                className={`glass group-hover:scale-105 ${activeIndex === i ? "animate-pulse" : ""} ${activeIndex === i ? "border! border-cyan-strong/60!" : ""} transition-all duration-300 ml-10 p-5 rounded-2xl md:ml-0 md:w-[calc(50%-2.5rem)] ${i % 2 === 0
                   ? "md:mr-auto md:text-right"
                   : "md:ml-auto md:text-left"
                   }`}

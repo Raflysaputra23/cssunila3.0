@@ -156,7 +156,7 @@ const LombaDetail = async ({ params }: Props) => {
           <Search size={58} className="text-muted-foreground animate-floating-smooth" />
           <h1 className="text-4xl font-bold">Lomba tidak ditemukan</h1>
           <Link
-            href="/"
+            href="/#lomba"
             className="mt-3 inline-flex gap-2 items-center btn-hero rounded-lg px-4 py-3 text-black"
           >
             <ArrowLeft size={18} /> Kembali ke Beranda
@@ -217,7 +217,7 @@ const LombaDetail = async ({ params }: Props) => {
         <div className="mx-auto max-w-5xl px-4">
           <div className="flex items-center justify-between gap-3">
             <Link
-              href="/"
+              href="/#lomba"
               className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground"
             >
               <ArrowLeft size={14} /> Kembali ke Beranda
@@ -442,7 +442,7 @@ const LombaDetail = async ({ params }: Props) => {
                         aria-hidden
                       />
                       <div
-                        className={`glass group-hover:scale-105 ${activeIndex === i ? "animate-pulse" : ""} ${dateActive(date?.startDate ?? "") ? "border! border-cyan-strong/60!" : ""} transition-all duration-300 ml-10 p-5 rounded-2xl md:ml-0 md:w-[calc(50%-2.5rem)] ${i % 2 === 0
+                        className={`glass group-hover:scale-105 ${activeIndex === i ? "animate-pulse" : ""} ${activeIndex === i ? "border! border-cyan-strong/60!" : ""} transition-all duration-300 ml-10 p-5 rounded-2xl md:ml-0 md:w-[calc(50%-2.5rem)] ${i % 2 === 0
                             ? "md:mr-auto md:text-right"
                             : "md:ml-auto md:text-left"
                           }`}

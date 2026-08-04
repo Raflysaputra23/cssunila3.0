@@ -48,7 +48,7 @@ const News = async () => {
                             className="glass group relative flex h-full flex-col overflow-hidden rounded-3xl p-6 transition hover:-translate-y-1 hover:border-white/20"
                         >
                             {n.image_url && (
-                                <Image src={n.image_url} alt={n.title} width={120} height={120} className="mb-4 h-40 w-full rounded-2xl object-contain border bg-background/50" loading="lazy" />
+                                <Image src={n.image_url} alt={n.title} width={120} height={120} className="mb-4 h-40 w-full rounded-2xl bg-center bg-no-repeat bg-cover object-cover group-hover:scale-105 transition-all duration-300 border bg-background/50" loading="lazy" />
                             )}
 
                             <div className="flex items-center gap-3">

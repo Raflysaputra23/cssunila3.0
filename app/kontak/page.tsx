@@ -16,12 +16,12 @@ import { Metadata } from "next";
 import Link from "next/link";
 
 export const metadata: Metadata = {
-  title: "Kontak",
-  description: "Hubungi panitia CSS 3.0 atau tim developer untuk pertanyaan, kendala pendaftaran, atau kerja sama sponsorship.",
-  openGraph: {
-    title: "Kontak — CSS 3.0",
-    description: "Butuh bantuan? Hubungi panitia CSS 3.0 dan tim developer platform.",
-  }
+    title: "Kontak",
+    description: "Hubungi panitia CSS 3.0 atau tim developer untuk pertanyaan, kendala pendaftaran, atau kerja sama sponsorship.",
+    openGraph: {
+        title: "Kontak — CSS 3.0",
+        description: "Butuh bantuan? Hubungi panitia CSS 3.0 dan tim developer platform.",
+    }
 }
 
 const channels = [
@@ -65,11 +65,11 @@ const faqs = [
     },
     {
         q: "Apakah bisa mengubah data anggota tim setelah mendaftar?",
-        a: "Bisa, dengan mengirim permintaan resmi ke email panitia paling lambat H-3 sebelum Technical Meeting.",
+        a: "Anda bisa langsung menghubungi penanggung jawab lomba, dengan mengirim permintaan resmi ke Email / WhatsApp panitia paling lambat H-3 sebelum Technical Meeting.",
     },
     {
         q: "Bagaimana cara menjadi sponsor atau media partner?",
-        a: "Kirim proposal atau company profile ke cssunila25@gmail.com dengan subjek [SPONSORSHIP CSS 3.0]. atau hubungi panitia kami secara langsung.",
+        a: "Kirim proposal atau company profile ke cssunila25@gmail.com. atau hubungi panitia kami secara langsung.",
     },
 ];
 
@@ -221,8 +221,11 @@ const KontakPage = () => {
                                 <HelpCircle size={14} /> Pertanyaan Umum
                             </span>
                             <h2 className="mt-3 font-display text-3xl font-bold sm:text-4xl">
-                                Sebelum <span className="gradient-text">menghubungi</span>.
+                                <span className="gradient-text">FAQ</span>.
                             </h2>
+                            <p className="mx-auto mt-4 max-w-xl text-sm text-muted-foreground sm:text-base">
+                                Temukan jawaban atas pertanyaan umum seputar pendaftaran, kompetisi, pembayaran, dan fitur platform CSS 3.0.
+                            </p>
                         </div>
 
                         <div className="mt-10 grid gap-4 md:grid-cols-2">

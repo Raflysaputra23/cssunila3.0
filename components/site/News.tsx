@@ -1,3 +1,4 @@
+import { formatDatetime } from "@/lib/formatTanggal";
 import { createClient } from "@/supabase/server";
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
@@ -61,7 +62,7 @@ const News = async () => {
                                 )}
                                 {n.published_at && (
                                     <time className="text-xs text-muted-foreground">
-                                        {new Date(n.published_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })}
+                                        {formatDatetime(n.published_at)}
                                     </time>
                                 )}
                             </div>

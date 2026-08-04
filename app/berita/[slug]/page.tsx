@@ -9,6 +9,7 @@ import { Metadata } from "next";
 import ShareButton from "@/components/site/ShareButton";
 import Gallery from "@/components/site/Gallery";
 import Remarkdown from "@/components/site/Remarkdown";
+import { formatDatetime } from "@/lib/formatTanggal";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -159,11 +160,7 @@ const NewsDetailPage = async ({ params }: Props) => {
                   <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
                     <Calendar size={14} />
                     <time>
-                      {new Date(news.published_at).toLocaleDateString("id-ID", {
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
+                      {formatDatetime(news.published_at)}
                     </time>
                   </div>
                 )}

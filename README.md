@@ -103,6 +103,13 @@ NEXT_PUBLIC_GOOGLE_CLIENT_SECRET=your-google-client-secret
 # WEB PUSH NOTIFICATIONS
 NEXT_PUBLIC_VAPID_PUBLIC_KEY=your-vapid-public-key
 VAPID_PRIVATE_KEY=your-vapid-private-key
+
+NEXT_PUBLIC_TURNSTILE_SITE_KEY=key-cloudflare-turnstile
+TURNSTILE_SECRET_KEY=secret-cloudflare-turnstile
+
+EMAIL_SMTP_USER=cssunilla25@gmail.com
+EMAIL_SMTP_PASS=your-email-smtp-pass
+OTP_SALT=your-otp-salt
 ```
 
 ### 4. Setup Database Supabase

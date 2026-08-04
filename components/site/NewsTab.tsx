@@ -245,7 +245,7 @@ const NewsTab = () => {
             <div className="grid gap-3 sm:grid-cols-2">
               <div className="space-y-1">
                 <label className="text-xs text-muted-foreground after:content-['*'] after:ml-1 after:text-red-500">Kategori</label>
-                <input className="inputCls" placeholder="Misal: Pengumuman" value={editing.category ?? ""} onChange={(e) => setEditing({ ...editing, category: e.target.value })} />
+                <input className="inputCls" required placeholder="Misal: Pengumuman" value={editing.category ?? ""} onChange={(e) => setEditing({ ...editing, category: e.target.value })} />
               </div>
               <div className="space-y-1">
                 <label className="text-xs text-muted-foreground after:content-['*'] after:ml-1 after:text-red-500">Status</label>
@@ -275,6 +275,7 @@ const NewsTab = () => {
                   {uploadingBanner ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
                   {uploadingBanner ? "Mengunggah..." : "Upload banner berita (PNG/JPG/WebP/SVG, max 2MB)"}
                   <input
+                    required={!editing.image_url}
                     type="file" className="hidden" accept=".jpg,.jpeg,.png,.webp,.svg"
                     disabled={uploadingBanner}
                     onChange={(e) => handleBannerUpload(e)}
@@ -329,7 +330,7 @@ const NewsTab = () => {
 
             <div className="space-y-1">
               <label className="text-xs text-muted-foreground after:content-['*'] after:ml-1 after:text-red-500">Ringkasan</label>
-              <textarea className="inputCls" rows={2} placeholder="Ringkasan singkat berita..." value={editing.excerpt ?? ""} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })} />
+              <textarea className="inputCls" required rows={2} placeholder="Ringkasan singkat berita..." value={editing.excerpt ?? ""} onChange={(e) => setEditing({ ...editing, excerpt: e.target.value })} />
             </div>
 
             <div className="space-y-1">

@@ -214,6 +214,7 @@ const SeminarsTab = () => {
                 <label className="text-xs text-muted-foreground after:content-['*'] after:ml-1 after:text-red-500">Nama Pembicara</label>
                 <input
                   className="inputCls"
+                  required
                   placeholder="Misal: Dr. Budi Santoso — Pakar AI, Universitas Lampung"
                   value={editing.speaker ?? ""}
                   onChange={(e) => setEditing({ ...editing, speaker: e.target.value })}
@@ -253,13 +254,14 @@ const SeminarsTab = () => {
                 <input
                   className="inputCls"
                   type="datetime-local"
+                  required
                   value={editing.scheduled_at ? editing.scheduled_at.slice(0, 16) : ""}
                   onChange={(e) => setEditing({ ...editing, scheduled_at: e.target.value ? new Date(e.target.value).toISOString() : null })}
                 />
               </div>
               <div className="space-y-1">
                 <label className="text-xs text-muted-foreground after:content-['*'] after:ml-1 after:text-red-500">Lokasi</label>
-                <input className="inputCls" placeholder="Misal: Aula Gedung Teknik" value={editing.location ?? ""} onChange={(e) => setEditing({ ...editing, location: e.target.value })} />
+                <input className="inputCls" required placeholder="Misal: Aula Gedung Teknik" value={editing.location ?? ""} onChange={(e) => setEditing({ ...editing, location: e.target.value })} />
               </div>
             </div>
 
@@ -282,7 +284,8 @@ const SeminarsTab = () => {
                   {uploadingBanner ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
                   {uploadingBanner ? "Mengunggah..." : "Upload banner seminar (PNG/JPG/WebP/SVG, max 2MB)"}
                   <input
-                    type="file" className="hidden" accept="image/*"
+                    required={!editing.image_url}
+                    type="file" className="hidden" accept=".jpg,.jpeg,.png,.webp,.svg"
                     disabled={uploadingBanner}
                     onChange={(e) => handleUpload(e, "image_url")}
                   />
@@ -295,6 +298,7 @@ const SeminarsTab = () => {
               <label className="text-xs text-muted-foreground after:content-['*'] after:ml-1 after:text-red-500">Deskripsi Seminar</label>
               <textarea
                 rows={5}
+                required
                 className="inputCls"
                 placeholder="Deskripsi acara seminar..."
                 value={editing.description ?? ""}

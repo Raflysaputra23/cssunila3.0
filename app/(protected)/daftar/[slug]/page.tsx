@@ -3,7 +3,7 @@
 import { use, useRef } from "react";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { ArrowLeft, Loader2, ShieldCheck, Upload, CheckCircle2, Info } from "lucide-react";
+import { ArrowLeft, Loader2, ShieldCheck, Upload, CheckCircle2, Info, Save } from "lucide-react";
 import { toast } from "sonner";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
@@ -12,6 +12,7 @@ import { useRouter } from "next/navigation";
 import { createClient } from "@/supabase/client";
 import Link from "next/link";
 import ConfirmModal from "@/components/site/ConfirmModal";
+import { useFormDraft } from "@/hooks/use-form-draft";
 
 type FieldRow = {
     id: string;
@@ -63,6 +64,14 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
     const [answers, setAnswers] = useState<Record<string, string>>({});
     const [uploading, setUploading] = useState<Record<string, boolean>>({});
     const [openInformation, setOpenInformation] = useState<boolean>(false);
+
+    const [draftRestoredAt, setDraftRestoredAt] = useState<number | null>(null);
+    const [restoredFileKeys, setRestoredFileKeys] = useState<string[]>([]);
+    const draftRestoredRef = useRef(false);
+    const compReadyRef = useRef(false);
+
+    const { saveDraft, readDraft, clearDraft } = useFormDraft(slug, user?.id);
+
     const suparef = useRef(createClient());
 
     useEffect(() => {
@@ -135,6 +144,56 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
         },
     });
 
+    useEffect(() => {
+        (async () => {
+            if (!comp || !user || draftRestoredRef.current) return;
+
+            compReadyRef.current = true;
+            draftRestoredRef.current = true;
+
+            const draft = readDraft();
+            if (!draft) return;
+
+            const fileKeys = comp.competition_fields
+                .filter((f) => f.field_type === "file")
+                .map((f) => f.key);
+
+            setTeamName((v) => v || draft.teamName);
+            setLeaderName((v) => v || draft.leaderName);
+            setLeaderWhatsapp((v) => v || draft.leaderWhatsapp);
+            setLeaderEmail((v) => v || draft.leaderEmail);
+            setSlot(draft.slot ?? 1);
+
+            if (Object.keys(draft.answers).length > 0) {
+                setAnswers(draft.answers);
+            }
+
+            const restoredFiles = fileKeys.filter((k) => !!draft.answers[k]);
+            if (restoredFiles.length > 0) setRestoredFileKeys(restoredFiles);
+
+            setDraftRestoredAt(draft.savedAt);
+            toast.info("Data berhasil dipulihkan", { duration: 5000 });
+        })();
+    }, [comp, user, readDraft]);
+
+    useEffect(() => {
+        if (!draftRestoredRef.current || !user) return;
+
+        const fileKeys = comp?.competition_fields
+            .filter((f) => f.field_type === "file")
+            .map((f) => f.key) ?? [];
+
+        saveDraft({
+            teamName,
+            leaderName,
+            leaderWhatsapp,
+            leaderEmail,
+            slot,
+            answers,
+            fileFields: fileKeys,
+        });
+    }, [teamName, leaderName, leaderWhatsapp, leaderEmail, slot, answers, user, comp, saveDraft]);
+
     const submit = useMutation({
         mutationFn: async () => {
             if (!comp || !user) throw new Error("Data belum siap");
@@ -162,7 +221,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
 
             for (const f of comp.competition_fields) {
                 if (f.required && !answers[f.key]?.trim()) {
-                    throw new Error(`Isi field "${f.label}"`);
+                    throw new Error(`Isi Field "${f.label}"`);
                 }
             }
 
@@ -206,6 +265,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
             return reg.id;
         },
         onSuccess: () => {
+            clearDraft();
             toast.success("Pendaftaran terkirim. Lanjut ke pembayaran di riwayat.");
             router.push("/history");
         },
@@ -236,6 +296,17 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                 <p className="mt-2 text-sm text-muted-foreground">
                                     Biaya pendaftaran <span className="text-foreground">Rp. {(comp.fee_idr * slot).toLocaleString("id-ID")}</span> · {comp.team_size}
                                 </p>
+
+                                {user && (
+                                    <div className="mt-4 flex items-center gap-2">
+                                        {draftRestoredAt && (
+                                            <span className="inline-flex items-center gap-1.5 rounded-full border border-cyan-strong/25 bg-cyan-strong/10 px-3 py-2 text-sm font-medium text-cyan-strong">
+                                                <CheckCircle2 size={14} />
+                                                Data berhasil dipulihkan
+                                            </span>
+                                        )}
+                                    </div>
+                                )}
 
                                 {!comp.is_open && (
                                     <div className="mt-6 rounded-xl border border-amber-500/40 bg-amber-500/10 p-4 text-sm text-amber-400">
@@ -332,7 +403,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                                             type="file"
                                                             className="hidden disabled:cursor-not-allowed"
                                                             accept=".jpg,.jpeg,.png,.webp,.pdf"
-                                                            required={f.required}
+                                                            required={f.required && !answers[f.key]}
                                                             onChange={(e) => {
                                                                 const file = e.target.files?.[0];
                                                                 if (file) uploadFile(f.key, file);
@@ -342,7 +413,11 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                                                     <p className="text-xs text-muted-foreground">Tip: File yang diterima &quot;.jpg&quot;, &quot;.jpeg&quot;, &quot;.png&quot;, &quot;.webp&quot;, &quot;.pdf&quot;. Max 2 MB</p>
                                                     {answers[f.key] && (
                                                         <p className="flex items-center gap-1.5 text-xs text-emerald-300">
-                                                            <CheckCircle2 size={12} /> {answers[f.key].split("/").pop()}
+                                                            <CheckCircle2 size={12} />
+                                                            {restoredFileKeys.includes(f.key)
+                                                                ? `File dipulihkan: ${answers[f.key].split("/").pop()}`
+                                                                : answers[f.key].split("/").pop()
+                                                            }
                                                         </p>
                                                     )}
                                                 </div>
@@ -397,7 +472,7 @@ const DaftarLomba = ({ params }: { params: Promise<{ slug: string }> }) => {
                 open={openInformation}
                 variant="warning"
                 title="Konfirmasi Pendaftaran"
-                message={`Informasi: karena anda mendaftar lebih dari 1 slot anda dikenakan biaya tambahan sebesar Rp. ${comp ? (comp.fee_idr * slot).toLocaleString("id-ID") : 0}.`}
+                message={`Karena anda mendaftar ${slot} slot, maka anda dikenakan biaya tambahan sebesar ${slot} X ${comp ? comp.fee_idr.toLocaleString("id-ID") : 0} = Rp. ${comp ? (comp.fee_idr * slot).toLocaleString("id-ID") : 0}.`}
                 confirmLabel="Ya, Setuju"
                 onConfirm={() => {
                     setOpenInformation(false)

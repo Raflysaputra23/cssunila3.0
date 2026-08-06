@@ -1,19 +1,28 @@
 "use client";
 
-import { useState, useEffect, memo } from "react";
+import { useState, useEffect, memo, useRef } from "react";
 import {
     Map,
     MapMarker,
     MarkerContent,
     MarkerPopup,
     MapControls,
+    MapRef,
 } from "@/components/ui/map";
 import { MapPin, Navigation } from "lucide-react";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 
 const DEFAULT_LAT = -5.3668101;
 const DEFAULT_LNG = 105.2436541;
 const DEFAULT_LOCATION_NAME = "FMIPA Universitas Lampung";
-const DEFAULT_STYLE = "https://tiles.openfreemap.org/styles/bright"
+const DEFAULT_STYLE = "https://tiles.openfreemap.org/styles/bright";
+
+const style_map = {
+    openstreetmap: "https://tiles.openfreemap.org/styles/bright",
+    openstreetmap3d: "https://tiles.openfreemap.org/styles/liberty",
+};
+
+type StyleKey = keyof typeof style_map;
 
 type LocationData = {
     latitude: number;
@@ -118,6 +127,14 @@ export const MapLocationView = ({
     const lat = latitude ?? DEFAULT_LAT;
     const lng = longitude ?? DEFAULT_LNG;
     const name = locationName || DEFAULT_LOCATION_NAME;
+    const [style, setStyle] = useState<StyleKey>("openstreetmap");
+    const selectedStyle = style_map[style];
+    const is3D = style === "openstreetmap3d";
+    const mapRef = useRef<MapRef>(null);
+
+    useEffect(() => {
+        mapRef.current?.easeTo({ pitch: is3D ? 60 : 0, duration: 500 });
+    }, [is3D]);
 
     const googleMapsUrl = `https://www.google.com/maps/search/?api=1&query=${lat},${lng}`;
 
@@ -149,14 +166,35 @@ export const MapLocationView = ({
 
             <div className="relative h-80 md:h-96 w-full overflow-hidden rounded-2xl border border-white/10 shadow-xl">
                 <Map
+                    ref={mapRef}
                     center={[lng, lat]}
                     zoom={15}
                     className="h-full w-full"
                     styles={{
-                        light: DEFAULT_STYLE,
-                        dark: DEFAULT_STYLE,
+                        light: selectedStyle,
+                        dark: selectedStyle,
                     }}
                 >
+                    <div className="absolute top-2 left-2 z-10">
+                        <Select
+
+                            required
+                            defaultValue={style}
+                            onValueChange={(newValue: string) => setStyle(newValue as StyleKey)}
+                        >
+                            <SelectTrigger className="w-full bg-black!">
+                                <SelectValue placeholder="Pilih Style Map" />
+                            </SelectTrigger>
+                            <SelectContent>
+                                {Object.entries(style_map).map(([key]) => (
+                                    <SelectItem key={key} value={key}>
+                                        {key === 'openstreetmap3d' ? 'Lihat 3D' : 'Lihat 2D'}
+                                    </SelectItem>
+                                ))}
+                            </SelectContent>
+                        </Select>
+                    </div>
+
                     <MapMarker longitude={lng} latitude={lat}>
                         <MarkerContent>
                             <div className="flex flex-col items-center">

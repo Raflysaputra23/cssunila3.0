@@ -293,7 +293,7 @@ const CompetitionEditor = ({
           </Select>
         </div>
 
-        {value.location_type !== "none" &&
+        {["online", "offline"].includes(value.location_type || "") &&
           <div>
             <HelpLabel required label="Lokasi Lomba" hint="Nama platform online atau titik lokasi pelaksanaan perlombaan" />
 

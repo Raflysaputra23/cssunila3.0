@@ -46,7 +46,7 @@ const Sponsors = async () => {
 
         {/* Sponsors Grid */}
         {sponsors.length > 0 && (
-          <div className="glass mb-8 grid grid-cols-2 gap-px overflow-hidden rounded-3xl bg-white/5 sm:grid-cols-4">
+          <div className="glass mb-8 grid grid-cols-2 gap-px overflow-hidden rounded-3xl bg-white/5 sm:grid-cols-4 px-3 py-2">
             {sponsors.map((sp) => (
               <Link
                 key={sp.id}

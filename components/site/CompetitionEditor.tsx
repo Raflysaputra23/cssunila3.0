@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
-import { ArrowDown, ArrowRight, Loader2, X } from "lucide-react";
+import { ArrowDown, ArrowRight, Loader2, MapPin, X } from "lucide-react";
 import HelpLabel from "./HelpLabel";
 import { accentOptions, iconNames } from "@/lib/icons";
 import { useEffect, useRef, useState } from "react";
@@ -66,6 +66,9 @@ const CompetitionEditor = ({
   const [loadingUpload, setLoadingUpload] = useState<boolean>(false);
   const [loadingUploadFile, setLoadingUploadFile] = useState<boolean>(false);
   const [preview, setPreview] = useState<string | null>(null);
+  const [keyword, setKeyword] = useState("");
+  const [debouncedKeyword, setDebouncedKeyword] = useState("");
+  const [results, setResults] = useState<any[]>([]);
   const suparef = useRef(createClient());
 
   const loadFile = async (path: string | null) => {
@@ -192,8 +195,35 @@ const CompetitionEditor = ({
     }
   };
 
+  const searchAddress = async (keyword: string) => {
+    const res = await fetch(
+      `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
+        keyword
+      )}&format=json&apiKey=060f934caa664ab487c8870153882438&limit=10&country=indonesia`
+    );
+    const data = await res.json();
+    if (data && data?.results?.length > 0) {
+      setResults(data.results);
+    }
+  }
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedKeyword(keyword);
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [keyword]);
+
+  useEffect(() => {
+    (async () => {
+      if (!debouncedKeyword) return;
+      await searchAddress(debouncedKeyword);
+    })();
+  }, [debouncedKeyword]);
+
   return (
-    <div className="fixed inset-0 z-50 overflow-y-auto bg-background/80 p-4 backdrop-blur">
+    <div onClick={() => setResults([])} className="fixed inset-0 z-50 overflow-y-auto bg-background/80 p-4 backdrop-blur">
       <form
         onSubmit={(e) => { e.preventDefault(); onSave(); }}
         className="glass-strong mx-auto my-6 w-full max-w-2xl space-y-4 rounded-3xl p-6"
@@ -298,13 +328,45 @@ const CompetitionEditor = ({
             <HelpLabel required label="Lokasi Lomba" hint="Nama platform online atau titik lokasi pelaksanaan perlombaan" />
 
             {value.location_type === "offline" ?
-              <div className="space-y-3 rounded-2xl border border-white/10 bg-white/2 p-4">
-                <input required className={"inputCls"} placeholder="Nama tempat / Alamat lokasi" value={value.location_name ?? ""} onChange={(e) => onChange({ ...value, location_name: e.target.value })} />
+              <div className="space-y-2 rounded-2xl border border-white/10 bg-white/2 p-4">
+                <input required className={"inputCls"} placeholder="Nama tempat / Alamat lokasi" value={value.location_name ?? ""} onChange={(e) => {
+                  onChange({ ...value, location_name: e.target.value });
+                  setKeyword(e.target.value);
+                }} />
+                <div className="relative">
+                  <div className="absolute top-0 left-0 right-0 z-50">
+                    {results?.length > 0 && (
+                      <ul className="border rounded-md bg-background p-2 space-y-2 shadow-lg max-h-60 overflow-y-auto text-sm">
+                        {results?.map((r) => (
+                          <li
+                            key={r.formatted}
+                            onClick={() => {
+                              onChange({
+                                ...value,
+                                location_name: r.name ? r.name : keyword,
+                                latitude: r.lat,
+                                longitude: r.lon,
+                              });
+                              setResults([]);
+                            }}
+                            className="cursor-pointer flex items-center gap-2 px-2 py-1.5 rounded-md hover:bg-muted border"
+                          >
+                            <MapPin size={22} className="text-cyan-strong" />
+                            <div className="flex flex-col gap-1 items-start">
+                              <h3 className="text-md font-semibold">{r.name ? r.name : keyword}</h3>
+                              <p className="text-xs text-muted-foreground">{r.formatted}</p>
+                            </div>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                </div>
                 <p className="text-[11px] text-muted-foreground italic">
                   Tips: Geser pin merah pada peta di bawah ini untuk menentukan titik koordinat lokasi lomba.
                 </p>
                 <MapLocationPicker
-                  locationName={value.location_name}
+                  locationName={"Lokasi Lomba"}
                   latitude={value.latitude}
                   longitude={value.longitude}
                   onChange={(loc) =>

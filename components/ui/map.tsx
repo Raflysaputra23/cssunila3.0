@@ -305,7 +305,6 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
     };
     const loadHandler = () => setIsLoaded(true);
 
-    // Viewport change handler - skip if triggered by internal update
     const handleMove = () => {
       if (internalUpdateRef.current) return;
       onViewportChangeRef.current?.(getViewport(map));
@@ -328,7 +327,6 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Sync controlled viewport to map
   useEffect(() => {
     if (!mapInstance || !isControlled || !viewport) return;
     if (mapInstance.isMoving()) return;
@@ -355,6 +353,26 @@ const Map = forwardRef<MapRef, MapProps>(function Map(
     mapInstance.jumpTo(next);
     internalUpdateRef.current = false;
   }, [mapInstance, isControlled, viewport]);
+
+  useEffect(() => {
+    if (!mapInstance) return;
+    if (!props.center) return;
+
+    const current = mapInstance.getCenter();
+    const center = props.center as [number, number];
+
+    if (
+      current.lng === center[0] &&
+      current.lat === center[1]
+    ) {
+      return;
+    }
+
+    mapInstance.flyTo({
+      center,
+      duration: 500,
+    });
+  }, [mapInstance, props.center]);
 
   // Handle style change: close the gate (so layer children tear down and
   // re-add on the incoming style) - the swap itself is staged to the effect below.
@@ -1405,9 +1423,9 @@ function MapGeoJSON<
   const latestRef = useRef({ onClick, onHover });
 
   useEffect(() => {
-    latestRef.current = { 
-      onClick, 
-      onHover 
+    latestRef.current = {
+      onClick,
+      onHover
     };
   }, [onClick, onHover]);
 
@@ -1762,10 +1780,10 @@ function MapArc<T extends MapArcDatum = MapArcDatum>({
   const latestRef = useRef({ data, onClick, onHover });
 
   useEffect(() => {
-    latestRef.current = { 
-      data, 
-      onClick, 
-      onHover 
+    latestRef.current = {
+      data,
+      onClick,
+      onHover
     };
   }, [data, onClick, onHover]);
 

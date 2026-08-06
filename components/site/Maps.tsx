@@ -11,6 +11,7 @@ import {
 } from "@/components/ui/map";
 import { MapPin, Navigation } from "lucide-react";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
+import Link from "next/link";
 
 const DEFAULT_LAT = -5.3668101;
 const DEFAULT_LNG = 105.2436541;
@@ -104,6 +105,7 @@ export const MapLocationPicker = memo(({
                     position="top-right"
                     showZoom
                     showLocate
+                    showCompass
                     showFullscreen
                 />
             </Map>
@@ -153,7 +155,7 @@ export const MapLocationView = ({
                     </p>
                 </div>
 
-                <a
+                <Link
                     href={googleMapsUrl}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -161,7 +163,7 @@ export const MapLocationView = ({
                 >
                     <Navigation size={14} />
                     Buka Google Maps
-                </a>
+                </Link>
             </div>
 
             <div className="relative h-80 md:h-96 w-full overflow-hidden rounded-2xl border border-white/10 shadow-xl">

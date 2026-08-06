@@ -46,7 +46,7 @@ const Sponsors = async () => {
 
         {/* Sponsors Grid */}
         {sponsors.length > 0 && (
-          <div className="glass mb-8 grid grid-cols-2 gap-px overflow-hidden rounded-3xl bg-white/5 sm:grid-cols-4 px-3 py-2">
+          <div className="glass mb-8 grid grid-cols-2 gap-px overflow-hidden rounded-3xl bg-white/5 sm:grid-cols-5">
             {sponsors.map((sp) => (
               <Link
                 key={sp.id}
@@ -54,7 +54,7 @@ const Sponsors = async () => {
                 target={sp.website ? "_blank" : undefined}
                 rel="noopener noreferrer"
                 title={sp.name}
-                className="group flex h-24 flex-col items-center justify-center gap-2 bg-background/40 px-4 text-center transition hover:bg-white/5"
+                className="group flex h-34 flex-col items-center justify-center gap-2 bg-background/40 px-4 py-5 text-center transition hover:bg-white/5"
               >
                 {sp.logo_url ? (
                   <Image

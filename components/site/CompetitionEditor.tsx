@@ -8,9 +8,9 @@ import { useEffect, useRef, useState } from "react";
 import { toast } from "sonner";
 import { createClient } from "@/supabase/client";
 import Image from "next/image";
-import Link from "next/link";
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { Dialog, DialogContent, DialogTrigger } from "../ui/dialog";
+import { MapLocationPicker } from "./Maps";
 
 type CompRow = {
   id: string;
@@ -41,6 +41,10 @@ type CompFull = CompRow & {
   panduan: string | null;
   slot: number;
   timeline: { date: string; label: string }[];
+  location_name?: string | null;
+  latitude?: number | null;
+  longitude?: number | null;
+  location_type?: string | null;
 };
 
 const CompetitionEditor = ({
@@ -271,6 +275,66 @@ const CompetitionEditor = ({
             setDescriptionText(e.target.value);
           }} />
         </div>
+        <div>
+          <HelpLabel label="Tipe Lokasi Lomba" hint="Pilih tipe lokasi lomba: Online atau Offline" />
+          <Select
+            required
+            defaultValue={value.location_type ?? ''}
+            onValueChange={(newValue: string) => onChange({ ...value, location_type: newValue })}
+          >
+            <SelectTrigger className="w-full">
+              <SelectValue placeholder="Pilih Tipe Lokasi" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="none">Tidak Menggunakan Lokasi</SelectItem>
+              <SelectItem value="online">Online</SelectItem>
+              <SelectItem value="offline">Offline</SelectItem>
+            </SelectContent>
+          </Select>
+        </div>
+
+        {value.location_type !== "none" &&
+          <div>
+            <HelpLabel required label="Lokasi Lomba" hint="Nama platform online atau titik lokasi pelaksanaan perlombaan" />
+
+            {value.location_type === "offline" ?
+              <div className="space-y-3 rounded-2xl border border-white/10 bg-white/2 p-4">
+                <input required className={"inputCls"} placeholder="Nama tempat / Alamat lokasi" value={value.location_name ?? ""} onChange={(e) => onChange({ ...value, location_name: e.target.value })} />
+                <p className="text-[11px] text-muted-foreground italic">
+                  Tips: Geser pin merah pada peta di bawah ini untuk menentukan titik koordinat lokasi lomba.
+                </p>
+                <MapLocationPicker
+                  locationName={value.location_name}
+                  latitude={value.latitude}
+                  longitude={value.longitude}
+                  onChange={(loc) =>
+                    onChange({
+                      ...value,
+                      latitude: loc.latitude,
+                      longitude: loc.longitude,
+                    })
+                  }
+                />
+              </div>
+              :
+              <Select
+                required
+                defaultValue={value.location_name ?? ''}
+                onValueChange={(newValue: string) => onChange({ ...value, location_name: newValue })}
+              >
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Pilih Platform Online" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Gmeet">Gmeet</SelectItem>
+                  <SelectItem value="Zoom">Zoom</SelectItem>
+                  <SelectItem value="other">Lainnya</SelectItem>
+                </SelectContent>
+              </Select>
+            }
+          </div>
+        }
+
 
         <div className="grid gap-3 sm:grid-cols-2">
           <div>

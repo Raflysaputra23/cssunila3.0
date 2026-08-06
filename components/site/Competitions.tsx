@@ -1,4 +1,4 @@
-import { ArrowUpRight, Users, Wallet, Lock, User } from "lucide-react";
+import { ArrowUpRight, Users, Wallet, Lock, User, MapPin } from "lucide-react";
 import { getIcon, accentGlow } from "@/lib/icons";
 import Link from "next/link";
 import { createClient } from "@/supabase/server";
@@ -6,7 +6,7 @@ import { createClient } from "@/supabase/server";
 type CompCard = {
     slug: string; name: string; tagline: string | null; description: string[];
     icon: string | null; accent: string | null; fee_idr: number; quota: number;
-    team_size: string | null; is_open: boolean;
+    team_size: string | null; is_open: boolean; location_name: string | null;
 };
 
 const Competitions = async () => {
@@ -16,7 +16,7 @@ const Competitions = async () => {
         const supabase = await createClient();
         const { data: competitions } = await supabase
             .from("competitions")
-            .select("slug,name,tagline,description,icon,accent,fee_idr,quota,team_size,is_open")
+            .select("slug,name,tagline,description,icon,accent,fee_idr,quota,team_size,is_open,location_name")
             .order("position");
 
         if (competitions) data = competitions as CompCard[];
@@ -85,6 +85,11 @@ const Competitions = async () => {
                                     <div className="flex items-center gap-2">
                                         <User size={12} className="text-cyan-strong" /> <span className="truncate">{c.quota > 0 ? c.quota+" Tim" : "Tidak ada batasan"}</span>
                                     </div>
+                                    {c.location_name && (
+                                        <div className="flex items-center gap-2">
+                                            <MapPin size={12} className="text-cyan-strong" /> <span className="truncate">{c.location_name}</span>
+                                        </div>
+                                    )}
                                 </dl>
 
                                 <Link

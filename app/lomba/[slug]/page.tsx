@@ -9,6 +9,7 @@ import {
   Clock,
   Search,
   UserCheck,
+  MapPin,
 } from "lucide-react";
 import Navbar from "@/components/site/Navbar";
 import Footer from "@/components/site/Footer";
@@ -22,6 +23,7 @@ import ShareButton from "@/components/site/ShareButton";
 import { Metadata } from "next";
 import { DownloadPanduanButton, DaftarActionButton } from "@/components/site/LombaActions";
 import parseDateRange from "@/lib/parseDate";
+import { MapLocationView } from "@/components/site/Maps";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -51,6 +53,10 @@ type CompetitionData = {
   is_multi_slot: boolean;
   rules: string[];
   timeline: { date: string; label: string }[];
+  location_name: string | null;
+  latitude: number | null;
+  longitude: number | null;
+  location_type: string | null;
 };
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -123,7 +129,7 @@ const LombaDetail = async ({ params }: Props) => {
     const { data, error } = await supabase
       .from("competitions")
       .select(
-        "id,slug,name,tagline,description,icon,accent,fee_idr,quota,team_size,is_open,rules,timeline,pj_1,no_pj_1,pj_2,no_pj_2,banner,juara_1,juara_2,juara_3,panduan,is_multi_slot"
+        "id,slug,name,tagline,description,icon,accent,fee_idr,quota,team_size,is_open,rules,timeline,pj_1,no_pj_1,pj_2,no_pj_2,banner,juara_1,juara_2,juara_3,panduan,is_multi_slot,location_name,latitude,longitude,location_type"
       )
       .eq("slug", slug)
       .maybeSingle();
@@ -286,6 +292,7 @@ const LombaDetail = async ({ params }: Props) => {
               },
               { icon: Users, label: "Tim", value: c.team_size ?? "-" },
               { icon: UserCheck, label: "Pendaftar", value: pendaftarCount ?? "-" },
+
             ].map((s) => (
               <div key={s.label} className="glass rounded-2xl p-5">
                 <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
@@ -303,6 +310,16 @@ const LombaDetail = async ({ params }: Props) => {
                 </div>
                 <div className="mt-2 font-display text-base font-semibold">
                   Tersedia
+                </div>
+              </div>
+            )}
+            {c.location_type === "online" && (
+              <div className="glass rounded-2xl p-5">
+                <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
+                  <MapPin size={14} /> Lokasi
+                </div>
+                <div className="mt-2 font-display text-base font-semibold">
+                  {c.location_name === "other" ? "Platform online" : c.location_name}
                 </div>
               </div>
             )}
@@ -443,8 +460,8 @@ const LombaDetail = async ({ params }: Props) => {
                       />
                       <div
                         className={`glass group-hover:scale-105 ${activeIndex === i ? "animate-pulse" : ""} ${activeIndex === i ? "border! border-cyan-strong/60!" : ""} transition-all duration-300 ml-10 p-5 rounded-2xl md:ml-0 md:w-[calc(50%-2.5rem)] ${i % 2 === 0
-                            ? "md:mr-auto md:text-right"
-                            : "md:ml-auto md:text-left"
+                          ? "md:mr-auto md:text-right"
+                          : "md:ml-auto md:text-left"
                           }`}
                       >
                         <div className="text-xs font-medium tracking-wider text-cyan-strong uppercase glass inline-flex justify-center items-center rounded-xl px-2.5 py-2">
@@ -470,6 +487,18 @@ const LombaDetail = async ({ params }: Props) => {
           </ol>
         </div>
       </section>
+
+      {c.location_type === "offline" && (
+        <section className="py-12">
+          <div className="max-w-5xl mx-auto px-4">
+            <MapLocationView
+              locationName={c.location_name}
+              latitude={c.latitude}
+              longitude={c.longitude}
+            />
+          </div>
+        </section>
+      )}
 
       <section className="py-12">
         <div

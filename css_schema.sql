@@ -87,6 +87,9 @@ CREATE TABLE public.competitions (
   panduan text,
   slot integer NOT NULL DEFAULT 0,
   is_multi_slot boolean NOT NULL DEFAULT false,
+  location_name text,
+  latitude double precision,
+  longitude double precision,
   created_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL,
   updated_at timestamp with time zone DEFAULT timezone('utc'::text, now()) NOT NULL
 );

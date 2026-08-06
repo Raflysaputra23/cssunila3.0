@@ -199,7 +199,7 @@ const CompetitionEditor = ({
     const res = await fetch(
       `https://api.geoapify.com/v1/geocode/search?text=${encodeURIComponent(
         keyword
-      )}&format=json&apiKey=060f934caa664ab487c8870153882438&limit=10&country=indonesia`
+      )}&format=json&apiKey=060f934caa664ab487c8870153882438&limit=10&country=indonesia&city=Bandar%20Lampung`
     );
     const data = await res.json();
     if (data && data?.results?.length > 0) {
@@ -306,7 +306,7 @@ const CompetitionEditor = ({
           }} />
         </div>
         <div>
-          <HelpLabel label="Tipe Lokasi Lomba" hint="Pilih tipe lokasi lomba: Online atau Offline" />
+          <HelpLabel required label="Tipe Lokasi Lomba" hint="Pilih tipe lokasi lomba: Online atau Offline" />
           <Select
             required
             defaultValue={value.location_type ?? ''}
@@ -361,6 +361,14 @@ const CompetitionEditor = ({
                       </ul>
                     )}
                   </div>
+                </div>
+                <div>
+                  <HelpLabel label="Latitude" hint="Koordinat lintang lokasi perlombaan" required />
+                  <input type="number" className={"inputCls"} required placeholder="Contoh: -5.4246" value={value.latitude ?? ""} onChange={(e) => onChange({ ...value, latitude: Number(e.target.value) })} />
+                </div>
+                <div>
+                  <HelpLabel label="Longitude" hint="Koordinat bujur lokasi perlombaan" required />
+                  <input type="number" className={"inputCls"} required placeholder="Contoh: 105.2702" value={value.longitude ?? ""} onChange={(e) => onChange({ ...value, longitude: Number(e.target.value) })} />
                 </div>
                 <p className="text-[11px] text-muted-foreground italic">
                   Tips: Geser pin merah pada peta di bawah ini untuk menentukan titik koordinat lokasi lomba.
